@@ -15,6 +15,8 @@
 #include "HLSLParser.h"
 #include "HLSLTree.h"
 
+#include <string.h>
+
 // Things that are not supported:
 // - Passing swizzled expressions as out or inout arguments. Out arguments are passed by reference in C++, but
 //   swizzled expressions are not addressable.
@@ -78,85 +80,35 @@ static const char* GetTypeName(const HLSLType& type)
     }
 }
 
-static bool is_semantic(const char * semantic, const char * name, int index)
+static void ParseSemantic(const char* semantic, unsigned int* outputLength, unsigned int* outputIndex)
 {
-    const char * s = semantic;
-    int n = strlen(name);
+    const char* semanticIndex = semantic;
 
-    if (strncmp(s, name, n) != 0)
-    {
-        // Name doesn't match.
-        return false;
-    }
-    s += n;
+    while (*semanticIndex && !isdigit(*semanticIndex))
+        semanticIndex++;
 
-    if (s[0] - '0' == index) {
-        s++;
-    }
-    else if (index != 0)
-    {
-        // Index doesn't match.
-        return false;
-    }
-
-    // EOS doesn't match.
-    return s[0] == '\0';
-}
-static bool is_semantic(const char * semantic, const char * name)
-{
-    return strcmp(semantic, name) == 0;
+    *outputLength = semanticIndex - semantic;
+    *outputIndex = atoi(semanticIndex);
 }
 
-static const char * translate_input_semantic(MSLGenerator::Target target, const char * semantic)
+static int ParseRegister(const char* registerName, int& nextRegister)
 {
-    if (semantic != NULL)
-    {
-        if (target == MSLGenerator::Target_VertexShader)
-        {
-            if (is_semantic(semantic, "POSITION", 0)) return "attribute(0)";
-            if (is_semantic(semantic, "TEXCOORD", 0)) return "attribute(1)";
-            if (is_semantic(semantic, "TEXCOORD", 1)) return "attribute(2)";
-            if (is_semantic(semantic, "NORMAL", 0)) return "attribute(3)";
-            if (is_semantic(semantic, "TANGENT", 0)) return "attribute(4)";
-            if (is_semantic(semantic, "COLOR", 0)) return "attribute(5)";
-            if (is_semantic(semantic, "COLOR", 1)) return "attribute(6)";
-            if (is_semantic(semantic, "BLENDINDICES", 0)) return "attribute(7)";
-            if (is_semantic(semantic, "BLENDWEIGHT", 0)) return "attribute(8)";
-            if (is_semantic(semantic, "INSTANCE_ID")) return "instance_id";
-            if (is_semantic(semantic, "VERTEX_ID")) return "vertex_id";
-        }
-        else if (target == MSLGenerator::Target_FragmentShader)
-        {
-            if (is_semantic(semantic, "POSITION", 0)) return "position";
-            //if (is_semantic(semantic, "VPOS")) return "position";
-            if (is_semantic(semantic, "VFACE")) return "front_facing";
-            //if (is_semantic(semantic, "COLOR", 0)) return "color(0)";      // For programmable blending.
-        }
-    }
-    return NULL;
-}
+    if (!registerName)
+        return nextRegister++;
 
-static const char * translate_output_semantic(MSLGenerator::Target target, const char * semantic)
-{
-    if (semantic != NULL)
-    {
-        if (target == MSLGenerator::Target_VertexShader)
-        {
-            if (is_semantic(semantic, "POSITION", 0)) return "position";
-        }
-        else if (target == MSLGenerator::Target_FragmentShader)
-        {
-            if (is_semantic(semantic, "COLOR", 0)) return "color(0)";
-            if (is_semantic(semantic, "COLOR", 1)) return "color(1)";
-            if (is_semantic(semantic, "DEPTH")) return "depth(any)";
-            if (is_semantic(semantic, "DEPTH_GT")) return "depth(greater)";
-            if (is_semantic(semantic, "DEPTH_LT")) return "depth(less)";
-            if (is_semantic(semantic, "SAMPLE_MASK", 0)) return "sample_mask";
-        }
-    }
-    return NULL;
-}
+    while (*registerName && !isdigit(*registerName))
+        registerName++;
 
+    if (!*registerName)
+        return nextRegister++;
+
+    int result = atoi(registerName);
+
+    if (nextRegister <= result)
+        nextRegister = result + 1;
+
+    return result;
+}
 
 MSLGenerator::MSLGenerator()
 {
@@ -164,6 +116,9 @@ MSLGenerator::MSLGenerator()
     m_entryName                     = NULL;
     m_target                        = Target_VertexShader;
     m_error = false;
+
+    m_firstClassArgument = NULL;
+    m_lastClassArgument  = NULL;
 }
 
 // Copied from GLSLGenerator
@@ -205,65 +160,51 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
     // Hide unused arguments. @@ It would be good to do this in the generator too.
     HideUnusedArguments(entryFunction);
 
-    // Collect textures, in order with names
     HLSLRoot* root = tree->GetRoot();
     HLSLStatement* statement = root->statement;
     ASSERT(m_firstClassArgument == NULL);
 
-    int textureIndex = 0;
-
-    // @@ IC: Hack! LIST BUFFERS IN THE RIGHT order.
-    int bufferOffset = 0;
-    if (target == Target_VertexShader) {
-        bufferOffset = 1; // Index 0 reserved for input vertex buffer.
-    }
-
     HLSLType samplerType(HLSLBaseType_Sampler);
 
-    ClassArgument * currentArg = m_firstClassArgument;
-    while (statement != NULL) {
-        HLSLStatement* nextStatement = statement->nextStatement;
-        
-        if (statement->nodeType == HLSLNodeType_Declaration) {
+    int nextTextureRegister = 0;
+    int nextBufferRegister = 0;
+
+    while (statement != NULL)
+    {
+        if (statement->nodeType == HLSLNodeType_Declaration)
+        {
             HLSLDeclaration* declaration = (HLSLDeclaration*)statement;
             
             if (!declaration->hidden && IsSamplerType(declaration->type))
             {
-                // We just want to list textures in order, no semantic handling is necessary
+                int textureRegister = ParseRegister(declaration->registerName, nextTextureRegister);
+
                 const char * textureName = m_tree->AddStringFormat("%s_texture", declaration->name);
-                const char * textureRegisterName = m_tree->AddStringFormat("texture(%d)", textureIndex);
+                const char * textureRegisterName = m_tree->AddStringFormat("texture(%d)", textureRegister);
                 AddClassArgument(new ClassArgument(textureName, declaration->type, textureRegisterName));
 
                 if (declaration->type.baseType != HLSLBaseType_Sampler2DMS)
                 {
                     const char * samplerName = m_tree->AddStringFormat("%s_sampler", declaration->name);
-                    const char * samplerRegisterName = m_tree->AddStringFormat("sampler(%d)", textureIndex);
+                    const char * samplerRegisterName = m_tree->AddStringFormat("sampler(%d)", textureRegister);
                     AddClassArgument(new ClassArgument(samplerName, samplerType, samplerRegisterName));
                 }
-
-                textureIndex++;
             }
         }
-        else if (statement->nodeType == HLSLNodeType_Buffer) {
+        else if (statement->nodeType == HLSLNodeType_Buffer)
+        {
             HLSLBuffer * buffer = (HLSLBuffer *)statement;
 
-            if (!buffer->hidden) {
+            if (!buffer->hidden)
+            {
                 HLSLType type(HLSLBaseType_UserDefined);
                 type.addressSpace = HLSLAddressSpace_Constant;
                 type.typeName = m_tree->AddStringFormat("Uniforms_%s", buffer->name);
 
-                int bufferIndex = -1;
-                if (strcmp(buffer->name, "per_pass") == 0) bufferIndex = bufferOffset + 0;
-                else if (strcmp(buffer->name, "per_item") == 0) bufferIndex = bufferOffset + 1;
+                int bufferRegister = ParseRegister(buffer->registerName, nextBufferRegister) + m_options.bufferRegisterOffset;
+                const char * bufferRegisterName = m_tree->AddStringFormat("buffer(%d)", bufferRegister);
 
-                const char * registerName = m_tree->AddStringFormat("buffer(%d)", bufferIndex);
-
-                if (bufferIndex >= 0)
-                {
-                    AddClassArgument(new ClassArgument(buffer->name, type, registerName));
-                }
-
-                bufferIndex--;
+                AddClassArgument(new ClassArgument(buffer->name, type, bufferRegisterName));
             }
         }
         
@@ -298,14 +239,14 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
                 {
                     if (!field->hidden)
                     {
-                        field->sv_semantic = translate_output_semantic(target, field->semantic);
+                        field->sv_semantic = TranslateOutputSemantic(field->semantic);
                     }
                     field = field->nextField;
                 }
             }
             else
             {
-                argument->sv_semantic = translate_output_semantic(target, argument->semantic);
+                argument->sv_semantic = TranslateOutputSemantic(argument->semantic);
             }
         }
         else {
@@ -329,7 +270,7 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
 
                     if (!field->hidden)
                     {
-                        field->sv_semantic = translate_input_semantic(target, field->semantic);
+                        field->sv_semantic = TranslateInputSemantic(field->semantic);
 
                         /*if (target == Target_VertexShader && is_semantic(field->semantic, "COLOR"))
                         {
@@ -341,7 +282,7 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
             }
             else
             {
-                argument->sv_semantic = translate_input_semantic(target, argument->semantic);
+                argument->sv_semantic = TranslateInputSemantic(argument->semantic);
             }
         }
 
@@ -364,14 +305,14 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
             {
                 if (!field->hidden)
                 {
-                    field->sv_semantic = translate_output_semantic(target, field->semantic);
+                    field->sv_semantic = TranslateOutputSemantic(field->semantic);
                 }
                 field = field->nextField;
             }
         }
         else
         {
-            entryFunction->sv_semantic = translate_output_semantic(target, entryFunction->semantic);
+            entryFunction->sv_semantic = TranslateOutputSemantic(entryFunction->semantic);
         }
     }
 }
@@ -390,7 +331,7 @@ void MSLGenerator::CleanPrepass()
     m_lastClassArgument = NULL;
 }
     
-bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName, int flags)
+bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName, const Options& options)
 {
     m_firstClassArgument = NULL;
     m_lastClassArgument = NULL;
@@ -399,6 +340,7 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
     m_entryName = entryName;
     m_target    = target;
     ASSERT(m_target == Target_VertexShader || m_target == Target_FragmentShader);
+    m_options   = options;
 
     m_writer.Reset();
 
@@ -412,15 +354,9 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
     
     Prepass(tree, target, entryFunction);
     
-    // ACoget-TODO: replace by prepass
-    m_per_pass_buffer = NULL;
-    m_per_item_buffer = NULL;
-    
     // ACoget-TODO: add a helper function for all the prepended code
     // ACoget-TODO: trim what gets added based on what the shader uses
     m_writer.WriteLine(0, "#include <metal_stdlib>");
-    m_writer.WriteLine(0, "#include <metal_texture>");
-    m_writer.WriteLine(0, "#include <metal_math>");
     m_writer.WriteLine(0, "using namespace metal;");
     m_writer.WriteLine(0, "");
     
@@ -429,7 +365,7 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
     // Any special function stubs we need go here
     // That includes special constructors to emulate HLSL not being strict
 
-    if (FindFunctionCall(entryFunction, "mad")) {
+    if (m_tree->NeedsFunction("mad")) {
         m_writer.WriteLine(0, "inline float mad(float a, float b, float c) {");
         m_writer.WriteLine(1, "return a * b + c;");
         m_writer.WriteLine(0, "}");
@@ -444,7 +380,7 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(0, "}");
     }
 
-    if (FindFunctionCall(entryFunction, "max")) {
+    if (m_tree->NeedsFunction("max")) {
         m_writer.WriteLine(0, "inline float max(int a, float b) {");
         m_writer.WriteLine(1, "return max((float)a, b);");
         m_writer.WriteLine(0, "}");
@@ -452,7 +388,7 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(1, "return max(a, (float)b);");
         m_writer.WriteLine(0, "}");
     }
-    if (FindFunctionCall(entryFunction, "min")) {
+    if (m_tree->NeedsFunction("min")) {
         m_writer.WriteLine(0, "inline float min(int a, float b) {");
         m_writer.WriteLine(1, "return min((float)a, b);");
         m_writer.WriteLine(0, "}");
@@ -461,19 +397,43 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(0, "}");
     }
 
-    if (FindFunctionCall(entryFunction, "lerp")) {
+    if (m_tree->NeedsFunction("lerp")) {
         m_writer.WriteLine(0, "template<typename T> inline T mix(T a, T b, int x) {");
         m_writer.WriteLine(1, "return mix(a, b, (float)x);");
         m_writer.WriteLine(0, "}");
         m_writer.WriteLine(0, "#define lerp mix");
     }
 
-    if (FindFunctionCall(entryFunction, "mul")) {
+    if (m_tree->NeedsFunction("mul")) {
+        const char* am = (m_options.flags & Flag_PackMatrixRowMajor) ? "m * a" : "a * m";
+        const char* ma = (m_options.flags & Flag_PackMatrixRowMajor) ? "a * m" : "m * a";
+
         // @@ Add all mul variants? Replace by * ?
-        m_writer.WriteLine(0, "inline float4 mul(float4 a, float4x4 m) {");
-        m_writer.WriteLine(1, "return a * m;");
+        m_writer.WriteLine(0, "inline float2 mul(float2 a, float2x2 m) {");
+        m_writer.WriteLine(1, "return %s;", am);
         m_writer.WriteLine(0, "}");
 
+        m_writer.WriteLine(0, "inline float3 mul(float3 a, float3x3 m) {");
+        m_writer.WriteLine(1, "return %s;", am);
+        m_writer.WriteLine(0, "}");
+
+        m_writer.WriteLine(0, "inline float4 mul(float4 a, float4x4 m) {");
+        m_writer.WriteLine(1, "return %s;", am);
+        m_writer.WriteLine(0, "}");
+
+        m_writer.WriteLine(0, "inline float2 mul(float2x2 m, float2 a) {");
+        m_writer.WriteLine(1, "return %s;", ma);
+        m_writer.WriteLine(0, "}");
+
+        m_writer.WriteLine(0, "inline float3 mul(float3x3 m, float3 a) {");
+        m_writer.WriteLine(1, "return %s;", ma);
+        m_writer.WriteLine(0, "}");
+
+        m_writer.WriteLine(0, "inline float4 mul(float4x4 m, float4 a) {");
+        m_writer.WriteLine(1, "return %s;", ma);
+        m_writer.WriteLine(0, "}");
+
+        // TODO: Support PackMatrixRowMajor for float3x4/float4x3
         m_writer.WriteLine(0, "inline float3 mul(float4 a, float3x4 m) {");
         m_writer.WriteLine(1, "return a * m;");
         m_writer.WriteLine(0, "}");
@@ -504,108 +464,117 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
     m_writer.WriteLine(1, "    m[0][i] = v.x; m[1][i] = v.y; return v;");
     m_writer.WriteLine(0, "}");
 
+    m_writer.WriteLine(0, "inline float3x3 matrix_ctor(float4x4 m) {");
+    m_writer.WriteLine(1, "    return float3x3(m[0].xyz, m[1].xyz, m[2].xyz);");
+    m_writer.WriteLine(0, "}");
 
-    if (FindFunctionCall(entryFunction, "clip"))
+    if (m_tree->NeedsFunction("clip"))
     {
         m_writer.WriteLine(0, "inline void clip(float x) {");
         m_writer.WriteLine(1, "if (x < 0.0) discard_fragment();");
         m_writer.WriteLine(0, "}");
     }
-    if (FindFunctionCall(entryFunction, "rcp"))
+    if (m_tree->NeedsFunction("rcp"))
     {
         m_writer.WriteLine(0, "inline float rcp(float x) {");
         m_writer.WriteLine(1, "return 1.0f / x;");
         m_writer.WriteLine(0, "}");
     }
 
-    if (FindFunctionCall(entryFunction, "ddx")) m_writer.WriteLine(0, "#define ddx dfdx");
-    if (FindFunctionCall(entryFunction, "ddy")) m_writer.WriteLine(0, "#define ddy dfdy");
-    if (FindFunctionCall(entryFunction, "frac")) m_writer.WriteLine(0, "#define frac fract");
+    if (m_tree->NeedsFunction("ddx")) m_writer.WriteLine(0, "#define ddx dfdx");
+    if (m_tree->NeedsFunction("ddy")) m_writer.WriteLine(0, "#define ddy dfdy");
+    if (m_tree->NeedsFunction("frac")) m_writer.WriteLine(0, "#define frac fract");
     
     //m_writer.WriteLine(0, "#define mad fma");     // @@ This doesn't seem to work.
     
-    if (FindFunctionCall(entryFunction, "tex2D") ||
-        FindFunctionCall(entryFunction, "tex2Dlod") ||
-        FindFunctionCall(entryFunction, "tex2Dgrad") ||
-        FindFunctionCall(entryFunction, "tex2Dbias"))
-    {
-        m_writer.WriteLine(0, "struct Texture2DSampler {");
-        m_writer.WriteLine(1, "const thread texture2d<float>& t;");
-        m_writer.WriteLine(1, "const thread sampler& s;");
-        m_writer.WriteLine(1, "Texture2DSampler(thread const texture2d<float>& t, thread const sampler& s) : t(t), s(s) {};");
-        m_writer.WriteLine(0, "};");
-    }
+    m_writer.WriteLine(0, "struct Texture2DSampler {");
+    m_writer.WriteLine(1, "const thread texture2d<float>& t;");
+    m_writer.WriteLine(1, "const thread sampler& s;");
+    m_writer.WriteLine(1, "Texture2DSampler(thread const texture2d<float>& t, thread const sampler& s) : t(t), s(s) {};");
+    m_writer.WriteLine(0, "};");
 
-    if (FindFunctionCall(entryFunction, "tex2D"))
+    if (m_tree->NeedsFunction("tex2D"))
     {
         m_writer.WriteLine(0, "inline float4 tex2D(Texture2DSampler ts, float2 texCoord) {");
         m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoord);");
         m_writer.WriteLine(0, "}");
     }
-    if (FindFunctionCall(entryFunction, "tex2Dlod"))
+    if (m_tree->NeedsFunction("tex2Dlod"))
     {
         m_writer.WriteLine(0, "inline float4 tex2Dlod(Texture2DSampler ts, float4 texCoordMip) {");
         m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoordMip.xy, level(texCoordMip.w));");
         m_writer.WriteLine(0, "}");
     }
-    if (FindFunctionCall(entryFunction, "tex2Dgrad"))
+    if (m_tree->NeedsFunction("tex2Dgrad"))
     {
         m_writer.WriteLine(0, "inline float4 tex2Dgrad(Texture2DSampler ts, float2 texCoord, float2 gradx, float2 grady) {");
         m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoord.xy, gradient2d(gradx, grady));");
         m_writer.WriteLine(0, "}");
     }
-    if (FindFunctionCall(entryFunction, "tex2Dbias"))
+    if (m_tree->NeedsFunction("tex2Dbias"))
     {
         m_writer.WriteLine(0, "inline float4 tex2Dbias(Texture2DSampler ts, float4 texCoordBias) {");
         m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoordBias.xy, bias(texCoordBias.w));");
         m_writer.WriteLine(0, "}");
     }
     
-    if (FindFunctionCall(entryFunction, "tex3D") ||
-        FindFunctionCall(entryFunction, "tex3Dlod"))
-    {
-        m_writer.WriteLine(0, "struct Texture3DSampler {");
-        m_writer.WriteLine(1, "const thread texture3d<float>& t;");
-        m_writer.WriteLine(1, "const thread sampler& s;");
-        m_writer.WriteLine(1, "Texture3DSampler(thread const texture3d<float>& t, thread const sampler& s) : t(t), s(s) {};");
-        m_writer.WriteLine(0, "};");
-    }
-    if (FindFunctionCall(entryFunction, "tex3D"))
+    m_writer.WriteLine(0, "struct Texture3DSampler {");
+    m_writer.WriteLine(1, "const thread texture3d<float>& t;");
+    m_writer.WriteLine(1, "const thread sampler& s;");
+    m_writer.WriteLine(1, "Texture3DSampler(thread const texture3d<float>& t, thread const sampler& s) : t(t), s(s) {};");
+    m_writer.WriteLine(0, "};");
+
+    if (m_tree->NeedsFunction("tex3D"))
     {
         m_writer.WriteLine(0, "inline float4 tex3D(Texture3DSampler ts, float3 texCoord) {");
         m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoord);");
         m_writer.WriteLine(0, "}");
     }
-    if (FindFunctionCall(entryFunction, "tex3Dlod"))
+    if (m_tree->NeedsFunction("tex3Dlod"))
     {
         m_writer.WriteLine(0, "inline float4 tex3Dlod(Texture3DSampler ts, float4 texCoordMip) {");
         m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoordMip.xyz, level(texCoordMip.w));");
         m_writer.WriteLine(0, "}");
     }
     
-    if (FindFunctionCall(entryFunction, "texCUBElod"))
+    m_writer.WriteLine(0, "struct TextureCubeSampler {");
+    m_writer.WriteLine(1, "const thread texturecube<float>& t;");
+    m_writer.WriteLine(1, "const thread sampler& s;");
+    m_writer.WriteLine(1, "TextureCubeSampler(thread const texturecube<float>& t, thread const sampler& s) : t(t), s(s) {};");
+    m_writer.WriteLine(0, "};");
+
+    if (m_tree->NeedsFunction("texCUBE"))
     {
-        m_writer.WriteLine(0, "struct TextureCubeSampler {");
-        m_writer.WriteLine(1, "const thread texturecube<float>& t;");
-        m_writer.WriteLine(1, "const thread sampler& s;");
-        m_writer.WriteLine(1, "TextureCubeSampler(thread const texturecube<float>& t, thread const sampler& s) : t(t), s(s) {};");
-        m_writer.WriteLine(0, "};");
-        
+        m_writer.WriteLine(0, "inline float4 texCUBE(TextureCubeSampler ts, float3 texCoord) {");
+        m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoord);");
+        m_writer.WriteLine(0, "}");
+    }
+
+    if (m_tree->NeedsFunction("texCUBElod"))
+    {
         m_writer.WriteLine(0, "inline float4 texCUBElod(TextureCubeSampler ts, float4 texCoordMip) {");
         m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoordMip.xyz, level(texCoordMip.w));");
         m_writer.WriteLine(0, "}");
     }
-    
-    if (FindFunctionCall(entryFunction, "tex2Dcmp"))
+
+    if (m_tree->NeedsFunction("texCUBEbias"))
     {
-        m_writer.WriteLine(0, "struct Texture2DShadowSampler {");
-        m_writer.WriteLine(1, "const thread depth2d<float>& t;");
-        m_writer.WriteLine(1, "const thread sampler& s;");
-        m_writer.WriteLine(1, "Texture2DShadowSampler(thread const depth2d<float>& t, thread const sampler& s) : t(t), s(s) {};");
-        m_writer.WriteLine(0, "};");
+        m_writer.WriteLine(0, "inline float4 texCUBEbias(TextureCubeSampler ts, float4 texCoordBias) {");
+        m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoordBias.xyz, bias(texCoordBias.w));");
+        m_writer.WriteLine(0, "}");
+    }
+    
+    m_writer.WriteLine(0, "struct Texture2DShadowSampler {");
+    m_writer.WriteLine(1, "const thread depth2d<float>& t;");
+    m_writer.WriteLine(1, "const thread sampler& s;");
+    m_writer.WriteLine(1, "Texture2DShadowSampler(thread const depth2d<float>& t, thread const sampler& s) : t(t), s(s) {};");
+    m_writer.WriteLine(0, "};");
         
+    if (m_tree->NeedsFunction("tex2Dcmp"))
+    {
         m_writer.WriteLine(0, "inline float4 tex2Dcmp(Texture2DShadowSampler ts, float4 texCoordCompare) {");
-        if (flags & Flags_ConstShadowSampler) {
+        if (m_options.flags & Flag_ConstShadowSampler)
+        {
             // iOS Metal requires that the sampler in sample_compare is a compile-time constant
             m_writer.WriteLine(1, "constexpr sampler shadow_constant_sampler(mip_filter::none, min_filter::linear, mag_filter::linear, address::clamp_to_edge, compare_func::less);");
             m_writer.WriteLine(1, "return ts.t.sample_compare(shadow_constant_sampler, texCoordCompare.xy, texCoordCompare.z);");
@@ -615,7 +584,7 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(0, "}");
     }
     
-    if (FindFunctionCall(entryFunction, "tex2DMSfetch"))
+    if (m_tree->NeedsFunction("tex2DMSfetch"))
     {
         m_writer.WriteLine(0, "inline float4 tex2DMSfetch(texture2d_ms<float> t, uint2 texCoord, uint sample) {");
         m_writer.WriteLine(1, "return t.read(texCoord, sample);");
@@ -810,7 +779,9 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
         else if (statement->nodeType == HLSLNodeType_Function)
         {
             HLSLFunction* function = static_cast<HLSLFunction*>(statement);
-            OutputFunction(indent, function);
+
+            if (!function->forward)
+                OutputFunction(indent, function);
         }
         else if (statement->nodeType == HLSLNodeType_ExpressionStatement)
         {
@@ -840,23 +811,23 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
             }
             else
             {
-                m_writer.WriteLine(indent, returnStatement->fileName, returnStatement->line, "return;");
+                m_writer.WriteLineTagged(indent, returnStatement->fileName, returnStatement->line, "return;");
             }
         }
         else if (statement->nodeType == HLSLNodeType_DiscardStatement)
         {
             HLSLDiscardStatement* discardStatement = static_cast<HLSLDiscardStatement*>(statement);
-            m_writer.WriteLine(indent, discardStatement->fileName, discardStatement->line, "discard_fragment();");
+            m_writer.WriteLineTagged(indent, discardStatement->fileName, discardStatement->line, "discard_fragment();");
         }
         else if (statement->nodeType == HLSLNodeType_BreakStatement)
         {
             HLSLBreakStatement* breakStatement = static_cast<HLSLBreakStatement*>(statement);
-            m_writer.WriteLine(indent, breakStatement->fileName, breakStatement->line, "break;");
+            m_writer.WriteLineTagged(indent, breakStatement->fileName, breakStatement->line, "break;");
         }
         else if (statement->nodeType == HLSLNodeType_ContinueStatement)
         {
             HLSLContinueStatement* continueStatement = static_cast<HLSLContinueStatement*>(statement);
-            m_writer.WriteLine(indent, continueStatement->fileName, continueStatement->line, "continue;");
+            m_writer.WriteLineTagged(indent, continueStatement->fileName, continueStatement->line, "continue;");
         }
         else if (statement->nodeType == HLSLNodeType_IfStatement)
         {
@@ -893,7 +864,7 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
         else if (statement->nodeType == HLSLNodeType_BlockStatement)
         {
             HLSLBlockStatement* blockStatement = static_cast<HLSLBlockStatement*>(statement);
-            m_writer.WriteLine(indent, blockStatement->fileName, blockStatement->line, "{");
+            m_writer.WriteLineTagged(indent, blockStatement->fileName, blockStatement->line, "{");
             OutputStatements(indent + 1, blockStatement->statement);
             m_writer.WriteLine(indent, "}");
         }
@@ -971,7 +942,7 @@ void MSLGenerator::OutputDeclaration(HLSLDeclaration* declaration)
 
 void MSLGenerator::OutputStruct(int indent, HLSLStruct* structure)
 {
-    m_writer.WriteLine(indent, structure->fileName, structure->line, "struct %s {", structure->name);
+    m_writer.WriteLineTagged(indent, structure->fileName, structure->line, "struct %s {", structure->name);
     HLSLStructField* field = structure->field;
     while (field != NULL)
     {
@@ -1013,18 +984,7 @@ void MSLGenerator::OutputBuffer(int indent, HLSLBuffer* buffer)
     }
     m_writer.WriteLine(indent, "};");
 
-    // Output member reference to buffers.
-    if (String_Equal(buffer->name, "per_pass")) {
-        m_per_pass_buffer = buffer;
-        m_writer.WriteLine(indent, "constant Uniforms_per_pass & per_pass;");
-    }
-    else if (String_Equal(buffer->name, "per_item")) {
-        m_per_item_buffer = buffer;
-        m_writer.WriteLine(indent, "constant Uniforms_per_item & per_item;");
-    }
-    else {
-        ASSERT(0); // General buffers not supported yet.
-    }
+    m_writer.WriteLine(indent, "constant Uniforms_%s & %s;", buffer->name, buffer->name);
 }
     
 void MSLGenerator::OutputFunction(int indent, HLSLFunction* function)
@@ -1042,27 +1002,6 @@ void MSLGenerator::OutputFunction(int indent, HLSLFunction* function)
     OutputStatements(indent + 1, function->statement);
     m_writer.WriteLine(indent, "};");
 }
-
-
-static bool is_in_buffer(HLSLBuffer * buffer, const char * name)
-{
-    if (buffer == NULL)
-    {
-        return false;
-    }
-    
-    HLSLDeclaration* field = buffer->field;
-    while (field != NULL)
-    {
-        if (!field->hidden)
-        {
-            if (strcmp(field->name, name) == 0) return true;
-        }
-        field = (HLSLDeclaration*)field->nextStatement;
-    }
-    return false;
-}
-
 
 // @@ We could be a lot smarter removing parenthesis based on the operator precedence of the parent expression.
 static bool needsParenthesis(HLSLExpression * expression, HLSLExpression * parentExpression) {
@@ -1110,8 +1049,10 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression, HLSLExpression* 
         {
             if (identifierExpression->global)
             {
-                if (is_in_buffer(m_per_item_buffer, name)) m_writer.Write("per_item.");
-                else if (is_in_buffer(m_per_pass_buffer, name)) m_writer.Write("per_pass.");
+                HLSLDeclaration * declaration = m_tree->FindGlobalDeclaration(identifierExpression->name);
+
+                if (declaration && declaration->buffer)
+                    m_writer.Write("%s.", declaration->buffer->name);
             }
             m_writer.Write("%s", name);
 
@@ -1141,9 +1082,8 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression, HLSLExpression* 
     else if (expression->nodeType == HLSLNodeType_CastingExpression)
     {
         HLSLCastingExpression* castingExpression = static_cast<HLSLCastingExpression*>(expression);
+        OutputCast(castingExpression->type);
         m_writer.Write("(");
-        OutputDeclarationType(castingExpression->type);
-        m_writer.Write(")(");
         OutputExpression(castingExpression->expression, castingExpression);
         m_writer.Write(")");
     }
@@ -1317,6 +1257,20 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression, HLSLExpression* 
     else
     {
         m_writer.Write("<unknown expression>");
+    }
+}
+
+void MSLGenerator::OutputCast(const HLSLType& type)
+{
+    if (type.baseType == HLSLBaseType_Float3x3)
+    {
+        m_writer.Write("matrix_ctor");
+    }
+    else
+    {
+        m_writer.Write("(");
+        OutputDeclarationType(type);
+        m_writer.Write(")");
     }
 }
  
@@ -1596,6 +1550,74 @@ void MSLGenerator::OutputFunctionCall(HLSLFunctionCall* functionCall)
     m_writer.Write("%s(", name);
     OutputExpressionList(functionCall->argument);
     m_writer.Write(")");
+}
+
+const char* MSLGenerator::TranslateInputSemantic(const char * semantic)
+{
+    if (semantic == NULL)
+        return NULL;
+
+    unsigned int length, index;
+    ParseSemantic(semantic, &length, &index);
+
+    if (m_target == MSLGenerator::Target_VertexShader)
+    {
+        if (String_Equal(semantic, "INSTANCE_ID")) return "instance_id";
+        if (String_Equal(semantic, "SV_InstanceID")) return "instance_id";
+        if (String_Equal(semantic, "VERTEX_ID")) return "vertex_id";
+        if (String_Equal(semantic, "SV_VertexID")) return "vertex_id";
+
+        if (m_options.attributeCallback)
+        {
+            char name[64];
+            ASSERT(length < sizeof(name));
+
+            strncpy(name, semantic, length);
+            name[length] = 0;
+
+            int attribute = m_options.attributeCallback(name, index);
+
+            if (attribute >= 0)
+                return m_tree->AddStringFormat("attribute(%d)", attribute);
+        }
+    }
+    else if (m_target == MSLGenerator::Target_FragmentShader)
+    {
+        if (String_Equal(semantic, "POSITION")) return "position";
+        if (String_Equal(semantic, "VFACE")) return "front_facing";
+    }
+
+    return NULL;
+}
+
+const char* MSLGenerator::TranslateOutputSemantic(const char * semantic)
+{
+    if (semantic == NULL)
+        return NULL;
+
+    unsigned int length, index;
+    ParseSemantic(semantic, &length, &index);
+
+    if (m_target == MSLGenerator::Target_VertexShader)
+    {
+        if (String_Equal(semantic, "POSITION")) return "position";
+        if (String_Equal(semantic, "SV_Position")) return "position";
+        if (String_Equal(semantic, "PSIZE")) return "point_size";
+    }
+    else if (m_target == MSLGenerator::Target_FragmentShader)
+    {
+        if (strncmp(semantic, "SV_Target", length) == 0)
+            return m_tree->AddStringFormat("color(%d)", index);
+        if (strncmp(semantic, "COLOR", length) == 0)
+            return m_tree->AddStringFormat("color(%d)", index);
+
+        if (String_Equal(semantic, "DEPTH")) return "depth(any)";
+        if (String_Equal(semantic, "DEPTH_GT")) return "depth(greater)";
+        if (String_Equal(semantic, "DEPTH_LT")) return "depth(less)";
+        if (String_Equal(semantic, "SAMPLE_MASK")) return "sample_mask";
+    }
+
+    return NULL;
 }
 
 } // M4

@@ -3,7 +3,6 @@
 
 #if _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS 1
-#define __attribute__(...)
 #endif
 
 #include <stdarg.h> // va_list, vsnprintf

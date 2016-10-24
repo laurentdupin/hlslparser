@@ -46,6 +46,7 @@ enum HLSLToken
     HLSLToken_SamplerCube,
     HLSLToken_Sampler2DShadow,
     HLSLToken_Sampler2DMS,
+    HLSLToken_Sampler2DArray,
 
     // Reserved words.
     HLSLToken_If,

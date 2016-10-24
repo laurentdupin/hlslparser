@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <ctype.h>
+#include <string.h>
 
 namespace M4
 {
@@ -511,6 +512,9 @@ const Intrinsic _intrinsic[] =
 		Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2x2 ),
         Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3x3 ),
         Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float2x2, HLSLBaseType_Float2 ),
+        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float3x3, HLSLBaseType_Float3 ),
+        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4x4, HLSLBaseType_Float4 ),
         Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float4x3 ),
         Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float4, HLSLBaseType_Float4x2 ),
 
@@ -556,6 +560,8 @@ const Intrinsic _intrinsic[] =
 
         Intrinsic("tex2DMSfetch", HLSLBaseType_Float4, HLSLBaseType_Sampler2DMS, HLSLBaseType_Int2, HLSLBaseType_Int),
         Intrinsic("tex2DMSsize", HLSLBaseType_Int3, HLSLBaseType_Sampler2DMS),
+
+        Intrinsic("tex2DArray", HLSLBaseType_Float4, HLSLBaseType_Sampler2DArray, HLSLBaseType_Float3),
 
         Intrinsic("tex3D",     HLSLBaseType_Float4, HLSLBaseType_Sampler3D, HLSLBaseType_Float3),
         Intrinsic("tex3Dlod",  HLSLBaseType_Float4, HLSLBaseType_Sampler3D, HLSLBaseType_Float4),
@@ -646,6 +652,7 @@ const BaseTypeDescription _baseTypeDescriptions[HLSLBaseType_Count] =
         { "samplerCUBE",        NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_SamplerCube
         { "sampler2DShadow",    NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2DShadow
         { "sampler2DMS",        NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2DMS
+        { "sampler2DArray",     NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2DArray
         { "user defined",       NumericType_NaN,        1, 0, 0, -1 }       // HLSLBaseType_UserDefined
     };
 
@@ -672,7 +679,7 @@ HLSLBaseType _binaryOpTypeLookup[HLSLBaseType_NumericCount][HLSLBaseType_Numeric
             HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3,
-            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, 
+            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3,
             HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3
         },
         {   // float4
@@ -720,8 +727,8 @@ HLSLBaseType _binaryOpTypeLookup[HLSLBaseType_NumericCount][HLSLBaseType_Numeric
         {   // half
             HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2, 
             HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2, 
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, 
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, 
+            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4,
+            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4,
             HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4
         },
         {   // half2
@@ -783,7 +790,7 @@ HLSLBaseType _binaryOpTypeLookup[HLSLBaseType_NumericCount][HLSLBaseType_Numeric
         {   // bool
             HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2,
-            HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4, 
+            HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
@@ -812,7 +819,7 @@ HLSLBaseType _binaryOpTypeLookup[HLSLBaseType_NumericCount][HLSLBaseType_Numeric
             HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2,
             HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int2, HLSLBaseType_Int2,
-            HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4, 
+            HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // int2
@@ -826,35 +833,35 @@ HLSLBaseType _binaryOpTypeLookup[HLSLBaseType_NumericCount][HLSLBaseType_Numeric
             HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Half3, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Int3, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int3,
-            HLSLBaseType_Int3, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int3, 
+            HLSLBaseType_Int3, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int3,
             HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3
         },
         {   // int4
             HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Half4, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Int4, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4, 
-            HLSLBaseType_Int4, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4, 
+            HLSLBaseType_Int4, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
+            HLSLBaseType_Int4, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Uint4, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // uint
             HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2,
-            HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4, 
-            HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4, 
+            HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4,
+            HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4,
             HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // uint2
             HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2,  
-            HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, 
+            HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2,
+            HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2,
             HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2
         },
         {   // uint3
             HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Half3, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3, 
-            HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3, 
+            HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3,
+            HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3,
             HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3
         },
         {   // uint4
@@ -1342,6 +1349,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
                 return false;
             }
             DeclareVariable( field->name, field->type );
+            field->buffer = buffer;
             if (buffer->field == NULL)
             {
                 buffer->field = field;
@@ -1384,13 +1392,41 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
                 return false;
             }
 
+            const HLSLFunction* declaration = FindFunction(function);
+
+            // Forward declaration
+            if (Accept(';'))
+            {
+                // Add a function entry so that calls can refer to it
+                if (!declaration)
+                {
+                    m_functions.PushBack( function );
+                    statement = function;
+                }
+                EndScope();
+                return true;
+            }
+
             // Optional semantic.
             if (Accept(':') && !ExpectIdentifier(function->semantic))
             {
                 return false;
             }
-            
-            m_functions.PushBack( function );
+
+            if (declaration)
+            {
+                if (declaration->forward || declaration->statement)
+                {
+                    m_tokenizer.Error("Duplicate function definition");
+                    return false;
+                }
+
+                const_cast<HLSLFunction*>(declaration)->forward = function;
+            }
+            else
+            {
+                m_functions.PushBack( function );
+            }
 
             if (!Expect('{') || !ParseBlock(function->statement, function->returnType))
             {
@@ -1429,7 +1465,6 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
             {
                 // @@ Currently we support either a semantic or a register, but not both.
                 if (AcceptIdentifier(declaration->semantic)) {
-                    int k = 1;
                 }
                 else if (!Expect(HLSLToken_Register) || !Expect('(') || !ExpectIdentifier(declaration->registerName) || !Expect(')'))
                 {
@@ -2907,7 +2942,7 @@ bool HLSLParser::ParseAttributeList(HLSLAttribute*& firstAttribute)
         if (!ExpectIdentifier(identifier)) {
             return false;
         }
-        
+
         HLSLAttribute * attribute = m_tree->AddNode<HLSLAttribute>(fileName, line);
         
         if (strcmp(identifier, "unroll") == 0) attribute->attributeType = HLSLAttributeType_Unroll;
@@ -3227,6 +3262,9 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLBaseType& type, const char*& typ
     case HLSLToken_Sampler2DMS:
         type = HLSLBaseType_Sampler2DMS;
         break;
+    case HLSLToken_Sampler2DArray:
+        type = HLSLBaseType_Sampler2DArray;
+        break;
     }
     if (type != HLSLBaseType_Void)
     {
@@ -3381,6 +3419,45 @@ const HLSLFunction* HLSLParser::FindFunction(const char* name) const
     return NULL;
 }
 
+static bool AreTypesEqual(HLSLTree* tree, const HLSLType& lhs, const HLSLType& rhs)
+{
+    return GetTypeCastRank(tree, lhs, rhs) == 0;
+}
+
+static bool AreArgumentListsEqual(HLSLTree* tree, HLSLArgument* lhs, HLSLArgument* rhs)
+{
+    while (lhs && rhs)
+    {
+        if (!AreTypesEqual(tree, lhs->type, rhs->type))
+            return false;
+
+        if (lhs->modifier != rhs->modifier)
+            return false;
+
+        if (lhs->semantic != rhs->semantic || lhs->sv_semantic != rhs->sv_semantic)
+            return false;
+
+        lhs = lhs->nextArgument;
+        rhs = rhs->nextArgument;
+    }
+
+    return lhs == NULL && rhs == NULL;
+}
+
+const HLSLFunction* HLSLParser::FindFunction(const HLSLFunction* fun) const
+{
+    for (int i = 0; i < m_functions.GetSize(); ++i)
+    {
+        if (m_functions[i]->name == fun->name &&
+            AreTypesEqual(m_tree, m_functions[i]->returnType, fun->returnType) &&
+            AreArgumentListsEqual(m_tree, m_functions[i]->argument, fun->argument))
+        {
+            return m_functions[i];
+        }
+    }
+    return NULL;
+}
+
 void HLSLParser::DeclareVariable(const char* name, const HLSLType& type)
 {
     if (m_variables.GetSize() == m_numGlobals)
@@ -3419,7 +3496,6 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
 {
     const HLSLFunction* matchedFunction     = NULL;
 
-    int  numArguments           = functionCall->numArguments;
     int  numMatchedOverloads    = 0;
     bool nameMatches            = false;
 
@@ -3599,9 +3675,9 @@ bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * me
     default:
         ASSERT(0);
     }
-
-    memberAccess->swizzle = true;
     
+    memberAccess->swizzle = true;
+
     return true;
 }
 

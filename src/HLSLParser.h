@@ -105,7 +105,8 @@ private:
     const HLSLType* FindVariable(const char* name, bool& global) const;
 
     const HLSLFunction* FindFunction(const char* name) const;
-    
+    const HLSLFunction* FindFunction(const HLSLFunction* fun) const;
+
     bool GetIsFunction(const char* name) const;
     
     /** Finds the overloaded function that matches the specified call. */

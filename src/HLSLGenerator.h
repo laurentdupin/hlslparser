@@ -35,7 +35,7 @@ public:
         Target_PixelShader,
     };
 
-    explicit HLSLGenerator(Allocator* allocator);
+    HLSLGenerator();
     
     bool Generate(HLSLTree* tree, Target target, const char* entryName, bool legacy);
     const char* GetResult() const;

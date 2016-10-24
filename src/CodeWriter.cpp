@@ -20,13 +20,13 @@ namespace M4
 
 static const int _maxLineLength = 2048;
 
-CodeWriter::CodeWriter()
+CodeWriter::CodeWriter(bool writeFileNames)
 {
     m_currentLine       = 1;
     m_currentFileName   = NULL;
     m_spacesPerIndent   = 4;
     m_writeLines        = true;
-    m_writeFileNames    = true;
+    m_writeFileNames    = writeFileNames;
 }
 
 void CodeWriter::BeginLine(int indent, const char* fileName, int lineNumber)
@@ -117,7 +117,7 @@ void CodeWriter::WriteLine(int indent, const char* format, ...)
     va_end(args);        
 }
 
-void CodeWriter::WriteLine(int indent, const char* fileName, int lineNumber, const char* format, ...)
+void CodeWriter::WriteLineTagged(int indent, const char* fileName, int lineNumber, const char* format, ...)
 {
     va_list args;
     va_start(args, format);

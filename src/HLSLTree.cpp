@@ -382,6 +382,40 @@ bool HLSLTree::GetExpressionValue(HLSLExpression * expression, int & value)
     return false;
 }
 
+bool HLSLTree::NeedsFunction(const char* name)
+{
+    // Early out
+    if (!GetContainsString(name))
+        return false;
+
+    struct NeedsFunctionVisitor: HLSLTreeVisitor
+    {
+        const char* name;
+        bool result;
+
+        virtual void VisitTopLevelStatement(HLSLStatement * node)
+        {
+            if (!node->hidden)
+                HLSLTreeVisitor::VisitTopLevelStatement(node);
+        }
+
+        virtual void VisitFunctionCall(HLSLFunctionCall * node)
+        {
+            result = result || String_Equal(name, node->function->name);
+
+            HLSLTreeVisitor::VisitFunctionCall(node);
+        }
+    };
+
+    NeedsFunctionVisitor visitor;
+    visitor.name = name;
+    visitor.result = false;
+
+    visitor.VisitRoot(m_root);
+
+    return visitor.result;
+}
+
 int GetVectorDimension(HLSLType & type)
 {
     if (type.baseType >= HLSLBaseType_FirstNumeric &&
@@ -941,6 +975,9 @@ public:
     {
         node->hidden = false;
         HLSLTreeVisitor::VisitFunction(node);
+
+        if (node->forward)
+            VisitFunction(node->forward);
     }
 
     virtual void VisitFunctionCall(HLSLFunctionCall * node)
@@ -1319,8 +1356,14 @@ void GroupParameters(HLSLTree * tree)
 class FindArgumentVisitor : public HLSLTreeVisitor
 {
 public:
-    bool found = false;
-    const char * name = NULL;
+    bool found;
+    const char * name;
+
+	FindArgumentVisitor()
+	{
+		found = false;
+		name  = NULL;
+	}
 
     bool FindArgument(const char * name, HLSLFunction * function)
     {
@@ -1365,57 +1408,6 @@ void HideUnusedArguments(HLSLFunction * function)
         arg = arg->nextArgument;
     }
 }
-
-
-class FindFunctionCallVisitor : public HLSLTreeVisitor
-{
-public:
-    bool found = false;
-    const char * name = NULL;
-
-    bool Find(HLSLFunction * function, const char * name)
-    {
-        this->found = false;
-        this->name = name;
-        VisitStatements(function->statement);
-        return found;
-    }
-
-    virtual void VisitStatements(HLSLStatement * statement) override
-    {
-        while (statement != NULL && !found)
-        {
-            VisitStatement(statement);
-            statement = statement->nextStatement;
-        }
-    }
-    
-    virtual void VisitFunctionCall(HLSLFunctionCall * fc) override
-    {
-        if (fc->function->name == name) // @@ This only works because both, intrinsic names and the arguments of FindFunctionCall are allocated statically and strings are pooled.
-        {
-            found = true;
-        }
-        else
-        {
-            // Visit arguments!
-            HLSLTreeVisitor::VisitFunctionCall(fc);
-            
-            VisitFunction((HLSLFunction *)fc->function);
-        }
-    }
-};
-
-
-// @@ IC: Add arguments and type to match signature?
-bool FindFunctionCall(HLSLFunction * function, const char * name)
-{
-    FindFunctionCallVisitor visitor;
- 
-    // For each argument.
-    return visitor.Find(function, name);
-}
-
 
 bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef/*=0.5*/)
 {
@@ -1492,7 +1484,6 @@ bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef/*=0.
 
     return true;
 }
-
 
 } // M4
 

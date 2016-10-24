@@ -53,6 +53,7 @@ static const char* _reservedWords[] =
         "samplerCUBE",
         "sampler2DShadow",
         "sampler2DMS",
+        "sampler2DArray",
         "if",
         "else",
         "for",

@@ -4,8 +4,6 @@
 #include "CodeWriter.h"
 #include "HLSLTree.h"
 
-struct Parameter_Table;
-
 namespace M4
 {
 
@@ -18,9 +16,7 @@ struct HLSLStruct;
  */
 class MSLGenerator
 {
-
 public:
-
     enum Target
     {
         Target_VertexShader,
@@ -29,12 +25,26 @@ public:
     
     enum Flags
     {
-        Flags_ConstShadowSampler = 0x1
+        Flag_ConstShadowSampler = 1 << 0,
+        Flag_PackMatrixRowMajor = 1 << 1,
+    };
+
+    struct Options
+    {
+        unsigned int flags;
+        unsigned int bufferRegisterOffset;
+        int (*attributeCallback)(const char* name, unsigned int index);
+
+        Options()
+        {
+            flags = 0;
+            bufferRegisterOffset = 0;
+        }
     };
 
     MSLGenerator();
-    
-    bool Generate(HLSLTree* tree, Target target, const char* entryName, int flags = 0);
+
+    bool Generate(HLSLTree* tree, Target target, const char* entryName, const Options& options = Options());
     const char* GetResult() const;
 
 private:
@@ -47,14 +57,15 @@ private:
         //const char* typeName;     // @@ Do we need more than the type name?
         const char* registerName;
 
-        ClassArgument * nextArg = NULL;
+        ClassArgument * nextArg;
         
         ClassArgument(const char* name, HLSLType type, const char * registerName) :
-            name(name), type(type), registerName(registerName) {};
+            name(name), type(type), registerName(registerName)
+		{
+			nextArg = NULL;
+		}
     };
 
-    ClassArgument * m_firstClassArgument = NULL;
-    ClassArgument * m_lastClassArgument = NULL;
     void AddClassArgument(ClassArgument * arg);
 
     void Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFunction);
@@ -67,6 +78,7 @@ private:
     void OutputBuffer(int indent, HLSLBuffer* buffer);
     void OutputFunction(int indent, HLSLFunction* function);
     void OutputExpression(HLSLExpression* expression, HLSLExpression* parentExpression);
+    void OutputCast(const HLSLType& type);
     
     void OutputArguments(HLSLArgument* argument);
     void OutputDeclaration(const HLSLType& type, const char* name, HLSLExpression* assignment, bool isRef = false, bool isConst = false, int alignment = 0);
@@ -75,7 +87,10 @@ private:
     void OutputExpressionList(HLSLExpression* expression);
     void OutputFunctionCallStatement(int indent, HLSLFunctionCall* functionCall);
     void OutputFunctionCall(HLSLFunctionCall* functionCall);
-    
+
+    const char* TranslateInputSemantic(const char* semantic);
+    const char* TranslateOutputSemantic(const char* semantic);
+
     void Error(const char* format, ...);
 
 private:
@@ -85,12 +100,12 @@ private:
     HLSLTree*       m_tree;
     const char*     m_entryName;
     Target          m_target;
-    
+    Options         m_options;
+
     bool            m_error;
-    
-    // TODO: Temporary hack to access uniforms struct members
-    HLSLBuffer* m_per_pass_buffer;
-    HLSLBuffer* m_per_item_buffer;
+
+    ClassArgument * m_firstClassArgument;
+    ClassArgument * m_lastClassArgument;
 };
 
 } // M4

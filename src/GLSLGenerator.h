@@ -20,19 +20,52 @@ class GLSLGenerator
 {
 
 public:
-
     enum Target
     {
         Target_VertexShader,
         Target_FragmentShader,
     };
 
-    explicit GLSLGenerator(Allocator* allocator);
+    enum Version
+    {
+        Version_110, // OpenGL 2.0
+        Version_140, // OpenGL 3.1
+        Version_100_ES, // OpenGL ES 2.0
+        Version_300_ES, // OpenGL ES 3.0
+    };
+
+    enum Flags
+    {
+        Flag_FlipPositionOutput = 1 << 0,
+        Flag_EmulateConstantBuffer = 1 << 1,
+        Flag_PackMatrixRowMajor = 1 << 2,
+        Flag_LowerMatrixMultiplication = 1 << 3,
+    };
+
+    struct Options
+    {
+        unsigned int flags;
+        const char* constantBufferPrefix;
+
+        Options()
+        {
+            flags = 0;
+            constantBufferPrefix = "";
+        }
+    };
+
+    GLSLGenerator();
     
-    bool Generate(const HLSLTree* tree, Target target, const char* entryName);
+    bool Generate(HLSLTree* tree, Target target, Version versiom, const char* entryName, const Options& options = Options());
     const char* GetResult() const;
 
 private:
+
+    enum AttributeModifier
+    {
+        AttributeModifier_In,
+        AttributeModifier_Out,
+    };
 
     void OutputExpressionList(HLSLExpression* expression, HLSLArgument* argument = NULL);
     void OutputExpression(HLSLExpression* expression, const HLSLType* dstType = NULL);
@@ -45,15 +78,27 @@ private:
      */
     void OutputStatements(int indent, HLSLStatement* statement, const HLSLType* returnType = NULL);
 
-    void OutputAttribute(const HLSLType& type, const char* semantic, const char* attribType, const char* prefix);
+    void OutputAttribute(const HLSLType& type, const char* semantic, AttributeModifier modifier);
     void OutputAttributes(HLSLFunction* entryFunction);
     void OutputEntryCaller(HLSLFunction* entryFunction);
     void OutputDeclaration(HLSLDeclaration* declaration);
 	void OutputDeclarationType( const HLSLType& type );
 	void OutputDeclarationBody( const HLSLType& type, const char* name );
     void OutputDeclaration(const HLSLType& type, const char* name);
+    void OutputCast(const HLSLType& type);
 
     void OutputSetOutAttribute(const char* semantic, const char* resultName);
+
+    void LayoutBuffer(HLSLBuffer* buffer, unsigned int& offset);
+    void LayoutBuffer(const HLSLType& type, unsigned int& offset);
+    void LayoutBufferElement(const HLSLType& type, unsigned int& offset);
+    void LayoutBufferAlign(const HLSLType& type, unsigned int& offset);
+
+    HLSLBuffer* GetBufferAccessExpression(HLSLExpression* expression);
+    void OutputBufferAccessExpression(HLSLBuffer* buffer, HLSLExpression* expression, unsigned int postOffset);
+    unsigned int OutputBufferAccessIndex(HLSLExpression* expression, unsigned int postOffset);
+
+    void OutputBuffer(int indent, HLSLBuffer* buffer);
 
     HLSLFunction* FindFunction(HLSLRoot* root, const char* name);
     HLSLStruct* FindStruct(HLSLRoot* root, const char* name);
@@ -68,25 +113,36 @@ private:
      * isn't used in the syntax tree. */
     bool ChooseUniqueName(const char* base, char* dst, int dstLength) const;
 
+    const char* GetBuiltInSemantic(const char* semantic, AttributeModifier modifier, int* outputIndex = 0);
+    const char* GetAttribQualifier(AttributeModifier modifier);
+
 private:
 
-    static const int    s_numReservedWords = 5;
+    static const int    s_numReservedWords = 7;
     static const char*  s_reservedWord[s_numReservedWords];
 
     CodeWriter          m_writer;
 
-    const HLSLTree*     m_tree;
+    HLSLTree*           m_tree;
     const char*         m_entryName;
     Target              m_target;
+    Version             m_version;
+    bool                m_versionLegacy;
+    Options             m_options;
+
     bool                m_outputPosition;
+    int                 m_outputTargets;
 
     const char*         m_outAttribPrefix;
     const char*         m_inAttribPrefix;
 
     char                m_matrixRowFunction[64];
+    char                m_matrixCtorFunction[64];
+    char                m_matrixMulFunction[64];
     char                m_clipFunction[64];
     char                m_tex2DlodFunction[64];
     char                m_tex2DbiasFunction[64];
+    char                m_tex2DgradFunction[64];
     char                m_tex3DlodFunction[64];
     char                m_texCUBEbiasFunction[64];
 	char                m_texCUBElodFunction[ 64 ];

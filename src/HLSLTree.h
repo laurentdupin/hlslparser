@@ -92,6 +92,7 @@ enum HLSLBaseType
     HLSLBaseType_SamplerCube,
     HLSLBaseType_Sampler2DShadow,
     HLSLBaseType_Sampler2DMS,
+    HLSLBaseType_Sampler2DArray,
     HLSLBaseType_UserDefined,       // struct
     
     HLSLBaseType_Count,
@@ -105,7 +106,8 @@ inline bool IsSamplerType(HLSLBaseType baseType)
            baseType == HLSLBaseType_Sampler3D ||
            baseType == HLSLBaseType_SamplerCube ||
            baseType == HLSLBaseType_Sampler2DShadow ||
-           baseType == HLSLBaseType_Sampler2DMS;
+           baseType == HLSLBaseType_Sampler2DMS ||
+           baseType == HLSLBaseType_Sampler2DArray;
 }
 
 inline bool IsMatrixType(HLSLBaseType baseType)
@@ -260,7 +262,6 @@ struct HLSLIdentifierExpression;
 struct HLSLConstructorExpression;
 struct HLSLFunctionCall;
 struct HLSLArrayAccess;
-struct HLSLAttribute;
 
 struct HLSLType
 {
@@ -328,9 +329,15 @@ struct HLSLStatement : public HLSLNode
 struct HLSLAttribute : public HLSLNode
 {
     static const HLSLNodeType s_type = HLSLNodeType_Attribute;
-    HLSLAttributeType   attributeType = HLSLAttributeType_Unknown;
-    HLSLExpression*     argument = NULL;
-    HLSLAttribute*      nextAttribute = NULL;
+	HLSLAttribute()
+	{
+		attributeType = HLSLAttributeType_Unknown;
+		argument      = NULL;
+		nextAttribute = NULL;
+	}
+    HLSLAttributeType   attributeType;
+    HLSLExpression*     argument;
+    HLSLAttribute*      nextAttribute;
 };
 
 struct HLSLDeclaration : public HLSLStatement
@@ -343,6 +350,7 @@ struct HLSLDeclaration : public HLSLStatement
         semantic        = NULL;
         nextDeclaration = NULL;
         assignment      = NULL;
+        buffer          = NULL;
     }
     const char*         name;
     HLSLType            type;
@@ -350,6 +358,7 @@ struct HLSLDeclaration : public HLSLStatement
     const char*         semantic;
     HLSLDeclaration*    nextDeclaration;    // If multiple variables declared on a line.
     HLSLExpression*     assignment;
+    HLSLBuffer*         buffer;
 };
 
 struct HLSLStruct : public HLSLStatement
@@ -411,6 +420,7 @@ struct HLSLFunction : public HLSLStatement
         statement       = NULL;
         argument        = NULL;
         numArguments    = 0;
+        forward         = NULL;
     }
     const char*         name;
     HLSLType            returnType;
@@ -419,6 +429,7 @@ struct HLSLFunction : public HLSLStatement
     int                 numArguments;
     HLSLArgument*       argument;
     HLSLStatement*      statement;
+    HLSLFunction*       forward; // Which HLSLFunction this one forward-declares
 };
 
 /** Declaration of an argument to a function. */
@@ -614,33 +625,54 @@ struct HLSLIdentifierExpression : public HLSLExpression
 struct HLSLConstructorExpression : public HLSLExpression
 {
     static const HLSLNodeType s_type = HLSLNodeType_ConstructorExpression;
+	HLSLConstructorExpression()
+	{
+		argument = NULL;
+	}
     HLSLType            type;
-    HLSLExpression*     argument = NULL;
+    HLSLExpression*     argument;
 };
 
 /** object.member **/
 struct HLSLMemberAccess : public HLSLExpression
 {
     static const HLSLNodeType s_type = HLSLNodeType_MemberAccess;
-    HLSLExpression*     object = NULL;
-    const char*         field = NULL;
-    bool                swizzle = false;
+	HLSLMemberAccess()
+	{
+		object  = NULL;
+		field   = NULL;
+		swizzle = false;
+	}
+    HLSLExpression*     object;
+    const char*         field;
+    bool                swizzle;
 };
 
 /** array[index] **/
 struct HLSLArrayAccess : public HLSLExpression
 {
     static const HLSLNodeType s_type = HLSLNodeType_ArrayAccess;
-    HLSLExpression*     array = NULL;
-    HLSLExpression*     index = NULL;
+	HLSLArrayAccess()
+	{
+		array = NULL;
+		index = NULL;
+	}
+    HLSLExpression*     array;
+    HLSLExpression*     index;
 };
 
 struct HLSLFunctionCall : public HLSLExpression
 {
     static const HLSLNodeType s_type = HLSLNodeType_FunctionCall;
-    const HLSLFunction* function = NULL;
-    HLSLExpression*     argument = NULL;
-    int                 numArguments = 0;
+	HLSLFunctionCall()
+	{
+		function     = NULL;
+		argument     = NULL;
+		numArguments = 0;
+	}
+    const HLSLFunction* function;
+    HLSLExpression*     argument;
+    int                 numArguments;
 };
 
 struct HLSLStateAssignment : public HLSLNode
@@ -785,6 +817,8 @@ public:
     bool GetExpressionValue(HLSLExpression * expression, int & value);
     int GetExpressionValue(HLSLExpression * expression, float values[4]);
 
+    bool NeedsFunction(const char * name);
+
 private:
 
     void* AllocateMemory(size_t size);
@@ -866,7 +900,6 @@ extern void PruneTree(HLSLTree* tree, const char* entryName0, const char* entryN
 extern void SortTree(HLSLTree* tree);
 extern void GroupParameters(HLSLTree* tree);
 extern void HideUnusedArguments(HLSLFunction * function);
-extern bool FindFunctionCall(HLSLFunction * function, const char * name);
 extern bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef = 0.5f);
 
 } // M4
