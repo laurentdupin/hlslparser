@@ -74,6 +74,7 @@ static const char* GetTypeName(const HLSLType& type)
     case HLSLBaseType_Sampler2D:    return "sampler2D";
     case HLSLBaseType_Sampler3D:    return "sampler3D";
     case HLSLBaseType_SamplerCube:  return "samplerCube";
+    case HLSLBaseType_Sampler2DMS:  return "sampler2DMS";
     case HLSLBaseType_Sampler2DArray:  return "sampler2DArray";
     case HLSLBaseType_UserDefined:  return type.typeName;
     default: return "?";
@@ -202,6 +203,10 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         m_writer.WriteLine(0, "#pragma optionNV(strict on)");
         m_writer.WriteLine(0, "#pragma optionNV(unroll all)");
     }
+    else if (m_version == Version_150)
+    {
+        m_writer.WriteLine(0, "#version 150");
+    }
     else if (m_version == Version_100_ES)
     {
         m_writer.WriteLine(0, "#version 100");
@@ -300,7 +305,14 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
             // Bias value is not supported in vertex shader.
             m_writer.WriteLine(0, "vec4 %s(sampler2D sampler, vec4 texCoord) { return texture(sampler, texCoord.xy);  }", m_tex2DbiasFunction );
         }
+    }
 
+    // Output the special function used to emulate tex2DMSfetch.
+    if (m_tree->NeedsFunction("tex2DMSfetch"))
+    {
+        m_writer.WriteLine(0, "vec4 tex2DMSfetch(sampler2DMS sampler, ivec2 texCoord, int sample) {");
+        m_writer.WriteLine(1, "return texelFetch(sampler, texCoord, sample);");
+        m_writer.WriteLine(0, "}");
     }
 
     // Output the special function used to emulate tex3Dlod.
