@@ -271,7 +271,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
             function = "texture2DLodEXT";
         }
 
-        m_writer.WriteLine(0, "vec4 %s(sampler2D sampler, vec4 texCoord) { return %s(sampler, texCoord.xy, texCoord.w);  }", m_tex2DlodFunction, function);
+        m_writer.WriteLine(0, "vec4 %s(sampler2D samp, vec4 texCoord) { return %s(samp, texCoord.xy, texCoord.w);  }", m_tex2DlodFunction, function);
     }
 
     // Output the special function used to emulate tex2Dgrad.
@@ -290,7 +290,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
             function = "texture2DGradEXT";
         }
 
-        m_writer.WriteLine(0, "vec4 %s(sampler2D sampler, vec2 texCoord, vec2 dx, vec2 dy) { return %s(sampler, texCoord, dx, dy);  }", m_tex2DgradFunction, function);
+        m_writer.WriteLine(0, "vec4 %s(sampler2D samp, vec2 texCoord, vec2 dx, vec2 dy) { return %s(samp, texCoord, dx, dy);  }", m_tex2DgradFunction, function);
     }
 
     // Output the special function used to emulate tex2Dbias.
@@ -298,27 +298,27 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     {
         if (target == Target_FragmentShader)
         {
-            m_writer.WriteLine(0, "vec4 %s(sampler2D sampler, vec4 texCoord) { return %s(sampler, texCoord.xy, texCoord.w);  }", m_tex2DbiasFunction, m_versionLegacy ? "texture2D" : "texture" );
+            m_writer.WriteLine(0, "vec4 %s(sampler2D samp, vec4 texCoord) { return %s(samp, texCoord.xy, texCoord.w);  }", m_tex2DbiasFunction, m_versionLegacy ? "texture2D" : "texture" );
         }
         else
         {
             // Bias value is not supported in vertex shader.
-            m_writer.WriteLine(0, "vec4 %s(sampler2D sampler, vec4 texCoord) { return texture(sampler, texCoord.xy);  }", m_tex2DbiasFunction );
+            m_writer.WriteLine(0, "vec4 %s(sampler2D samp, vec4 texCoord) { return texture(samp, texCoord.xy);  }", m_tex2DbiasFunction );
         }
     }
 
     // Output the special function used to emulate tex2DMSfetch.
     if (m_tree->NeedsFunction("tex2DMSfetch"))
     {
-        m_writer.WriteLine(0, "vec4 tex2DMSfetch(sampler2DMS sampler, ivec2 texCoord, int sample) {");
-        m_writer.WriteLine(1, "return texelFetch(sampler, texCoord, sample);");
+        m_writer.WriteLine(0, "vec4 tex2DMSfetch(sampler2DMS samp, ivec2 texCoord, int sample) {");
+        m_writer.WriteLine(1, "return texelFetch(samp, texCoord, sample);");
         m_writer.WriteLine(0, "}");
     }
 
     // Output the special function used to emulate tex3Dlod.
     if (m_tree->NeedsFunction("tex3Dlod"))
     {
-        m_writer.WriteLine(0, "vec4 %s(sampler3D sampler, vec4 texCoord) { return %s(sampler, texCoord.xyz, texCoord.w);  }", m_tex3DlodFunction, m_versionLegacy ? "texture3D" : "texture" );
+        m_writer.WriteLine(0, "vec4 %s(sampler3D samp, vec4 texCoord) { return %s(samp, texCoord.xyz, texCoord.w);  }", m_tex3DlodFunction, m_versionLegacy ? "texture3D" : "texture" );
     }
 
     // Output the special function used to emulate texCUBEbias.
@@ -326,12 +326,12 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     {
         if (target == Target_FragmentShader)
         {
-            m_writer.WriteLine(0, "vec4 %s(samplerCube sampler, vec4 texCoord) { return %s(sampler, texCoord.xyz, texCoord.w);  }", m_texCUBEbiasFunction, m_versionLegacy ? "textureCube" : "texture" );
+            m_writer.WriteLine(0, "vec4 %s(samplerCube samp, vec4 texCoord) { return %s(samp, texCoord.xyz, texCoord.w);  }", m_texCUBEbiasFunction, m_versionLegacy ? "textureCube" : "texture" );
         }
         else
         {
             // Bias value is not supported in vertex shader.
-            m_writer.WriteLine(0, "vec4 %s(samplerCube sampler, vec4 texCoord) { return texture(sampler, texCoord.xyz);  }", m_texCUBEbiasFunction );
+            m_writer.WriteLine(0, "vec4 %s(samplerCube samp, vec4 texCoord) { return texture(samp, texCoord.xyz);  }", m_texCUBEbiasFunction );
         }
     }
 
@@ -351,7 +351,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
             function = "textureCubeLodEXT";
         }
 
-		m_writer.WriteLine( 0, "vec4 %s(samplerCube sampler, vec4 texCoord) { return %s(sampler, texCoord.xyz, texCoord.w);  }", m_texCUBElodFunction, function);
+		m_writer.WriteLine( 0, "vec4 %s(samplerCube samp, vec4 texCoord) { return %s(samp, texCoord.xyz, texCoord.w);  }", m_texCUBElodFunction, function);
 	}
 
     m_writer.WriteLine(0, "vec2  %s(float x) { return  vec2(x, x); }", m_scalarSwizzle2Function);
