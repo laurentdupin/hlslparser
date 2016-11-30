@@ -39,6 +39,7 @@ public:
         {
             flags = 0;
             bufferRegisterOffset = 0;
+            attributeCallback = NULL;
         }
     };
 
