@@ -1670,7 +1670,8 @@ bool HLSLParser::ParseStatement(HLSLStatement*& statement, const HLSLType& retur
             return false;
         }
         // Check that the return expression can be cast to the return type of the function.
-        if (!CheckTypeCast(returnStatement->expression->expressionType, returnType))
+        HLSLType voidType(HLSLBaseType_Void);
+        if (!CheckTypeCast(returnStatement->expression ? returnStatement->expression->expressionType : voidType, returnType))
         {
             return false;
         }
