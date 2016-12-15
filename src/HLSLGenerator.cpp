@@ -137,6 +137,7 @@ static const char * TranslateSemantic(const char* semantic, bool output, HLSLGen
             if (String_Equal("DEPTH", semantic))      return "SV_Depth";
             if (String_Equal("COLOR", semantic))      return "SV_Target";
             if (String_Equal("COLOR0", semantic))     return "SV_Target0";
+            if (String_Equal("COLOR0_1", semantic))   return "SV_Target1";
             if (String_Equal("COLOR1", semantic))     return "SV_Target1";
             if (String_Equal("COLOR2", semantic))     return "SV_Target2";
             if (String_Equal("COLOR3", semantic))     return "SV_Target3";

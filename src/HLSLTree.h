@@ -262,6 +262,7 @@ struct HLSLIdentifierExpression;
 struct HLSLConstructorExpression;
 struct HLSLFunctionCall;
 struct HLSLArrayAccess;
+struct HLSLAttribute;
 
 struct HLSLType
 {
@@ -806,7 +807,7 @@ public:
     }
 
     HLSLFunction * FindFunction(const char * name);
-    HLSLDeclaration * FindGlobalDeclaration(const char * name);
+    HLSLDeclaration * FindGlobalDeclaration(const char * name, HLSLBuffer ** buffer_out = NULL);
     HLSLStruct * FindGlobalStruct(const char * name);
     HLSLTechnique * FindTechnique(const char * name);
     HLSLPipeline * FindFirstPipeline();

@@ -94,7 +94,7 @@ HLSLFunction * HLSLTree::FindFunction(const char * name)
     return NULL;
 }
 
-HLSLDeclaration * HLSLTree::FindGlobalDeclaration(const char * name)
+HLSLDeclaration * HLSLTree::FindGlobalDeclaration(const char * name, HLSLBuffer ** buffer_out/*=NULL*/)
 {
     HLSLStatement * statement = m_root->statement;
     while (statement != NULL)
@@ -104,6 +104,7 @@ HLSLDeclaration * HLSLTree::FindGlobalDeclaration(const char * name)
             HLSLDeclaration * declaration = (HLSLDeclaration *)statement;
             if (String_Equal(name, declaration->name))
             {
+                if (buffer_out) *buffer_out = NULL;
                 return declaration;
             }
         }
@@ -117,6 +118,7 @@ HLSLDeclaration * HLSLTree::FindGlobalDeclaration(const char * name)
                 ASSERT(field->nodeType == HLSLNodeType_Declaration);
                 if (String_Equal(name, field->name))
                 {
+                    if (buffer_out) *buffer_out = buffer;
                     return field;
                 }
                 field = (HLSLDeclaration*)field->nextStatement;
@@ -126,6 +128,7 @@ HLSLDeclaration * HLSLTree::FindGlobalDeclaration(const char * name)
         statement = statement->nextStatement;
     }
 
+    if (buffer_out) *buffer_out = NULL;
     return NULL;
 }
 
@@ -1208,7 +1211,8 @@ void GroupParameters(HLSLTree * tree)
     
     HLSLStatement* previousStatement = NULL;
     HLSLStatement* statement = root->statement;
-    while (statement != NULL) {
+    while (statement != NULL)
+    {
         HLSLStatement* nextStatement = statement->nextStatement;
 
         if (statement->nodeType == HLSLNodeType_Struct) // Do not remove this, or it will mess the else clause below.
@@ -1333,6 +1337,14 @@ void GroupParameters(HLSLTree * tree)
         perItemBuffer->name = tree->AddString("per_item");
         perItemBuffer->registerName = tree->AddString("b0");
         perItemBuffer->field = firstPerItemDeclaration;
+        
+        // Set declaration buffer pointers.
+        HLSLDeclaration * field = perItemBuffer->field;
+        while (field != NULL)
+        {
+            field->buffer = perItemBuffer;
+            field = (HLSLDeclaration *)field->nextStatement;
+        }
 
         // Add buffer to statements.
         AddSingleStatement(root, statementBeforeBuffers, perItemBuffer);
@@ -1347,6 +1359,14 @@ void GroupParameters(HLSLTree * tree)
         perPassBuffer->registerName = tree->AddString("b1");
         perPassBuffer->field = firstPerPassDeclaration;
 
+        // Set declaration buffer pointers.
+        HLSLDeclaration * field = perPassBuffer->field;
+        while (field != NULL)
+        {
+            field->buffer = perPassBuffer;
+            field = (HLSLDeclaration *)field->nextStatement;
+        }
+        
         // Add buffer to statements.
         AddSingleStatement(root, statementBeforeBuffers, perPassBuffer);
     }

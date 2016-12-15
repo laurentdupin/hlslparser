@@ -17,22 +17,23 @@
 
 #include <string.h>
 
-// Things that are not supported:
+// MSL limitations:
 // - Passing swizzled expressions as out or inout arguments. Out arguments are passed by reference in C++, but
 //   swizzled expressions are not addressable.
+// - Some type conversions and constructors don't work exactly the same way. For example, casts to smaller size vectors are not alloweed in C++. @@ Add more details...
+// - Swizzles on scalar types, whether or not it expands them. a_float.x, a_float.xxxx both cause compile errors.
+// - Using ints as floats without the trailing .0 makes the compiler sad.
+// Unsupported by this generator:
 // - Matrix [] access is implemented as a function call, so result cannot be passed as out/inout argument.
 // - Matrix [] access is not supported in all l-value expressions. Only simple assignments.
-// - Some type conversions and constructors don't work exactly the same way. For example, casts to smaller size vectors are not alloweed in C++. @@ Add more details...
 // - No support for boolean vectors and logical operators involving vectors. This is not just in metal.
-// - No general support for uniform buffers.
-// - What else?
+// - No support for non-float texture types
 
 namespace M4
 {
     
 static const char* GetTypeName(const HLSLType& type)
 {
-    // ACoget-TODO: How to detect non-float textures, if relevant?
     switch (type.baseType)
     {
     case HLSLBaseType_Void:             return "void";
@@ -68,6 +69,7 @@ static const char* GetTypeName(const HLSLType& type)
     case HLSLBaseType_Uint4:            return "uint4";
     case HLSLBaseType_Texture:          return "texture";
     case HLSLBaseType_Sampler:          return "sampler";
+    // ACoget-TODO: How to detect non-float textures, if relevant?
     case HLSLBaseType_Sampler2D:        return "texture2d<float>";
     case HLSLBaseType_Sampler3D:        return "texture3d<float>";
     case HLSLBaseType_SamplerCube:      return "texturecube<float>";
@@ -85,30 +87,42 @@ static void ParseSemantic(const char* semantic, unsigned int* outputLength, unsi
     const char* semanticIndex = semantic;
 
     while (*semanticIndex && !isdigit(*semanticIndex))
+    {
         semanticIndex++;
+    }
 
     *outputLength = semanticIndex - semantic;
     *outputIndex = atoi(semanticIndex);
 }
 
+// Parse register name and advance next register index.
 static int ParseRegister(const char* registerName, int& nextRegister)
 {
     if (!registerName)
+    {
         return nextRegister++;
+    }
 
     while (*registerName && !isdigit(*registerName))
+    {
         registerName++;
+    }
 
     if (!*registerName)
+    {
         return nextRegister++;
+    }
 
     int result = atoi(registerName);
 
     if (nextRegister <= result)
+    {
         nextRegister = result + 1;
+    }
 
     return result;
 }
+
 
 MSLGenerator::MSLGenerator()
 {
@@ -139,7 +153,7 @@ void MSLGenerator::Error(const char* format, ...)
     va_end(arg);
 }
 
-inline void MSLGenerator::AddClassArgument(ClassArgument * arg)
+inline void MSLGenerator::AddClassArgument(ClassArgument* arg)
 {
     if (m_firstClassArgument == NULL)
     {
@@ -154,10 +168,7 @@ inline void MSLGenerator::AddClassArgument(ClassArgument * arg)
 
 void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFunction)
 {
-    // ACoget-TODO: process uniforms
-    // ACoget-TODO: list used texture types to trim functions being prepended
-    
-    // Hide unused arguments. @@ It would be good to do this in the generator too.
+    // Hide unused arguments. @@ It would be good to do this in the other generators too.
     HideUnusedArguments(entryFunction);
 
     HLSLRoot* root = tree->GetRoot();
@@ -202,6 +213,7 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
                 type.typeName = m_tree->AddStringFormat("Uniforms_%s", buffer->name);
 
                 int bufferRegister = ParseRegister(buffer->registerName, nextBufferRegister) + m_options.bufferRegisterOffset;
+
                 const char * bufferRegisterName = m_tree->AddStringFormat("buffer(%d)", bufferRegister);
 
                 AddClassArgument(new ClassArgument(buffer->name, type, bufferRegisterName));
@@ -215,10 +227,11 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
     // and patch all the references to it!
     
     // Translate semantics.
-    HLSLArgument * argument = entryFunction->argument;
+    HLSLArgument* argument = entryFunction->argument;
     while (argument != NULL)
     {
-        if (argument->hidden) {
+        if (argument->hidden)
+        {
             argument = argument->nextArgument;
             continue;
         }
@@ -229,8 +242,9 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
             if (argument->type.baseType == HLSLBaseType_UserDefined)
             {
                 // Our vertex input is a struct and its fields need to be tagged when we generate that
-                HLSLStruct * structure = tree->FindGlobalStruct(argument->type.typeName);
-                if (structure == NULL) {
+                HLSLStruct* structure = tree->FindGlobalStruct(argument->type.typeName);
+                if (structure == NULL)
+                {
                     Error("Vertex shader output struct '%s' not found in shader\n", argument->type.typeName);
                 }
 
@@ -249,13 +263,15 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
                 argument->sv_semantic = TranslateOutputSemantic(argument->semantic);
             }
         }
-        else {
+        else
+        {
             // Translate input arguments semantics.
             if (argument->type.baseType == HLSLBaseType_UserDefined)
             {
                 // Our vertex input is a struct and its fields need to be tagged when we generate that
-                HLSLStruct * structure = tree->FindGlobalStruct(argument->type.typeName);
-                if (structure == NULL) {
+                HLSLStruct* structure = tree->FindGlobalStruct(argument->type.typeName);
+                if (structure == NULL)
+                {
                     Error("Vertex shader input struct '%s' not found in shader\n", argument->type.typeName);
                 }
 
@@ -295,8 +311,9 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
         if (entryFunction->returnType.baseType == HLSLBaseType_UserDefined)
         {
             // Our vertex input is a struct and its fields need to be tagged when we generate that
-            HLSLStruct * structure = tree->FindGlobalStruct(entryFunction->returnType.typeName);
-            if (structure == NULL) {
+            HLSLStruct* structure = tree->FindGlobalStruct(entryFunction->returnType.typeName);
+            if (structure == NULL)
+            {
                 Error("Vertex shader output struct '%s' not found in shader\n", entryFunction->returnType.typeName);
             }
 
@@ -313,16 +330,18 @@ void MSLGenerator::Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFun
         else
         {
             entryFunction->sv_semantic = TranslateOutputSemantic(entryFunction->semantic);
+            
+            //Error("MSL only supports COLOR semantic in return \n", entryFunction->returnType.typeName);
         }
     }
 }
 
 void MSLGenerator::CleanPrepass()
 {
-    ClassArgument * currentArg = m_firstClassArgument;
+    ClassArgument* currentArg = m_firstClassArgument;
     while (currentArg != NULL)
     {
-        ClassArgument * nextArg = currentArg->nextArg;
+        ClassArgument* nextArg = currentArg->nextArg;
         delete currentArg;
         currentArg = nextArg;
     }
@@ -331,41 +350,20 @@ void MSLGenerator::CleanPrepass()
     m_lastClassArgument = NULL;
 }
     
-bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName, const Options& options)
+void MSLGenerator::PrependDeclarations()
 {
-    m_firstClassArgument = NULL;
-    m_lastClassArgument = NULL;
-
-    m_tree      = tree;
-    m_entryName = entryName;
-    m_target    = target;
-    ASSERT(m_target == Target_VertexShader || m_target == Target_FragmentShader);
-    m_options   = options;
-
-    m_writer.Reset();
-
-    // Find entry point function
-    HLSLFunction * entryFunction = tree->FindFunction(entryName);
-    if (entryFunction == NULL)
-    {
-        Error("Entry point '%s' doesn't exist\n", entryName);
-        return false;
-    }
+    // Any special function stubs we need go here
+    // That includes special constructors to emulate HLSL not being strict
     
-    Prepass(tree, target, entryFunction);
     
-    // ACoget-TODO: add a helper function for all the prepended code
-    // ACoget-TODO: trim what gets added based on what the shader uses
     m_writer.WriteLine(0, "#include <metal_stdlib>");
     m_writer.WriteLine(0, "using namespace metal;");
     m_writer.WriteLine(0, "");
     
     // 'mad' should be translated as 'fma'
-
-    // Any special function stubs we need go here
-    // That includes special constructors to emulate HLSL not being strict
-
-    if (m_tree->NeedsFunction("mad")) {
+    
+    if (m_tree->NeedsFunction("mad"))
+    {
         m_writer.WriteLine(0, "inline float mad(float a, float b, float c) {");
         m_writer.WriteLine(1, "return a * b + c;");
         m_writer.WriteLine(0, "}");
@@ -380,7 +378,8 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(0, "}");
     }
 
-    if (m_tree->NeedsFunction("max")) {
+    if (m_tree->NeedsFunction("max"))
+    {
         m_writer.WriteLine(0, "inline float max(int a, float b) {");
         m_writer.WriteLine(1, "return max((float)a, b);");
         m_writer.WriteLine(0, "}");
@@ -388,7 +387,8 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(1, "return max(a, (float)b);");
         m_writer.WriteLine(0, "}");
     }
-    if (m_tree->NeedsFunction("min")) {
+    if (m_tree->NeedsFunction("min"))
+    {
         m_writer.WriteLine(0, "inline float min(int a, float b) {");
         m_writer.WriteLine(1, "return min((float)a, b);");
         m_writer.WriteLine(0, "}");
@@ -397,14 +397,16 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(0, "}");
     }
 
-    if (m_tree->NeedsFunction("lerp")) {
+    if (m_tree->NeedsFunction("lerp"))
+    {
         m_writer.WriteLine(0, "template<typename T> inline T mix(T a, T b, int x) {");
         m_writer.WriteLine(1, "return mix(a, b, (float)x);");
         m_writer.WriteLine(0, "}");
         m_writer.WriteLine(0, "#define lerp mix");
     }
 
-    if (m_tree->NeedsFunction("mul")) {
+    if (m_tree->NeedsFunction("mul"))
+    {
         const char* am = (m_options.flags & Flag_PackMatrixRowMajor) ? "m * a" : "a * m";
         const char* ma = (m_options.flags & Flag_PackMatrixRowMajor) ? "a * m" : "m * a";
 
@@ -487,12 +489,19 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
     
     //m_writer.WriteLine(0, "#define mad fma");     // @@ This doesn't seem to work.
     
-    m_writer.WriteLine(0, "struct Texture2DSampler {");
-    m_writer.WriteLine(1, "const thread texture2d<float>& t;");
-    m_writer.WriteLine(1, "const thread sampler& s;");
-    m_writer.WriteLine(1, "Texture2DSampler(thread const texture2d<float>& t, thread const sampler& s) : t(t), s(s) {};");
-    m_writer.WriteLine(0, "};");
-
+    if (m_tree->NeedsFunction("tex2D") ||
+        m_tree->NeedsFunction("tex2Dlod") ||
+        m_tree->NeedsFunction("tex2Dgrad") ||
+        m_tree->NeedsFunction("tex2Dbias") ||
+        m_tree->NeedsFunction("tex2Dfetch"))
+    {
+        m_writer.WriteLine(0, "struct Texture2DSampler {");
+        m_writer.WriteLine(1, "const thread texture2d<float>& t;");
+        m_writer.WriteLine(1, "const thread sampler& s;");
+        m_writer.WriteLine(1, "Texture2DSampler(thread const texture2d<float>& t, thread const sampler& s) : t(t), s(s) {};");
+        m_writer.WriteLine(0, "};");
+    }
+    
     if (m_tree->NeedsFunction("tex2D"))
     {
         m_writer.WriteLine(0, "inline float4 tex2D(Texture2DSampler ts, float2 texCoord) {");
@@ -517,12 +526,29 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoordBias.xy, bias(texCoordBias.w));");
         m_writer.WriteLine(0, "}");
     }
+    if (m_tree->NeedsFunction("tex2Dfetch"))
+    {
+        m_writer.WriteLine(0, "inline float4 tex2Dfetch(Texture2DSampler ts, uint2 texCoord) {");
+        m_writer.WriteLine(1, "return ts.t.read(texCoord);");
+        m_writer.WriteLine(0, "}");
+    }
     
-    m_writer.WriteLine(0, "struct Texture3DSampler {");
-    m_writer.WriteLine(1, "const thread texture3d<float>& t;");
-    m_writer.WriteLine(1, "const thread sampler& s;");
-    m_writer.WriteLine(1, "Texture3DSampler(thread const texture3d<float>& t, thread const sampler& s) : t(t), s(s) {};");
-    m_writer.WriteLine(0, "};");
+    if (m_tree->NeedsFunction("tex2DMSfetch"))
+    {
+        m_writer.WriteLine(0, "inline float4 tex2DMSfetch(texture2d_ms<float> t, float2 texCoord) {");
+        m_writer.WriteLine(1, "return ts.t.read(uint2(texCoord));");
+        m_writer.WriteLine(0, "}");
+    }
+
+    if (m_tree->NeedsFunction("tex3D") ||
+        m_tree->NeedsFunction("tex3Dlod"))
+    {
+        m_writer.WriteLine(0, "struct Texture3DSampler {");
+        m_writer.WriteLine(1, "const thread texture3d<float>& t;");
+        m_writer.WriteLine(1, "const thread sampler& s;");
+        m_writer.WriteLine(1, "Texture3DSampler(thread const texture3d<float>& t, thread const sampler& s) : t(t), s(s) {};");
+        m_writer.WriteLine(0, "};");
+    }
 
     if (m_tree->NeedsFunction("tex3D"))
     {
@@ -537,11 +563,16 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(0, "}");
     }
     
-    m_writer.WriteLine(0, "struct TextureCubeSampler {");
-    m_writer.WriteLine(1, "const thread texturecube<float>& t;");
-    m_writer.WriteLine(1, "const thread sampler& s;");
-    m_writer.WriteLine(1, "TextureCubeSampler(thread const texturecube<float>& t, thread const sampler& s) : t(t), s(s) {};");
-    m_writer.WriteLine(0, "};");
+    if (m_tree->NeedsFunction("texCUBE") ||
+        m_tree->NeedsFunction("texCUBElod") ||
+        m_tree->NeedsFunction("texCUBEbias"))
+    {
+        m_writer.WriteLine(0, "struct TextureCubeSampler {");
+        m_writer.WriteLine(1, "const thread texturecube<float>& t;");
+        m_writer.WriteLine(1, "const thread sampler& s;");
+        m_writer.WriteLine(1, "TextureCubeSampler(thread const texturecube<float>& t, thread const sampler& s) : t(t), s(s) {};");
+        m_writer.WriteLine(0, "};");
+    }
 
     if (m_tree->NeedsFunction("texCUBE"))
     {
@@ -564,14 +595,14 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(0, "}");
     }
     
-    m_writer.WriteLine(0, "struct Texture2DShadowSampler {");
-    m_writer.WriteLine(1, "const thread depth2d<float>& t;");
-    m_writer.WriteLine(1, "const thread sampler& s;");
-    m_writer.WriteLine(1, "Texture2DShadowSampler(thread const depth2d<float>& t, thread const sampler& s) : t(t), s(s) {};");
-    m_writer.WriteLine(0, "};");
-        
     if (m_tree->NeedsFunction("tex2Dcmp"))
     {
+        m_writer.WriteLine(0, "struct Texture2DShadowSampler {");
+        m_writer.WriteLine(1, "const thread depth2d<float>& t;");
+        m_writer.WriteLine(1, "const thread sampler& s;");
+        m_writer.WriteLine(1, "Texture2DShadowSampler(thread const depth2d<float>& t, thread const sampler& s) : t(t), s(s) {};");
+        m_writer.WriteLine(0, "};");
+        
         m_writer.WriteLine(0, "inline float4 tex2Dcmp(Texture2DShadowSampler ts, float4 texCoordCompare) {");
         if (m_options.flags & Flag_ConstShadowSampler)
         {
@@ -580,7 +611,9 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
             m_writer.WriteLine(1, "return ts.t.sample_compare(shadow_constant_sampler, texCoordCompare.xy, texCoordCompare.z);");
         }
         else
+        {
             m_writer.WriteLine(1, "return ts.t.sample_compare(ts.s, texCoordCompare.xy, texCoordCompare.z);");
+        }
         m_writer.WriteLine(0, "}");
     }
     
@@ -594,7 +627,36 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
         m_writer.WriteLine(1, "return t.read(uint2(texCoord), sample);");
         m_writer.WriteLine(0, "}");
     }
+}
     
+bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName, const Options& options)
+{
+    m_firstClassArgument = NULL;
+    m_lastClassArgument = NULL;
+
+    m_tree      = tree;
+    m_target    = target;
+    ASSERT(m_target == Target_VertexShader || m_target == Target_FragmentShader);
+    m_entryName = entryName;
+    m_options = options;
+
+    m_writer.Reset();
+
+    // Find entry point function
+    HLSLFunction* entryFunction = tree->FindFunction(entryName);
+    if (entryFunction == NULL)
+    {
+        Error("Entry point '%s' doesn't exist\n", entryName);
+        return false;
+    }
+    
+    Prepass(tree, target, entryFunction);
+    
+    PrependDeclarations();
+    
+    // In MSL, uniforms are parameters for the entry point, not globals:
+    // to limit code rewriting, we wrap the entire original shader into a class.
+    // Uniforms are then passed to the constructor and copied to member variables.
     const char* shaderClassName = (target == MSLGenerator::Target_VertexShader) ? "Vertex_Shader" : "Pixel_Shader";
     m_writer.WriteLine(0, "struct %s {", shaderClassName);
     
@@ -632,83 +694,125 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
     m_writer.WriteLine(0, "};"); // Class
     
 
-    // Generate actual entry point
+    // Generate real entry point, the one called by Metal
     m_writer.WriteLine(0, "");
 
+    // If function return value has a non-color output semantic, declare a temporary struct for the output.
+    bool wrapReturnType = false;
+    if (entryFunction->sv_semantic != NULL && strcmp(entryFunction->sv_semantic, "color(0)") != 0)
+    {
+        wrapReturnType = true;
+        
+        m_writer.WriteLine(0, "struct %s_output { %s tmp [[%s]]; };", entryName, GetTypeName(entryFunction->returnType), entryFunction->sv_semantic);
+        
+        m_writer.WriteLine(0, "");
+    }
+    
+    
     m_writer.BeginLine(0);
 
     // @@ Add/Translate function attributes.
     // entryFunction->attributes
-
-    if (m_target == Target_VertexShader) {
+    
+    if (m_target == Target_VertexShader)
+    {
         m_writer.Write("vertex ");
     }
-    else {
+    else
+    {
         m_writer.Write("fragment ");
     }
 
     // Return type.
-    if (entryFunction->returnType.baseType == HLSLBaseType_UserDefined) {
-        m_writer.Write("%s::", shaderClassName);
+    if (wrapReturnType)
+    {
+        m_writer.Write("%s_output", entryName);
     }
-    m_writer.Write("%s", GetTypeName(entryFunction->returnType));
+    else
+    {
+        if (entryFunction->returnType.baseType == HLSLBaseType_UserDefined)
+        {
+            m_writer.Write("%s::", shaderClassName);
+        }
+        m_writer.Write("%s", GetTypeName(entryFunction->returnType));
+    }
 
     m_writer.Write(" %s(", entryName);
 
     int argumentCount = 0;
-    HLSLArgument * argument = entryFunction->argument;
-    while (argument != NULL) {
-        if (!argument->hidden) {
-            if (argument->type.baseType == HLSLBaseType_UserDefined) {
+    HLSLArgument* argument = entryFunction->argument;
+    while (argument != NULL)
+    {
+        if (!argument->hidden)
+        {
+            if (argument->type.baseType == HLSLBaseType_UserDefined)
+            {
                 m_writer.Write("%s::", shaderClassName);
             }
             m_writer.Write("%s %s", GetTypeName(argument->type), argument->name);
 
             // @@ IC: We are assuming that the first argument is the 'stage_in'.
-            if (argument->type.baseType == HLSLBaseType_UserDefined && argument == entryFunction->argument) {
+            if (argument->type.baseType == HLSLBaseType_UserDefined && argument == entryFunction->argument)
+            {
                 m_writer.Write(" [[stage_in]]");
             }
-            else if (argument->sv_semantic) {
+            else if (argument->sv_semantic)
+            {
                 m_writer.Write(" [[%s]]", argument->sv_semantic);
             }
             argumentCount++;
         }
         argument = argument->nextArgument;
-        if (argument && !argument->hidden) m_writer.Write(", ");
+        if (argument && !argument->hidden)
+        {
+            m_writer.Write(", ");
+        }
     }
 
     currentArg = m_firstClassArgument;
-    if (argumentCount && currentArg != NULL) m_writer.Write(", ");
+    if (argumentCount && currentArg != NULL)
+    {
+        m_writer.Write(", ");
+    }
     while (currentArg != NULL)
     {
         //if (currentArg->type.addressSpace == HLSLAddressSpace_Constant) m_writer.Write("constant ");
         //else m_writer.Write("thread ");
 
-        if (currentArg->type.baseType == HLSLBaseType_UserDefined) {
+        if (currentArg->type.baseType == HLSLBaseType_UserDefined)
+        {
             m_writer.Write("constant %s::%s & %s [[%s]]", shaderClassName, currentArg->type.typeName, currentArg->name, currentArg->registerName);
         }
-        else {
+        else
+        {
             m_writer.Write("%s %s [[%s]]", GetTypeName(currentArg->type), currentArg->name, currentArg->registerName);
         }
 
         currentArg = currentArg->nextArg;
-        if (currentArg) m_writer.Write(", ");
+        if (currentArg)
+        {
+            m_writer.Write(", ");
+        }
     }
     m_writer.EndLine(") {");
 
-    // Create the helper class instance and call real entry point
+    // Create the helper class instance and call the entry point from the original shader
     m_writer.BeginLine(1);
     m_writer.Write("%s %s", shaderClassName, entryName);
 
     currentArg = m_firstClassArgument;
-    if (currentArg) {
+    if (currentArg)
+    {
         m_writer.Write("(");
 
         while (currentArg != NULL)
         {
             m_writer.Write("%s", currentArg->name);
             currentArg = currentArg->nextArg;
-            if (currentArg) m_writer.Write(", ");
+            if (currentArg)
+            {
+                m_writer.Write(", ");
+            }
         }
 
         m_writer.Write(")");
@@ -716,23 +820,39 @@ bool MSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryName
     m_writer.EndLine(";");
 
     m_writer.BeginLine(1);
-    m_writer.Write("return %s.%s(", entryName, entryName);
+    
+    if (wrapReturnType)
+    {
+        m_writer.Write("%s_output output; output.tmp = %s.%s(", entryName, entryName, entryName);
+    }
+    else
+    {
+        m_writer.Write("return %s.%s(", entryName, entryName);
+    }
 
     argument = entryFunction->argument;
-    while (argument != NULL) {
-        if (!argument->hidden) {
+    while (argument != NULL)
+    {
+        if (!argument->hidden)
+        {
             m_writer.Write("%s", argument->name);
         }
         argument = argument->nextArgument;
-        if (argument && !argument->hidden) m_writer.Write(", ");
+        if (argument && !argument->hidden)
+        {
+            m_writer.Write(", ");
+        }
     }
 
     m_writer.EndLine(");");
+    
+    if (wrapReturnType)
+    {
+        m_writer.WriteLine(1, "return output;");
+    }
 
     m_writer.WriteLine(0, "}");
 
-
-    
     CleanPrepass();
     m_tree = NULL;
     
@@ -781,7 +901,9 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
             HLSLFunction* function = static_cast<HLSLFunction*>(statement);
 
             if (!function->forward)
+            {
                 OutputFunction(indent, function);
+            }
         }
         else if (statement->nodeType == HLSLNodeType_ExpressionStatement)
         {
@@ -790,7 +912,7 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
             // IC: This works, but it only helps in very few scenarios. We need a more general solution that involves more complex syntax tree transformations.
             /*if (expressionStatement->expression->nodeType == HLSLNodeType_FunctionCall)
             {
-                OutputFunctionCallStatement(indent, (HLSLFunctionCall *)expressionStatement->expression);
+                OutputFunctionCallStatement(indent, (HLSLFunctionCall*)expressionStatement->expression);
             }
             else*/
             {
@@ -890,17 +1012,20 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
 
 void MSLGenerator::OutputAttributes(int indent, HLSLAttribute* attribute)
 {
-    // ACoget-TODO: do those exist in MSL?
+    // IC: These do not appear to exist in MSL.
     while (attribute != NULL) {
-        if (attribute->attributeType == HLSLAttributeType_Unroll) {
+        if (attribute->attributeType == HLSLAttributeType_Unroll)
+        {
             // @@ Do any of these work?
             //m_writer.WriteLine(indent, attribute->fileName, attribute->line, "#pragma unroll");
             //m_writer.WriteLine(indent, attribute->fileName, attribute->line, "[[unroll]]");
         }
-        else if (attribute->attributeType == HLSLAttributeType_Flatten) {
+        else if (attribute->attributeType == HLSLAttributeType_Flatten)
+        {
             // @@
         }
-        else if (attribute->attributeType == HLSLAttributeType_Branch) {
+        else if (attribute->attributeType == HLSLAttributeType_Branch)
+        {
             // @@
         }
         
@@ -932,7 +1057,8 @@ void MSLGenerator::OutputDeclaration(HLSLDeclaration* declaration)
     {
         OutputDeclaration(declaration->type, declaration->name, declaration->assignment);
         declaration = declaration->nextDeclaration;
-        while(declaration != NULL) {
+        while(declaration != NULL)
+        {
             m_writer.Write(",");
             OutputDeclarationBody(declaration->type, declaration->name, declaration->assignment);
             declaration = declaration->nextDeclaration;
@@ -949,11 +1075,9 @@ void MSLGenerator::OutputStruct(int indent, HLSLStruct* structure)
         if (!field->hidden)
         {
             m_writer.BeginLine(indent + 1, field->fileName, field->line);
-
-            // ACoget-TODO: no assignment in struct fields?
             OutputDeclaration(field->type, field->name, NULL);
-
-            if (field->sv_semantic) {
+            if (field->sv_semantic)
+            {
                 m_writer.Write(" [[%s]]", field->sv_semantic);
             }
 
@@ -1003,11 +1127,15 @@ void MSLGenerator::OutputFunction(int indent, HLSLFunction* function)
     m_writer.WriteLine(indent, "};");
 }
 
+
 // @@ We could be a lot smarter removing parenthesis based on the operator precedence of the parent expression.
-static bool needsParenthesis(HLSLExpression * expression, HLSLExpression * parentExpression) {
+static bool NeedsParenthesis(HLSLExpression* expression, HLSLExpression* parentExpression) {
 
     // For now we just omit the parenthesis if there's no parent expression.
-    if (parentExpression == NULL) return false;
+    if (parentExpression == NULL)
+    {
+        return false;
+    }
 
     // One more special case that's pretty common.
     if (parentExpression->nodeType == HLSLNodeType_MemberAccess)
@@ -1049,17 +1177,21 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression, HLSLExpression* 
         {
             if (identifierExpression->global)
             {
-                HLSLDeclaration * declaration = m_tree->FindGlobalDeclaration(identifierExpression->name);
+                HLSLBuffer * buffer;
+                HLSLDeclaration * declaration = m_tree->FindGlobalDeclaration(identifierExpression->name, &buffer);
 
                 if (declaration && declaration->buffer)
+                {
+                    ASSERT(buffer == declaration->buffer);
                     m_writer.Write("%s.", declaration->buffer->name);
+                }
             }
             m_writer.Write("%s", name);
 
             // IC: Add swizzle if this is a member access of a field that has the swizzle flag.
             /*if (parentExpression->nodeType == HLSLNodeType_MemberAccess)
             {
-                HLSLMemberAccess * memberAccess = (HLSLMemberAccess *)parentExpression;
+                HLSLMemberAccess* memberAccess = (HLSLMemberAccess*)parentExpression;
                 const HLSLType & objectType = memberAccess->object->expressionType;
                 const HLSLStruct* structure = m_tree->FindGlobalStruct(objectType.typeName);
                 if (structure != NULL)
@@ -1090,7 +1222,6 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression, HLSLExpression* 
     else if (expression->nodeType == HLSLNodeType_ConstructorExpression)
     {
         HLSLConstructorExpression* constructorExpression = static_cast<HLSLConstructorExpression*>(expression);
-        // ACoget-TODO: should this use OutputDeclarationType?
         m_writer.Write("%s(", GetTypeName(constructorExpression->type));
         OutputExpressionList(constructorExpression->argument);
         m_writer.Write(")");
@@ -1135,7 +1266,7 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression, HLSLExpression* 
             case HLSLUnaryOp_PostIncrement: op = "++"; pre = false; break;
             case HLSLUnaryOp_PostDecrement: op = "--"; pre = false; break;
         }
-        bool addParenthesis = needsParenthesis(unaryExpression->expression, expression);
+        bool addParenthesis = NeedsParenthesis(unaryExpression->expression, expression);
         if (addParenthesis) m_writer.Write("(");
         if (pre)
         {
@@ -1153,13 +1284,15 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression, HLSLExpression* 
     {
         HLSLBinaryExpression* binaryExpression = static_cast<HLSLBinaryExpression*>(expression);
 
-        bool addParenthesis = needsParenthesis(expression, parentExpression);
+        bool addParenthesis = NeedsParenthesis(expression, parentExpression);
         if (addParenthesis) m_writer.Write("(");
 
         bool rewrite_assign = false;
-        if (binaryExpression->binaryOp == HLSLBinaryOp_Assign && binaryExpression->expression1->nodeType == HLSLNodeType_ArrayAccess) {
+        if (binaryExpression->binaryOp == HLSLBinaryOp_Assign && binaryExpression->expression1->nodeType == HLSLNodeType_ArrayAccess)
+        {
             HLSLArrayAccess* arrayAccess = static_cast<HLSLArrayAccess*>(binaryExpression->expression1);
-            if (!arrayAccess->array->expressionType.array && IsMatrixType(arrayAccess->array->expressionType.baseType)) {
+            if (!arrayAccess->array->expressionType.array && IsMatrixType(arrayAccess->array->expressionType.baseType))
+            {
                 rewrite_assign = true;
 
                 m_writer.Write("set_column(");
@@ -1221,11 +1354,17 @@ void MSLGenerator::OutputExpression(HLSLExpression* expression, HLSLExpression* 
     else if (expression->nodeType == HLSLNodeType_MemberAccess)
     {
         HLSLMemberAccess* memberAccess = static_cast<HLSLMemberAccess*>(expression);
-        bool addParenthesis = needsParenthesis(memberAccess->object, expression);
+        bool addParenthesis = NeedsParenthesis(memberAccess->object, expression);
         
-        if (addParenthesis) m_writer.Write("(");
+        if (addParenthesis)
+        {
+            m_writer.Write("(");
+        }
         OutputExpression(memberAccess->object, NULL);
-        if (addParenthesis) m_writer.Write(")");
+        if (addParenthesis)
+        {
+            m_writer.Write(")");
+        }
         
         m_writer.Write(".%s", memberAccess->field);
     }
@@ -1280,7 +1419,8 @@ void MSLGenerator::OutputArguments(HLSLArgument* argument)
     int numArgs = 0;
     while (argument != NULL)
     {
-        if (argument->hidden) {
+        if (argument->hidden)
+        {
             argument = argument->nextArgument;
             continue;
         }
@@ -1454,13 +1594,19 @@ void MSLGenerator::OutputExpressionList(HLSLExpression* expression)
     }
 }
 
-inline bool isAddressable(HLSLExpression * expression)
+inline bool isAddressable(HLSLExpression* expression)
 {
-    if (expression->nodeType == HLSLNodeType_IdentifierExpression) return true;
-    if (expression->nodeType == HLSLNodeType_ArrayAccess) return true;
+    if (expression->nodeType == HLSLNodeType_IdentifierExpression)
+    {
+        return true;
+    }
+    if (expression->nodeType == HLSLNodeType_ArrayAccess)
+    {
+        return true;
+    }
     if (expression->nodeType == HLSLNodeType_MemberAccess)
     {
-        HLSLMemberAccess * memberAccess = (HLSLMemberAccess *)expression;
+        HLSLMemberAccess* memberAccess = (HLSLMemberAccess*)expression;
         return !memberAccess->swizzle;
     }
     return false;
@@ -1469,8 +1615,8 @@ inline bool isAddressable(HLSLExpression * expression)
 void MSLGenerator::OutputFunctionCallStatement(int indent, HLSLFunctionCall* functionCall)
 {
     int argumentIndex = 0;
-    HLSLArgument * argument = functionCall->function->argument;
-    HLSLExpression * expression = functionCall->argument;
+    HLSLArgument* argument = functionCall->function->argument;
+    HLSLExpression* expression = functionCall->argument;
     while (argument != NULL)
     {
         if (!isAddressable(expression))
@@ -1519,7 +1665,10 @@ void MSLGenerator::OutputFunctionCallStatement(int indent, HLSLFunctionCall* fun
         argument = argument->nextArgument;
         expression = expression->nextExpression;
         argumentIndex++;
-        if (expression) m_writer.Write(", ");
+        if (expression)
+        {
+            m_writer.Write(", ");
+        }
     }
     m_writer.EndLine(");");
 
@@ -1578,13 +1727,16 @@ const char* MSLGenerator::TranslateInputSemantic(const char * semantic)
             int attribute = m_options.attributeCallback(name, index);
 
             if (attribute >= 0)
+            {
                 return m_tree->AddStringFormat("attribute(%d)", attribute);
+            }
         }
     }
     else if (m_target == MSLGenerator::Target_FragmentShader)
     {
         if (String_Equal(semantic, "POSITION")) return "position";
         if (String_Equal(semantic, "VFACE")) return "front_facing";
+        if (String_Equal(semantic, "TARGET_INDEX")) return "render_target_array_index";
     }
 
     return NULL;
@@ -1603,13 +1755,30 @@ const char* MSLGenerator::TranslateOutputSemantic(const char * semantic)
         if (String_Equal(semantic, "POSITION")) return "position";
         if (String_Equal(semantic, "SV_Position")) return "position";
         if (String_Equal(semantic, "PSIZE")) return "point_size";
+        if (String_Equal(semantic, "POINT_SIZE")) return "point_size";
+        if (String_Equal(semantic, "TARGET_INDEX")) return "render_target_array_index";
     }
     else if (m_target == MSLGenerator::Target_FragmentShader)
     {
+        if (m_options.flags & MSLGenerator::Flag_NoIndexAttribute)
+        {
+            // No dual-source blending on iOS, and no index() attribute
+            if (String_Equal(semantic, "COLOR0_1")) return NULL;
+        }
+        else
+        {
+            // @@ IC: Hardcoded for this specific case, extend ParseSemantic?
+            if (String_Equal(semantic, "COLOR0_1")) return "color(0), index(1)";
+        }
+
         if (strncmp(semantic, "SV_Target", length) == 0)
+        {
             return m_tree->AddStringFormat("color(%d)", index);
+        }
         if (strncmp(semantic, "COLOR", length) == 0)
+        {
             return m_tree->AddStringFormat("color(%d)", index);
+        }
 
         if (String_Equal(semantic, "DEPTH")) return "depth(any)";
         if (String_Equal(semantic, "DEPTH_GT")) return "depth(greater)";

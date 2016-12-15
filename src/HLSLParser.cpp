@@ -1465,6 +1465,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
             {
                 // @@ Currently we support either a semantic or a register, but not both.
                 if (AcceptIdentifier(declaration->semantic)) {
+                    int k = 1;
                 }
                 else if (!Expect(HLSLToken_Register) || !Expect('(') || !ExpectIdentifier(declaration->registerName) || !Expect(')'))
                 {
@@ -3497,6 +3498,7 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
 {
     const HLSLFunction* matchedFunction     = NULL;
 
+    int  numArguments           = functionCall->numArguments;
     int  numMatchedOverloads    = 0;
     bool nameMatches            = false;
 
@@ -3658,6 +3660,7 @@ bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * me
     static const HLSLBaseType halfType[]  = { HLSLBaseType_Half,  HLSLBaseType_Half2,  HLSLBaseType_Half3,  HLSLBaseType_Half4  };
     static const HLSLBaseType intType[]   = { HLSLBaseType_Int,   HLSLBaseType_Int2,   HLSLBaseType_Int3,   HLSLBaseType_Int4   };
     static const HLSLBaseType uintType[]  = { HLSLBaseType_Uint,  HLSLBaseType_Uint2,  HLSLBaseType_Uint3,  HLSLBaseType_Uint4  };
+    static const HLSLBaseType boolType[]  = { HLSLBaseType_Bool,  HLSLBaseType_Bool2,  HLSLBaseType_Bool3,  HLSLBaseType_Bool4  };
     
     switch (_baseTypeDescriptions[objectType.baseType].numericType)
     {
@@ -3672,13 +3675,16 @@ bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * me
         break;
     case NumericType_Uint:
         memberAccess->expressionType.baseType = uintType[swizzleLength - 1];
-        break;
+            break;
+    case NumericType_Bool:
+        memberAccess->expressionType.baseType = boolType[swizzleLength - 1];
+            break;
     default:
         ASSERT(0);
     }
-    
-    memberAccess->swizzle = true;
 
+    memberAccess->swizzle = true;
+    
     return true;
 }
 

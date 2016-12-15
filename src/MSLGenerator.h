@@ -27,6 +27,7 @@ public:
     {
         Flag_ConstShadowSampler = 1 << 0,
         Flag_PackMatrixRowMajor = 1 << 1,
+        Flag_NoIndexAttribute   = 1 << 2,
     };
 
     struct Options
@@ -71,6 +72,8 @@ private:
 
     void Prepass(HLSLTree* tree, Target target, HLSLFunction* entryFunction);
     void CleanPrepass();
+    
+    void PrependDeclarations();
     
     void OutputStatements(int indent, HLSLStatement* statement);
     void OutputAttributes(int indent, HLSLAttribute* attribute);
