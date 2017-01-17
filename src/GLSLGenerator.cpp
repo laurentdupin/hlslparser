@@ -486,7 +486,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 
     if (bufferAccess)
     {
-        OutputBufferAccessExpression(bufferAccess, expression, 0);
+        OutputBufferAccessExpression(bufferAccess, expression, expression->expressionType, 0);
     }
     else if (expression->nodeType == HLSLNodeType_IdentifierExpression)
     {
@@ -1312,10 +1312,8 @@ HLSLBuffer* GLSLGenerator::GetBufferAccessExpression(HLSLExpression* expression)
     return 0;
 }
 
-void GLSLGenerator::OutputBufferAccessExpression(HLSLBuffer* buffer, HLSLExpression* expression, unsigned int postOffset)
+void GLSLGenerator::OutputBufferAccessExpression(HLSLBuffer* buffer, HLSLExpression* expression, const HLSLType& type, unsigned int postOffset)
 {
-    const HLSLType& type = expression->expressionType;
-
     if (type.array)
     {
         Error("Constant buffer access is not supported for arrays (use indexing instead)");
@@ -1368,7 +1366,7 @@ void GLSLGenerator::OutputBufferAccessExpression(HLSLBuffer* buffer, HLSLExpress
 
             for (HLSLStructField* field = st->field; field; field = field->nextField)
             {
-                OutputBufferAccessExpression(buffer, expression, offset);
+                OutputBufferAccessExpression(buffer, expression, field->type, offset);
 
                 if (field->nextField)
                     m_writer.Write(",");
