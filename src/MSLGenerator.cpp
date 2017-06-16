@@ -1480,7 +1480,7 @@ void MSLGenerator::OutputDeclarationType(const HLSLType& type, bool isRef, bool 
             typeName = "TextureCubeSampler";
         else if (type.baseType == HLSLBaseType_Sampler2DShadow)
             typeName = "Texture2DShadowSampler";
-        else if (type.baseType == HLSLBaseType_Sampler2DShadow)
+        else if (type.baseType == HLSLBaseType_Sampler2DMS)
             typeName = "Texture2DMSSampler";
         else
             typeName = "<unhandled texture type>";
