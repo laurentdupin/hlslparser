@@ -1751,6 +1751,7 @@ const char* MSLGenerator::TranslateInputSemantic(const char * semantic)
     else if (m_target == MSLGenerator::Target_FragmentShader)
     {
         if (String_Equal(semantic, "POSITION")) return "position";
+        if (String_Equal(semantic, "SV_Position")) return "position";
         if (String_Equal(semantic, "VFACE")) return "front_facing";
         if (String_Equal(semantic, "TARGET_INDEX")) return "render_target_array_index";
     }
