@@ -96,7 +96,7 @@ private:
     void LayoutBufferAlign(const HLSLType& type, unsigned int& offset);
 
     HLSLBuffer* GetBufferAccessExpression(HLSLExpression* expression);
-    void OutputBufferAccessExpression(HLSLBuffer* buffer, HLSLExpression* expression, unsigned int postOffset);
+    void OutputBufferAccessExpression(HLSLBuffer* buffer, HLSLExpression* expression, const HLSLType& type, unsigned int postOffset);
     unsigned int OutputBufferAccessIndex(HLSLExpression* expression, unsigned int postOffset);
 
     void OutputBuffer(int indent, HLSLBuffer* buffer);
