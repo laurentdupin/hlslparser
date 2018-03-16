@@ -629,14 +629,14 @@ void MSLGenerator::PrependDeclarations()
         m_writer.WriteLine(0, "}");
     }
 
-    m_writer.WriteLine(0, "struct Texture2DArraySampler {");
-    m_writer.WriteLine(1, "const thread texture2d_array<float>& t;");
-    m_writer.WriteLine(1, "const thread sampler& s;");
-    m_writer.WriteLine(1, "Texture2DArraySampler(thread const texture2d_array<float>& t, thread const sampler& s) : t(t), s(s) {};");
-    m_writer.WriteLine(0, "};");
-
     if (m_tree->NeedsFunction("tex2DArray"))
     {
+        m_writer.WriteLine(0, "struct Texture2DArraySampler {");
+        m_writer.WriteLine(1, "const thread texture2d_array<float>& t;");
+        m_writer.WriteLine(1, "const thread sampler& s;");
+        m_writer.WriteLine(1, "Texture2DArraySampler(thread const texture2d_array<float>& t, thread const sampler& s) : t(t), s(s) {};");
+        m_writer.WriteLine(0, "};");
+
         m_writer.WriteLine(0, "inline float4 tex2DArray(Texture2DArraySampler ts, float3 texCoord) {");
         m_writer.WriteLine(1, "return ts.t.sample(ts.s, texCoord.xy, texCoord.z + 0.5);"); // 0.5 offset needed on nvidia gpus
         m_writer.WriteLine(0, "}");
