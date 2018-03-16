@@ -534,13 +534,6 @@ void MSLGenerator::PrependDeclarations()
         m_writer.WriteLine(0, "}");
     }
     
-    if (m_tree->NeedsFunction("tex2DMSfetch"))
-    {
-        m_writer.WriteLine(0, "inline float4 tex2DMSfetch(texture2d_ms<float> t, float2 texCoord) {");
-        m_writer.WriteLine(1, "return ts.t.read(uint2(texCoord));");
-        m_writer.WriteLine(0, "}");
-    }
-
     if (m_tree->NeedsFunction("tex3D") ||
         m_tree->NeedsFunction("tex3Dlod"))
     {
