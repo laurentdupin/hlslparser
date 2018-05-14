@@ -523,10 +523,12 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             }
             break;
         case HLSLBaseType_Int:
-        case HLSLBaseType_Uint:
             m_writer.Write("%d", literalExpression->iValue);
             break;
-        case HLSLBaseType_Bool:
+        case HLSLBaseType_Uint:
+            m_writer.Write("%uu", literalExpression->iValue);
+	    break;
+	case HLSLBaseType_Bool:
             m_writer.Write("%s", literalExpression->bValue ? "true" : "false");
             break;
         default:
