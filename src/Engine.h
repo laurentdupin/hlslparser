@@ -20,6 +20,7 @@
 // Engine/Assert.h
 
 #define ASSERT(...)
+#define assert(...)
 
 namespace M4 {
 

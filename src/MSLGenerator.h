@@ -36,6 +36,7 @@ public:
         unsigned int bufferRegisterOffset;
         int (*attributeCallback)(const char* name, unsigned int index);
         bool treatHalfAsFloat;
+        bool forceHalfPrecision;    // Not implemented.
         bool usePreciseFma;
         bool use16BitIntegers;
 
@@ -45,6 +46,7 @@ public:
             bufferRegisterOffset = 0;
             attributeCallback = NULL;
             treatHalfAsFloat = true;
+            forceHalfPrecision = false;
             usePreciseFma = false;
             use16BitIntegers = false;
         }
