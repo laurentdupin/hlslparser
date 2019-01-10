@@ -996,7 +996,8 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
                 if (indent == 0)
                 {
                     // At the top level, we need the "uniform" keyword.
-                    m_writer.Write("uniform ");
+                    if ((declaration->type.flags & HLSLTypeFlag_Static) == 0)
+                        m_writer.Write("uniform ");
                 }
                 OutputDeclaration(declaration);
                 m_writer.EndLine(";");
@@ -1794,6 +1795,11 @@ void GLSLGenerator::OutputDeclaration(const HLSLType& type, const char* name)
 
 void GLSLGenerator::OutputDeclarationType( const HLSLType& type )
 {
+	if ((type.flags & HLSLTypeFlag_Const) && (type.flags & HLSLTypeFlag_Static))
+	{
+		m_writer.Write("const ");
+	}
+
 	m_writer.Write( "%s ", GetTypeName( type ) );
 }
 
