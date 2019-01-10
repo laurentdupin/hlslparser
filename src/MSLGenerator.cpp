@@ -751,13 +751,16 @@ namespace M4
 
         PrependDeclarations();
 
+        HLSLRoot* root = m_tree->GetRoot();
+
+        OutputStaticDeclarations(0, root->statement);
+
         // In MSL, uniforms are parameters for the entry point, not globals:
         // to limit code rewriting, we wrap the entire original shader into a class.
         // Uniforms are then passed to the constructor and copied to member variables.
         const char* shaderClassName = (target == MSLGenerator::Target_VertexShader) ? "Vertex_Shader" : "Pixel_Shader";
         m_writer.WriteLine(0, "struct %s {", shaderClassName);
 
-        HLSLRoot* root = m_tree->GetRoot();
         OutputStatements(1, root->statement);
 
         // Generate constructor
@@ -961,6 +964,44 @@ namespace M4
     const char* MSLGenerator::GetResult() const
     {
         return m_writer.GetResult();
+    }
+
+    void MSLGenerator::OutputStaticDeclarations(int indent, HLSLStatement* statement)
+    {
+        while (statement != NULL)
+        {
+            if (statement->hidden)
+            {
+                statement = statement->nextStatement;
+                continue;
+            }
+
+            if (statement->nodeType == HLSLNodeType_Declaration)
+            {
+                HLSLDeclaration* declaration = static_cast<HLSLDeclaration*>(statement);
+
+                const HLSLType& type = declaration->type;
+
+                if ((type.flags & HLSLTypeFlag_Const) && (type.flags & HLSLTypeFlag_Static))
+                {
+                    m_writer.BeginLine(indent, declaration->fileName, declaration->line);
+                    OutputDeclaration(declaration);
+                    m_writer.EndLine(";");
+
+                    // hide declaration from subsequent passes
+                    declaration->hidden = true;
+                }
+            }
+            else if (statement->nodeType == HLSLNodeType_Function)
+            {
+                HLSLFunction* function = static_cast<HLSLFunction*>(statement);
+
+                if (!function->forward)
+                    OutputStaticDeclarations(indent, function->statement);
+            }
+
+            statement = statement->nextStatement;
+        }
     }
 
     void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
