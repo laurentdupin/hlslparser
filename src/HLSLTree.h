@@ -9,290 +9,290 @@
 namespace M4
 {
 
-enum HLSLNodeType
+enum class HLSLNodeType
 {
-    HLSLNodeType_Root,
-    HLSLNodeType_Declaration,
-    HLSLNodeType_Struct,
-    HLSLNodeType_StructField,
-    HLSLNodeType_Buffer,
-    HLSLNodeType_BufferField,
-    HLSLNodeType_Function,
-    HLSLNodeType_Argument,
-    HLSLNodeType_ExpressionStatement,
-    HLSLNodeType_Expression,
-    HLSLNodeType_ReturnStatement,
-    HLSLNodeType_DiscardStatement,
-    HLSLNodeType_BreakStatement,
-    HLSLNodeType_ContinueStatement,
-    HLSLNodeType_IfStatement,
-    HLSLNodeType_ForStatement,
-    HLSLNodeType_BlockStatement,
-    HLSLNodeType_UnaryExpression,
-    HLSLNodeType_BinaryExpression,
-    HLSLNodeType_ConditionalExpression,
-    HLSLNodeType_CastingExpression,
-    HLSLNodeType_LiteralExpression,
-    HLSLNodeType_IdentifierExpression,
-    HLSLNodeType_ConstructorExpression,
-    HLSLNodeType_MemberAccess,
-    HLSLNodeType_ArrayAccess,
-    HLSLNodeType_FunctionCall,
-    HLSLNodeType_StateAssignment,
-    HLSLNodeType_SamplerState,
-    HLSLNodeType_Pass,
-    HLSLNodeType_Technique,
-    HLSLNodeType_Attribute,
-    HLSLNodeType_Pipeline,
-    HLSLNodeType_Stage,
+    Root,
+    Declaration,
+    Struct,
+    StructField,
+    Buffer,
+    BufferField,
+    Function,
+    Argument,
+    ExpressionStatement,
+    Expression,
+    ReturnStatement,
+    DiscardStatement,
+    BreakStatement,
+    ContinueStatement,
+    IfStatement,
+    ForStatement,
+    BlockStatement,
+    UnaryExpression,
+    BinaryExpression,
+    ConditionalExpression,
+    CastingExpression,
+    LiteralExpression,
+    IdentifierExpression,
+    ConstructorExpression,
+    MemberAccess,
+    ArrayAccess,
+    FunctionCall,
+    StateAssignment,
+    SamplerState,
+    Pass,
+    Technique,
+    Attribute,
+    Pipeline,
+    Stage,
 };
 
-enum HLSLTypeDimension
+enum class HLSLTypeDimension
 {
-    HLSLTypeDimension_None,
-    HLSLTypeDimension_Scalar,
-    HLSLTypeDimension_Vector2,
-    HLSLTypeDimension_Vector3,
-    HLSLTypeDimension_Vector4,
-    HLSLTypeDimension_Matrix2x2,
-    HLSLTypeDimension_Matrix3x3,
-    HLSLTypeDimension_Matrix4x4,
-    HLSLTypeDimension_Matrix4x3,
-    HLSLTypeDimension_Matrix4x2
+    None,
+    Scalar,
+    Vector2,
+    Vector3,
+    Vector4,
+    Matrix2x2,
+    Matrix3x3,
+    Matrix4x4,
+    Matrix4x3,
+    Matrix4x2
 };
     
-enum HLSLBaseType
+enum class HLSLBaseType
 {
-    HLSLBaseType_Unknown,
-    HLSLBaseType_Void,    
-    HLSLBaseType_Float,
-    HLSLBaseType_FirstNumeric = HLSLBaseType_Float,
-    HLSLBaseType_Float2,
-    HLSLBaseType_Float3,
-    HLSLBaseType_Float4,
-	HLSLBaseType_Float2x2,
-    HLSLBaseType_Float3x3,
-    HLSLBaseType_Float4x4,
-    HLSLBaseType_Float4x3,
-    HLSLBaseType_Float4x2,
-    HLSLBaseType_Half,
-    HLSLBaseType_Half2,
-    HLSLBaseType_Half3,
-    HLSLBaseType_Half4,
-	HLSLBaseType_Half2x2,
-    HLSLBaseType_Half3x3,
-    HLSLBaseType_Half4x4,
-    HLSLBaseType_Half4x3,
-    HLSLBaseType_Half4x2,
-    HLSLBaseType_Bool,
-    HLSLBaseType_FirstInteger = HLSLBaseType_Bool,
-	HLSLBaseType_Bool2,
-	HLSLBaseType_Bool3,
-	HLSLBaseType_Bool4,
-    HLSLBaseType_Int,
-    HLSLBaseType_Int2,
-    HLSLBaseType_Int3,
-    HLSLBaseType_Int4,
-    HLSLBaseType_Uint,
-    HLSLBaseType_Uint2,
-    HLSLBaseType_Uint3,
-    HLSLBaseType_Uint4,
-    /*HLSLBaseType_Short,   // @@ Separate dimension from Base type, this is getting out of control.
-    HLSLBaseType_Short2,
-    HLSLBaseType_Short3,
-    HLSLBaseType_Short4,
-    HLSLBaseType_Ushort,
-    HLSLBaseType_Ushort2,
-    HLSLBaseType_Ushort3,
-    HLSLBaseType_Ushort4,*/
-    HLSLBaseType_LastInteger = HLSLBaseType_Uint4,
-    HLSLBaseType_LastNumeric = HLSLBaseType_Uint4,
-    HLSLBaseType_Texture,
-    HLSLBaseType_Sampler,           // @@ use type inference to determine sampler type.
-    HLSLBaseType_Sampler2D,
-    HLSLBaseType_Sampler3D,
-    HLSLBaseType_SamplerCube,
-    HLSLBaseType_Sampler2DShadow,
-    HLSLBaseType_Sampler2DMS,
-    HLSLBaseType_Sampler2DArray,
-    HLSLBaseType_UserDefined,       // struct
-    HLSLBaseType_Expression,        // type argument for defined() sizeof() and typeof().
-    HLSLBaseType_Auto,
+    Unknown,
+    Void,    
+    Float,
+    FirstNumeric = HLSLBaseType::Float,
+    Float2,
+    Float3,
+    Float4,
+	Float2x2,
+    Float3x3,
+    Float4x4,
+    Float4x3,
+    Float4x2,
+    Half,
+    Half2,
+    Half3,
+    Half4,
+	Half2x2,
+    Half3x3,
+    Half4x4,
+    Half4x3,
+    Half4x2,
+    Bool,
+    FirstInteger = HLSLBaseType::Bool,
+	Bool2,
+	Bool3,
+	Bool4,
+    Int,
+    Int2,
+    Int3,
+    Int4,
+    Uint,
+    Uint2,
+    Uint3,
+    Uint4,
+  /*Short,   // @@ Separate dimension from Base type, this is getting out of control.
+    Short2,
+    Short3,
+    Short4,
+    Ushort,
+    Ushort2,
+    Ushort3,
+    Ushort4,*/
+    LastInteger = HLSLBaseType::Uint4,
+    LastNumeric = HLSLBaseType::Uint4,
+    Texture,
+    Sampler,           // @@ use type inference to determine sampler type.
+    Sampler2D,
+    Sampler3D,
+    SamplerCube,
+    Sampler2DShadow,
+    Sampler2DMS,
+    Sampler2DArray,
+    UserDefined,       // struct
+    Expression,        // type argument for defined() sizeof() and typeof().
+    Auto,
     
-    HLSLBaseType_Count,
-    HLSLBaseType_NumericCount = HLSLBaseType_LastNumeric - HLSLBaseType_FirstNumeric + 1
+    Count,
+    NumericCount = LastNumeric - FirstNumeric + 1
 };
     
-extern const HLSLTypeDimension BaseTypeDimension[HLSLBaseType_Count];
-extern const HLSLBaseType ScalarBaseType[HLSLBaseType_Count];
+extern const HLSLTypeDimension BaseTypeDimension[(int)HLSLBaseType::Count];
+extern const HLSLBaseType ScalarBaseType[(int)HLSLBaseType::Count];
 
 inline bool IsSamplerType(HLSLBaseType baseType)
 {
-    return baseType == HLSLBaseType_Sampler ||
-           baseType == HLSLBaseType_Sampler2D ||
-           baseType == HLSLBaseType_Sampler3D ||
-           baseType == HLSLBaseType_SamplerCube ||
-           baseType == HLSLBaseType_Sampler2DShadow ||
-           baseType == HLSLBaseType_Sampler2DMS ||
-           baseType == HLSLBaseType_Sampler2DArray;
+    return baseType == HLSLBaseType::Sampler ||
+           baseType == HLSLBaseType::Sampler2D ||
+           baseType == HLSLBaseType::Sampler3D ||
+           baseType == HLSLBaseType::SamplerCube ||
+           baseType == HLSLBaseType::Sampler2DShadow ||
+           baseType == HLSLBaseType::Sampler2DMS ||
+           baseType == HLSLBaseType::Sampler2DArray;
 }
 
 inline bool IsMatrixType(HLSLBaseType baseType)
 {
-    return baseType == HLSLBaseType_Float3x3 || baseType == HLSLBaseType_Float4x4 || baseType == HLSLBaseType_Float4x3 || baseType == HLSLBaseType_Float4x2 ||
-        baseType == HLSLBaseType_Half3x3 || baseType == HLSLBaseType_Half4x4 || baseType == HLSLBaseType_Half4x3 || baseType == HLSLBaseType_Half4x2;
+    return baseType == HLSLBaseType::Float3x3 || baseType == HLSLBaseType::Float4x4 || baseType == HLSLBaseType::Float4x3 || baseType == HLSLBaseType::Float4x2 ||
+        baseType == HLSLBaseType::Half3x3 || baseType == HLSLBaseType::Half4x4 || baseType == HLSLBaseType::Half4x3 || baseType == HLSLBaseType::Half4x2;
 }
 
 inline bool IsScalarType( HLSLBaseType baseType )
 {
-	return  baseType == HLSLBaseType_Float ||
-			baseType == HLSLBaseType_Half ||
-			baseType == HLSLBaseType_Bool ||
-			baseType == HLSLBaseType_Int ||
-			baseType == HLSLBaseType_Uint;
+	return  baseType == HLSLBaseType::Float ||
+			baseType == HLSLBaseType::Half ||
+			baseType == HLSLBaseType::Bool ||
+			baseType == HLSLBaseType::Int ||
+			baseType == HLSLBaseType::Uint;
 }
 
 inline bool IsVectorType( HLSLBaseType baseType )
 {
-	return  baseType == HLSLBaseType_Float2 ||
-		baseType == HLSLBaseType_Float3 ||
-		baseType == HLSLBaseType_Float4 ||
-		baseType == HLSLBaseType_Half2 ||
-		baseType == HLSLBaseType_Half3 ||
-		baseType == HLSLBaseType_Half4 ||
-		baseType == HLSLBaseType_Bool2 ||
-		baseType == HLSLBaseType_Bool3 ||
-		baseType == HLSLBaseType_Bool4 ||
-		baseType == HLSLBaseType_Int2  ||
-		baseType == HLSLBaseType_Int3  ||
-		baseType == HLSLBaseType_Int4  ||
-		baseType == HLSLBaseType_Uint2 ||
-		baseType == HLSLBaseType_Uint3 ||
-		baseType == HLSLBaseType_Uint4;
+	return  baseType == HLSLBaseType::Float2 ||
+		baseType == HLSLBaseType::Float3 ||
+		baseType == HLSLBaseType::Float4 ||
+		baseType == HLSLBaseType::Half2 ||
+		baseType == HLSLBaseType::Half3 ||
+		baseType == HLSLBaseType::Half4 ||
+		baseType == HLSLBaseType::Bool2 ||
+		baseType == HLSLBaseType::Bool3 ||
+		baseType == HLSLBaseType::Bool4 ||
+		baseType == HLSLBaseType::Int2  ||
+		baseType == HLSLBaseType::Int3  ||
+		baseType == HLSLBaseType::Int4  ||
+		baseType == HLSLBaseType::Uint2 ||
+		baseType == HLSLBaseType::Uint3 ||
+		baseType == HLSLBaseType::Uint4;
 }
 
 
-enum HLSLBinaryOp
+enum class HLSLBinaryOp
 {
-    HLSLBinaryOp_And,
-    HLSLBinaryOp_Or,
-    HLSLBinaryOp_Add,
-    HLSLBinaryOp_Sub,
-    HLSLBinaryOp_Mul,
-    HLSLBinaryOp_Div,
-    HLSLBinaryOp_Less,
-    HLSLBinaryOp_Greater,
-    HLSLBinaryOp_LessEqual,
-    HLSLBinaryOp_GreaterEqual,
-    HLSLBinaryOp_Equal,
-    HLSLBinaryOp_NotEqual,
-    HLSLBinaryOp_BitAnd,
-    HLSLBinaryOp_BitOr,
-    HLSLBinaryOp_BitXor,
-    HLSLBinaryOp_Assign,
-    HLSLBinaryOp_AddAssign,
-    HLSLBinaryOp_SubAssign,
-    HLSLBinaryOp_MulAssign,
-    HLSLBinaryOp_DivAssign,
+    And,
+    Or,
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Less,
+    Greater,
+    LessEqual,
+    GreaterEqual,
+    Equal,
+    NotEqual,
+    BitAnd,
+    BitOr,
+    BitXor,
+    Assign,
+    AddAssign,
+    SubAssign,
+    MulAssign,
+    DivAssign,
 };
 
 inline bool IsCompareOp( HLSLBinaryOp op )
 {
-	return op == HLSLBinaryOp_Less ||
-		op == HLSLBinaryOp_Greater ||
-		op == HLSLBinaryOp_LessEqual ||
-		op == HLSLBinaryOp_GreaterEqual ||
-		op == HLSLBinaryOp_Equal ||
-		op == HLSLBinaryOp_NotEqual;
+	return op == HLSLBinaryOp::Less ||
+		op == HLSLBinaryOp::Greater ||
+		op == HLSLBinaryOp::LessEqual ||
+		op == HLSLBinaryOp::GreaterEqual ||
+		op == HLSLBinaryOp::Equal ||
+		op == HLSLBinaryOp::NotEqual;
 }
 
 inline bool IsArithmeticOp( HLSLBinaryOp op )
 {
-    return op == HLSLBinaryOp_Add ||
-        op == HLSLBinaryOp_Sub ||
-        op == HLSLBinaryOp_Mul ||
-        op == HLSLBinaryOp_Div;
+    return op == HLSLBinaryOp::Add ||
+        op == HLSLBinaryOp::Sub ||
+        op == HLSLBinaryOp::Mul ||
+        op == HLSLBinaryOp::Div;
 }
 
 inline bool IsLogicOp( HLSLBinaryOp op )
 {
-    return op == HLSLBinaryOp_And ||
-        op == HLSLBinaryOp_Or;
+    return op == HLSLBinaryOp::And ||
+        op == HLSLBinaryOp::Or;
 }
 
 inline bool IsAssignOp( HLSLBinaryOp op )
 {
-    return op == HLSLBinaryOp_Assign ||
-        op == HLSLBinaryOp_AddAssign ||
-        op == HLSLBinaryOp_SubAssign ||
-        op == HLSLBinaryOp_MulAssign ||
-        op == HLSLBinaryOp_DivAssign;
+    return op == HLSLBinaryOp::Assign ||
+        op == HLSLBinaryOp::AddAssign ||
+        op == HLSLBinaryOp::SubAssign ||
+        op == HLSLBinaryOp::MulAssign ||
+        op == HLSLBinaryOp::DivAssign;
 }
 
     
-enum HLSLUnaryOp
+enum class HLSLUnaryOp
 {
-    HLSLUnaryOp_Negative,       // -x
-    HLSLUnaryOp_Positive,       // +x
-    HLSLUnaryOp_Not,            // !x
-    HLSLUnaryOp_PreIncrement,   // ++x
-    HLSLUnaryOp_PreDecrement,   // --x
-    HLSLUnaryOp_PostIncrement,  // x++
-    HLSLUnaryOp_PostDecrement,  // x++
-    HLSLUnaryOp_BitNot,         // ~x
+    Negative,       // -x
+    Positive,       // +x
+    Not,            // !x
+    PreIncrement,   // ++x
+    PreDecrement,   // --x
+    PostIncrement,  // x++
+    PostDecrement,  // x++
+    BitNot,         // ~x
 };
 
-enum HLSLArgumentModifier
+enum class HLSLArgumentModifier
 {
-    HLSLArgumentModifier_None,
-    HLSLArgumentModifier_In,
-    HLSLArgumentModifier_Out,
-    HLSLArgumentModifier_Inout,
-    HLSLArgumentModifier_Uniform,
-    HLSLArgumentModifier_Const,
+    None,
+    In,
+    Out,
+    Inout,
+    Uniform,
+    Const,
 };
 
-enum HLSLTypeFlags
+enum class HLSLTypeFlags
 {
-    HLSLTypeFlag_None = 0,
-    HLSLTypeFlag_Const = 0x01,
-    HLSLTypeFlag_Static = 0x02,
-    //HLSLTypeFlag_Uniform = 0x04,
-    //HLSLTypeFlag_Extern = 0x10,
-    //HLSLTypeFlag_Volatile = 0x20,
-    //HLSLTypeFlag_Shared = 0x40,
-    //HLSLTypeFlag_Precise = 0x80,
-
-    HLSLTypeFlag_Input = 0x100,
-    HLSLTypeFlag_Output = 0x200,
+    None = 0,
+    Const = 0x01,
+    Static = 0x02, 
+    Input = 0x04,
+    Output = 0x08,
+    Linear = 0x10,
+    Centroid = 0x20,
 
     // Interpolation modifiers.
-    HLSLTypeFlag_Linear = 0x10000,
-    HLSLTypeFlag_Centroid = 0x20000,
-    HLSLTypeFlag_NoInterpolation = 0x40000,
-    HLSLTypeFlag_NoPerspective = 0x80000,
-    HLSLTypeFlag_Sample = 0x100000,
+    NoInterpolation = 0x40,
+    NoPerspective = 0x80,
+    Sample = 0x100,
 
     // Misc.
-    HLSLTypeFlag_NoPromote = 0x200000,
+    NoPromote = 0x200,
+
+    //Uniform = 0x400,
+    //Extern = 0x800,
+    //Volatile = 0x1000,
+    //Shared = 0x2000,
+    //Precise = 0x4000,
 };
 
-enum HLSLAttributeType
+enum class HLSLAttributeType
 {
-    HLSLAttributeType_Unknown,
-    HLSLAttributeType_Unroll,
-    HLSLAttributeType_Branch,
-    HLSLAttributeType_Flatten,
-    HLSLAttributeType_NoFastMath,
+    Unknown,
+    Unroll,
+    Branch,
+    Flatten,
+    NoFastMath,
 };
 
-enum HLSLAddressSpace
+enum class HLSLAddressSpace
 {
-    HLSLAddressSpace_Undefined,
-    HLSLAddressSpace_Constant,
-    HLSLAddressSpace_Device,
-    HLSLAddressSpace_Thread,
-    HLSLAddressSpace_Shared,
+    Undefined,
+    Constant,
+    Device,
+    Thread,
+    Shared,
 };
 
 
@@ -318,15 +318,15 @@ struct HLSLAttribute;
 
 struct HLSLType
 {
-    explicit HLSLType(HLSLBaseType _baseType = HLSLBaseType_Unknown)
+    explicit HLSLType(HLSLBaseType _baseType = HLSLBaseType::Unknown)
     { 
         baseType    = _baseType;
-        samplerType = HLSLBaseType_Float;
+        samplerType = HLSLBaseType::Float;
         typeName    = NULL;
         array       = false;
         arraySize   = NULL;
         flags       = 0;
-        addressSpace = HLSLAddressSpace_Undefined;
+        addressSpace = HLSLAddressSpace::Undefined;
     }
     HLSLBaseType        baseType;
     HLSLBaseType        samplerType;    // Half or Float
@@ -356,14 +356,16 @@ inline bool IsVectorType(const HLSLType & type)
 /** Base class for all nodes in the HLSL AST */
 struct HLSLNode
 {
-    HLSLNodeType        nodeType;
-    const char*         fileName;
-    int                 line;
+    HLSLNodeType                nodeType;
+    const char*                 fileName;
+    int                         line;
+
+    //virtual nlohmann::json      ConvertToJSON() = 0;
 };
 
 struct HLSLRoot : public HLSLNode
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Root;
+    static const HLSLNodeType s_type = HLSLNodeType::Root;
     HLSLRoot()          { statement = NULL; }
     HLSLStatement*      statement;          // First statement.
 };
@@ -383,10 +385,10 @@ struct HLSLStatement : public HLSLNode
 
 struct HLSLAttribute : public HLSLNode
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Attribute;
+    static const HLSLNodeType s_type = HLSLNodeType::Attribute;
 	HLSLAttribute()
 	{
-		attributeType = HLSLAttributeType_Unknown;
+		attributeType = HLSLAttributeType::Unknown;
 		argument      = NULL;
 		nextAttribute = NULL;
 	}
@@ -397,7 +399,7 @@ struct HLSLAttribute : public HLSLNode
 
 struct HLSLDeclaration : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Declaration;
+    static const HLSLNodeType s_type = HLSLNodeType::Declaration;
     HLSLDeclaration()
     {
         name            = NULL;
@@ -418,7 +420,7 @@ struct HLSLDeclaration : public HLSLStatement
 
 struct HLSLStruct : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Struct;
+    static const HLSLNodeType s_type = HLSLNodeType::Struct;
     HLSLStruct()
     {
         name            = NULL;
@@ -430,7 +432,7 @@ struct HLSLStruct : public HLSLStatement
 
 struct HLSLStructField : public HLSLNode
 {
-    static const HLSLNodeType s_type = HLSLNodeType_StructField;
+    static const HLSLNodeType s_type = HLSLNodeType::StructField;
     HLSLStructField()
     {
         name            = NULL;
@@ -450,7 +452,7 @@ struct HLSLStructField : public HLSLNode
 /** A cbuffer or tbuffer declaration. */
 struct HLSLBuffer : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Buffer;
+    static const HLSLNodeType s_type = HLSLNodeType::Buffer;
     HLSLBuffer()
     {
         name            = NULL;
@@ -468,7 +470,7 @@ struct HLSLBuffer : public HLSLStatement
 /** Function declaration */
 struct HLSLFunction : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Function;
+    static const HLSLNodeType s_type = HLSLNodeType::Function;
     HLSLFunction()
     {
         name            = NULL;
@@ -494,11 +496,11 @@ struct HLSLFunction : public HLSLStatement
 /** Declaration of an argument to a function. */
 struct HLSLArgument : public HLSLNode
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Argument;
+    static const HLSLNodeType s_type = HLSLNodeType::Argument;
     HLSLArgument()
     {
         name            = NULL;
-        modifier        = HLSLArgumentModifier_None;
+        modifier        = HLSLArgumentModifier::None;
         semantic        = NULL;
         sv_semantic     = NULL;
         defaultValue    = NULL;
@@ -518,7 +520,7 @@ struct HLSLArgument : public HLSLNode
 /** A expression which forms a complete statement. */
 struct HLSLExpressionStatement : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_ExpressionStatement;
+    static const HLSLNodeType s_type = HLSLNodeType::ExpressionStatement;
     HLSLExpressionStatement()
     {
         expression = NULL;
@@ -528,7 +530,7 @@ struct HLSLExpressionStatement : public HLSLStatement
 
 struct HLSLReturnStatement : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_ReturnStatement;
+    static const HLSLNodeType s_type = HLSLNodeType::ReturnStatement;
     HLSLReturnStatement()
     {
         expression = NULL;
@@ -538,22 +540,22 @@ struct HLSLReturnStatement : public HLSLStatement
 
 struct HLSLDiscardStatement : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_DiscardStatement;
+    static const HLSLNodeType s_type = HLSLNodeType::DiscardStatement;
 };
 
 struct HLSLBreakStatement : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_BreakStatement;
+    static const HLSLNodeType s_type = HLSLNodeType::BreakStatement;
 };
 
 struct HLSLContinueStatement : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_ContinueStatement;
+    static const HLSLNodeType s_type = HLSLNodeType::ContinueStatement;
 };
 
 struct HLSLIfStatement : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_IfStatement;
+    static const HLSLNodeType s_type = HLSLNodeType::IfStatement;
     HLSLIfStatement()
     {
         condition     = NULL;
@@ -569,7 +571,7 @@ struct HLSLIfStatement : public HLSLStatement
 
 struct HLSLForStatement : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_ForStatement;
+    static const HLSLNodeType s_type = HLSLNodeType::ForStatement;
     HLSLForStatement()
     {
         initialization = NULL;
@@ -585,7 +587,7 @@ struct HLSLForStatement : public HLSLStatement
 
 struct HLSLBlockStatement : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_BlockStatement;
+    static const HLSLNodeType s_type = HLSLNodeType::BlockStatement;
     HLSLBlockStatement()
     {
         statement = NULL;
@@ -597,7 +599,7 @@ struct HLSLBlockStatement : public HLSLStatement
 /** Base type for all types of expressions. */
 struct HLSLExpression : public HLSLNode
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Expression;
+    static const HLSLNodeType s_type = HLSLNodeType::Expression;
     HLSLExpression()
     {
         nextExpression = NULL;
@@ -608,7 +610,7 @@ struct HLSLExpression : public HLSLNode
 
 struct HLSLUnaryExpression : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_UnaryExpression;
+    static const HLSLNodeType s_type = HLSLNodeType::UnaryExpression;
     HLSLUnaryExpression()
     {
         expression = NULL;
@@ -619,7 +621,7 @@ struct HLSLUnaryExpression : public HLSLExpression
 
 struct HLSLBinaryExpression : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_BinaryExpression;
+    static const HLSLNodeType s_type = HLSLNodeType::BinaryExpression;
     HLSLBinaryExpression()
     {
         expression1 = NULL;
@@ -633,7 +635,7 @@ struct HLSLBinaryExpression : public HLSLExpression
 /** ? : construct */
 struct HLSLConditionalExpression : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_ConditionalExpression;
+    static const HLSLNodeType s_type = HLSLNodeType::ConditionalExpression;
     HLSLConditionalExpression()
     {
         condition       = NULL;
@@ -647,7 +649,7 @@ struct HLSLConditionalExpression : public HLSLExpression
 
 struct HLSLCastingExpression : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_CastingExpression;
+    static const HLSLNodeType s_type = HLSLNodeType::CastingExpression;
     HLSLCastingExpression()
     {
         expression = NULL;
@@ -659,7 +661,7 @@ struct HLSLCastingExpression : public HLSLExpression
 /** Float, integer, boolean, etc. literal constant. */
 struct HLSLLiteralExpression : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_LiteralExpression;
+    static const HLSLNodeType s_type = HLSLNodeType::LiteralExpression;
     HLSLBaseType        type;   // Note, not all types can be literals.
     union
     {
@@ -672,7 +674,7 @@ struct HLSLLiteralExpression : public HLSLExpression
 /** An identifier, typically a variable name or structure field name. */
 struct HLSLIdentifierExpression : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_IdentifierExpression;
+    static const HLSLNodeType s_type = HLSLNodeType::IdentifierExpression;
     HLSLIdentifierExpression()
     {
         name     = NULL;
@@ -685,7 +687,7 @@ struct HLSLIdentifierExpression : public HLSLExpression
 /** float2(1, 2) */
 struct HLSLConstructorExpression : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_ConstructorExpression;
+    static const HLSLNodeType s_type = HLSLNodeType::ConstructorExpression;
 	HLSLConstructorExpression()
 	{
 		argument = NULL;
@@ -697,7 +699,7 @@ struct HLSLConstructorExpression : public HLSLExpression
 /** object.member **/
 struct HLSLMemberAccess : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_MemberAccess;
+    static const HLSLNodeType s_type = HLSLNodeType::MemberAccess;
 	HLSLMemberAccess()
 	{
 		object  = NULL;
@@ -712,7 +714,7 @@ struct HLSLMemberAccess : public HLSLExpression
 /** array[index] **/
 struct HLSLArrayAccess : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_ArrayAccess;
+    static const HLSLNodeType s_type = HLSLNodeType::ArrayAccess;
 	HLSLArrayAccess()
 	{
 		array = NULL;
@@ -724,7 +726,7 @@ struct HLSLArrayAccess : public HLSLExpression
 
 struct HLSLFunctionCall : public HLSLExpression
 {
-    static const HLSLNodeType s_type = HLSLNodeType_FunctionCall;
+    static const HLSLNodeType s_type = HLSLNodeType::FunctionCall;
 	HLSLFunctionCall()
 	{
 		function     = NULL;
@@ -738,7 +740,7 @@ struct HLSLFunctionCall : public HLSLExpression
 
 struct HLSLStateAssignment : public HLSLNode
 {
-    static const HLSLNodeType s_type = HLSLNodeType_StateAssignment;
+    static const HLSLNodeType s_type = HLSLNodeType::StateAssignment;
     HLSLStateAssignment()
     {
         stateName = NULL;
@@ -758,7 +760,7 @@ struct HLSLStateAssignment : public HLSLNode
 
 struct HLSLSamplerState : public HLSLExpression // @@ Does this need to be an expression? Does it have a type? I guess type is useful.
 {
-    static const HLSLNodeType s_type = HLSLNodeType_SamplerState;
+    static const HLSLNodeType s_type = HLSLNodeType::SamplerState;
     HLSLSamplerState()
     {
         numStateAssignments = 0;
@@ -771,7 +773,7 @@ struct HLSLSamplerState : public HLSLExpression // @@ Does this need to be an ex
 
 struct HLSLPass : public HLSLNode
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Pass;
+    static const HLSLNodeType s_type = HLSLNodeType::Pass;
     HLSLPass()
     {
         name = NULL;
@@ -788,7 +790,7 @@ struct HLSLPass : public HLSLNode
 
 struct HLSLTechnique : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Technique;
+    static const HLSLNodeType s_type = HLSLNodeType::Technique;
     HLSLTechnique()
     {
         name = NULL;
@@ -803,7 +805,7 @@ struct HLSLTechnique : public HLSLStatement
 
 struct HLSLPipeline : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Pipeline;
+    static const HLSLNodeType s_type = HLSLNodeType::Pipeline;
     HLSLPipeline()
     {
         name = NULL;
@@ -818,7 +820,7 @@ struct HLSLPipeline : public HLSLStatement
 
 struct HLSLStage : public HLSLStatement
 {
-    static const HLSLNodeType s_type = HLSLNodeType_Stage;
+    static const HLSLNodeType s_type = HLSLNodeType::Stage;
     HLSLStage()
     {
         name = NULL;

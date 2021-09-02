@@ -131,7 +131,7 @@ void HLSLTokenizer::Next()
 
     if (m_error)
     {
-        m_token = HLSLToken_EndOfStream;
+        m_token = (int)HLSLToken::EndOfStream;
         return;
     }
 
@@ -139,7 +139,7 @@ void HLSLTokenizer::Next()
 
     if (m_buffer >= m_bufferEnd || *m_buffer == '\0')
     {
-        m_token = HLSLToken_EndOfStream;
+        m_token = (int)HLSLToken::EndOfStream;
         return;
     }
 
@@ -148,61 +148,61 @@ void HLSLTokenizer::Next()
     // +=, -=, *=, /=, ==, <=, >=
     if (m_buffer[0] == '+' && m_buffer[1] == '=')
     {
-        m_token = HLSLToken_PlusEqual;
+        m_token = (int)HLSLToken::PlusEqual;
         m_buffer += 2;
         return;
     }
     else if (m_buffer[0] == '-' && m_buffer[1] == '=')
     {
-        m_token = HLSLToken_MinusEqual;
+        m_token = (int)HLSLToken::MinusEqual;
         m_buffer += 2;
         return;
     }
     else if (m_buffer[0] == '*' && m_buffer[1] == '=')
     {
-        m_token = HLSLToken_TimesEqual;
+        m_token = (int)HLSLToken::TimesEqual;
         m_buffer += 2;
         return;
     }
     else if (m_buffer[0] == '/' && m_buffer[1] == '=')
     {
-        m_token = HLSLToken_DivideEqual;
+        m_token = (int)HLSLToken::DivideEqual;
         m_buffer += 2;
         return;
     }
     else if (m_buffer[0] == '=' && m_buffer[1] == '=')
     {
-        m_token = HLSLToken_EqualEqual;
+        m_token = (int)HLSLToken::EqualEqual;
         m_buffer += 2;
         return;
     }
     else if (m_buffer[0] == '!' && m_buffer[1] == '=')
     {
-        m_token = HLSLToken_NotEqual;
+        m_token = (int)HLSLToken::NotEqual;
         m_buffer += 2;
         return;
     }
     else if (m_buffer[0] == '<' && m_buffer[1] == '=')
     {
-        m_token = HLSLToken_LessEqual;
+        m_token = (int)HLSLToken::LessEqual;
         m_buffer += 2;
         return;
     }
     else if (m_buffer[0] == '>' && m_buffer[1] == '=')
     {
-        m_token = HLSLToken_GreaterEqual;
+        m_token = (int)HLSLToken::GreaterEqual;
         m_buffer += 2;
         return;
     }
     else if (m_buffer[0] == '&' && m_buffer[1] == '&')
     {
-        m_token = HLSLToken_AndAnd;
+        m_token = (int)HLSLToken::AndAnd;
         m_buffer += 2;
         return;
     }
     else if (m_buffer[0] == '|' && m_buffer[1] == '|')
     {
-        m_token = HLSLToken_BarBar;
+        m_token = (int)HLSLToken::BarBar;
         m_buffer += 2;
         return;
     }
@@ -210,7 +210,7 @@ void HLSLTokenizer::Next()
     // ++, --
     if ((m_buffer[0] == '-' || m_buffer[0] == '+') && (m_buffer[1] == m_buffer[0]))
     {
-        m_token = (m_buffer[0] == '+') ? HLSLToken_PlusPlus : HLSLToken_MinusMinus;
+        m_token = (m_buffer[0] == '+') ? (int)HLSLToken::PlusPlus : (int)HLSLToken::MinusMinus;
         m_buffer += 2;
         return;
     }
@@ -248,7 +248,7 @@ void HLSLTokenizer::Next()
         }
     }
 
-    m_token = HLSLToken_Identifier;
+    m_token = (int)HLSLToken::Identifier;
 
 }
 
@@ -355,7 +355,7 @@ bool HLSLTokenizer::ScanNumber()
         if (GetIsNumberSeparator(hEnd[0]))
         {
             m_buffer = hEnd;
-            m_token  = HLSLToken_IntLiteral;
+            m_token  = (int)HLSLToken::IntLiteral;
             m_iValue = iValue;
             return true;
         }
@@ -382,14 +382,14 @@ bool HLSLTokenizer::ScanNumber()
 	if( fEnd > iEnd && GetIsNumberSeparator( fEnd[ 0 ] ) )
 	{
 		m_buffer = fEnd;
-		m_token = fEnd[ 0 ] == 'f' ? HLSLToken_FloatLiteral : HLSLToken_HalfLiteral;
+		m_token = fEnd[ 0 ] == 'f' ? (int)HLSLToken::FloatLiteral : (int)HLSLToken::HalfLiteral;
         m_fValue = static_cast<float>(fValue);
         return true;
     }
     else if (iEnd > m_buffer && GetIsNumberSeparator(iEnd[0]))
     {
         m_buffer = iEnd;
-        m_token  = HLSLToken_IntLiteral;
+        m_token  = (int)HLSLToken::IntLiteral;
         m_iValue = iValue;
         return true;
     }
@@ -558,15 +558,15 @@ void HLSLTokenizer::Error(const char* format, ...)
 
 void HLSLTokenizer::GetTokenName(char buffer[s_maxIdentifier]) const
 {
-    if (m_token == HLSLToken_FloatLiteral || m_token == HLSLToken_HalfLiteral )
+    if (m_token == (int)HLSLToken::FloatLiteral || m_token == (int)HLSLToken::HalfLiteral )
     {
         sprintf_s(buffer, s_maxIdentifier, "%f", m_fValue);
     }
-    else if (m_token == HLSLToken_IntLiteral)
+    else if (m_token == (int)HLSLToken::IntLiteral)
     {
         sprintf_s(buffer, s_maxIdentifier, "%d", m_iValue);
     }
-    else if (m_token == HLSLToken_Identifier)
+    else if (m_token == (int)HLSLToken::Identifier)
     {
         strcpy_s(buffer, s_maxIdentifier, m_identifier);
     }
@@ -583,7 +583,7 @@ void HLSLTokenizer::GetTokenName(int token, char buffer[s_maxIdentifier])
         buffer[0] = (char)token;
         buffer[1] = 0;
     }
-    else if (token < HLSLToken_LessEqual)
+    else if (token < (int)HLSLToken::LessEqual)
     {
         strcpy_s(buffer, s_maxIdentifier, _reservedWords[token - 256]);
     }
@@ -591,37 +591,37 @@ void HLSLTokenizer::GetTokenName(int token, char buffer[s_maxIdentifier])
     {
         switch (token)
         {
-        case HLSLToken_PlusPlus:
+        case (int)HLSLToken::PlusPlus:
             strcpy_s(buffer, s_maxIdentifier, "++");
             break;
-        case HLSLToken_MinusMinus:
+        case (int)HLSLToken::MinusMinus:
             strcpy_s(buffer, s_maxIdentifier, "--");
             break;
-        case HLSLToken_PlusEqual:
+        case (int)HLSLToken::PlusEqual:
             strcpy_s(buffer, s_maxIdentifier, "+=");
             break;
-        case HLSLToken_MinusEqual:
+        case (int)HLSLToken::MinusEqual:
             strcpy_s(buffer, s_maxIdentifier, "-=");
             break;
-        case HLSLToken_TimesEqual:
+        case (int)HLSLToken::TimesEqual:
             strcpy_s(buffer, s_maxIdentifier, "*=");
             break;
-        case HLSLToken_DivideEqual:
+        case (int)HLSLToken::DivideEqual:
             strcpy_s(buffer, s_maxIdentifier, "/=");
             break;
-		case HLSLToken_HalfLiteral:
+		case (int)HLSLToken::HalfLiteral:
             strcpy_s(buffer, s_maxIdentifier, "half" );
 			break;
-        case HLSLToken_FloatLiteral:
+        case (int)HLSLToken::FloatLiteral:
             strcpy_s(buffer, s_maxIdentifier, "float");
             break;
-        case HLSLToken_IntLiteral:
+        case (int)HLSLToken::IntLiteral:
             strcpy_s(buffer, s_maxIdentifier, "int");
             break;
-        case HLSLToken_Identifier:
+        case (int)HLSLToken::Identifier:
             strcpy_s(buffer, s_maxIdentifier, "identifier");
             break;
-        case HLSLToken_EndOfStream:
+        case (int)HLSLToken::EndOfStream:
             strcpy_s(buffer, s_maxIdentifier, "<eof>");
             break;
         default:

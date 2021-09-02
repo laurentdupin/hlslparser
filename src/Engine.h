@@ -5,6 +5,12 @@
 #include <vector>
 #include <stdexcept>
 
+#define MAGIC_ENUM_RANGE_MIN 0
+#define MAGIC_ENUM_RANGE_MAX 512
+
+#include "json.hpp"
+#include "magic_enum.hpp"
+
 #ifndef NULL
 #define NULL    0
 #endif
@@ -14,6 +20,8 @@
 #endif
 
 // Engine/Assert.h
+
+#undef assert
 
 #define ASSERT(...) while(!(__VA_ARGS__)) throw std::runtime_error(#__VA_ARGS__ " condition failed");
 #define assert(...) while(!(__VA_ARGS__)) throw std::runtime_error(#__VA_ARGS__ " condition failed");

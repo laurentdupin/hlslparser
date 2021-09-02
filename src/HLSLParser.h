@@ -33,7 +33,9 @@ public:
 
 private:
 
+    bool Accept(HLSLToken token) { return Accept((int)token); }
     bool Accept(int token);
+    bool Expect(HLSLToken token) { return Expect((int)token); }
     bool Expect(int token);
 
     /**

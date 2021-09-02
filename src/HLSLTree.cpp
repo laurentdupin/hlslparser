@@ -6,97 +6,97 @@
 namespace M4
 {
 
-const HLSLTypeDimension BaseTypeDimension[HLSLBaseType_Count] =
+const HLSLTypeDimension BaseTypeDimension[(int)HLSLBaseType::Count] =
 {
-    HLSLTypeDimension_None,     // HLSLBaseType_Unknown,
-    HLSLTypeDimension_None,     // HLSLBaseType_Void,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Float,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Float2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Float3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Float4,
-    HLSLTypeDimension_Matrix2x2,// HLSLBaseType_Float2x2,
-    HLSLTypeDimension_Matrix3x3,// HLSLBaseType_Float3x3,
-    HLSLTypeDimension_Matrix4x4,// HLSLBaseType_Float4x4,
-    HLSLTypeDimension_Matrix4x3,// HLSLBaseType_Float4x3,
-    HLSLTypeDimension_Matrix4x2,// HLSLBaseType_Float4x2,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Half,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Half2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Half3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Half4,
-    HLSLTypeDimension_Matrix2x2,// HLSLBaseType_Half2x2,
-    HLSLTypeDimension_Matrix3x3,// HLSLBaseType_Half3x3,
-    HLSLTypeDimension_Matrix4x4,// HLSLBaseType_Half4x4,
-    HLSLTypeDimension_Matrix4x3,// HLSLBaseType_Half4x3,
-    HLSLTypeDimension_Matrix4x2,// HLSLBaseType_Half4x2,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Bool,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Bool2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Bool3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Bool4,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Int,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Int2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Int3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Int4,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Uint,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Uint2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Uint3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Uint4,
-    HLSLTypeDimension_None,     // HLSLBaseType_Texture,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler,           // @@ use type inference to determine sampler type.
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler2D,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler3D,
-    HLSLTypeDimension_None,     // HLSLBaseType_SamplerCube,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler2DShadow,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler2DMS,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler2DArray,
-    HLSLTypeDimension_None,     // HLSLBaseType_UserDefined,       // struct
-    HLSLTypeDimension_None,     // HLSLBaseType_Expression,        // type argument for defined() sizeof() and typeof().
-    HLSLTypeDimension_None,     // HLSLBaseType_Auto,
+    HLSLTypeDimension::None,     // HLSLBaseType::Unknown,
+    HLSLTypeDimension::None,     // HLSLBaseType::Void,
+    HLSLTypeDimension::Scalar,   // HLSLBaseType::Float,
+    HLSLTypeDimension::Vector2,  // HLSLBaseType::Float2,
+    HLSLTypeDimension::Vector3,  // HLSLBaseType::Float3,
+    HLSLTypeDimension::Vector4,  // HLSLBaseType::Float4,
+    HLSLTypeDimension::Matrix2x2,// HLSLBaseType::Float2x2,
+    HLSLTypeDimension::Matrix3x3,// HLSLBaseType::Float3x3,
+    HLSLTypeDimension::Matrix4x4,// HLSLBaseType::Float4x4,
+    HLSLTypeDimension::Matrix4x3,// HLSLBaseType::Float4x3,
+    HLSLTypeDimension::Matrix4x2,// HLSLBaseType::Float4x2,
+    HLSLTypeDimension::Scalar,   // HLSLBaseType::Half,
+    HLSLTypeDimension::Vector2,  // HLSLBaseType::Half2,
+    HLSLTypeDimension::Vector3,  // HLSLBaseType::Half3,
+    HLSLTypeDimension::Vector4,  // HLSLBaseType::Half4,
+    HLSLTypeDimension::Matrix2x2,// HLSLBaseType::Half2x2,
+    HLSLTypeDimension::Matrix3x3,// HLSLBaseType::Half3x3,
+    HLSLTypeDimension::Matrix4x4,// HLSLBaseType::Half4x4,
+    HLSLTypeDimension::Matrix4x3,// HLSLBaseType::Half4x3,
+    HLSLTypeDimension::Matrix4x2,// HLSLBaseType::Half4x2,
+    HLSLTypeDimension::Scalar,   // HLSLBaseType::Bool,
+    HLSLTypeDimension::Vector2,  // HLSLBaseType::Bool2,
+    HLSLTypeDimension::Vector3,  // HLSLBaseType::Bool3,
+    HLSLTypeDimension::Vector4,  // HLSLBaseType::Bool4,
+    HLSLTypeDimension::Scalar,   // HLSLBaseType::Int,
+    HLSLTypeDimension::Vector2,  // HLSLBaseType::Int2,
+    HLSLTypeDimension::Vector3,  // HLSLBaseType::Int3,
+    HLSLTypeDimension::Vector4,  // HLSLBaseType::Int4,
+    HLSLTypeDimension::Scalar,   // HLSLBaseType::Uint,
+    HLSLTypeDimension::Vector2,  // HLSLBaseType::Uint2,
+    HLSLTypeDimension::Vector3,  // HLSLBaseType::Uint3,
+    HLSLTypeDimension::Vector4,  // HLSLBaseType::Uint4,
+    HLSLTypeDimension::None,     // HLSLBaseType::Texture,
+    HLSLTypeDimension::None,     // HLSLBaseType::Sampler,           // @@ use type inference to determine sampler type.
+    HLSLTypeDimension::None,     // HLSLBaseType::Sampler2D,
+    HLSLTypeDimension::None,     // HLSLBaseType::Sampler3D,
+    HLSLTypeDimension::None,     // HLSLBaseType::SamplerCube,
+    HLSLTypeDimension::None,     // HLSLBaseType::Sampler2DShadow,
+    HLSLTypeDimension::None,     // HLSLBaseType::Sampler2DMS,
+    HLSLTypeDimension::None,     // HLSLBaseType::Sampler2DArray,
+    HLSLTypeDimension::None,     // HLSLBaseType::UserDefined,       // struct
+    HLSLTypeDimension::None,     // HLSLBaseType::Expression,        // type argument for defined() sizeof() and typeof().
+    HLSLTypeDimension::None,     // HLSLBaseType::Auto,
 };
 
-const HLSLBaseType ScalarBaseType[HLSLBaseType_Count] = {
-    HLSLBaseType_Unknown,       // HLSLBaseType_Unknown,
-    HLSLBaseType_Void,          // HLSLBaseType_Void,
-    HLSLBaseType_Float,         // HLSLBaseType_Float,
-    HLSLBaseType_Float,         // HLSLBaseType_Float2,
-    HLSLBaseType_Float,         // HLSLBaseType_Float3,
-    HLSLBaseType_Float,         // HLSLBaseType_Float4,
-    HLSLBaseType_Float,         // HLSLBaseType_Float2x2,
-    HLSLBaseType_Float,         // HLSLBaseType_Float3x3,
-    HLSLBaseType_Float,         // HLSLBaseType_Float4x4,
-    HLSLBaseType_Float,         // HLSLBaseType_Float4x3,
-    HLSLBaseType_Float,         // HLSLBaseType_Float4x2,
-    HLSLBaseType_Half,          // HLSLBaseType_Half,
-    HLSLBaseType_Half,          // HLSLBaseType_Half2,
-    HLSLBaseType_Half,          // HLSLBaseType_Half3,
-    HLSLBaseType_Half,          // HLSLBaseType_Half4,
-    HLSLBaseType_Half,          // HLSLBaseType_Half2x2,
-    HLSLBaseType_Half,          // HLSLBaseType_Half3x3,
-    HLSLBaseType_Half,          // HLSLBaseType_Half4x4,
-    HLSLBaseType_Half,          // HLSLBaseType_Half4x3,
-    HLSLBaseType_Half,          // HLSLBaseType_Half4x2,
-    HLSLBaseType_Bool,          // HLSLBaseType_Bool,
-    HLSLBaseType_Bool,          // HLSLBaseType_Bool2,
-    HLSLBaseType_Bool,          // HLSLBaseType_Bool3,
-    HLSLBaseType_Bool,          // HLSLBaseType_Bool4,
-    HLSLBaseType_Int,           // HLSLBaseType_Int,
-    HLSLBaseType_Int,           // HLSLBaseType_Int2,
-    HLSLBaseType_Int,           // HLSLBaseType_Int3,
-    HLSLBaseType_Int,           // HLSLBaseType_Int4,
-    HLSLBaseType_Uint,          // HLSLBaseType_Uint,
-    HLSLBaseType_Uint,          // HLSLBaseType_Uint2,
-    HLSLBaseType_Uint,          // HLSLBaseType_Uint3,
-    HLSLBaseType_Uint,          // HLSLBaseType_Uint4,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Texture,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler,           // @@ use type inference to determine sampler type.
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler2D,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler3D,
-    HLSLBaseType_Unknown,       // HLSLBaseType_SamplerCube,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler2DShadow,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler2DMS,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler2DArray,
-    HLSLBaseType_Unknown,       // HLSLBaseType_UserDefined,       // struct
-    HLSLBaseType_Unknown,       // HLSLBaseType_Expression,        // type argument for defined() sizeof() and typeof().
-    HLSLBaseType_Unknown,       // HLSLBaseType_Auto,
+const HLSLBaseType ScalarBaseType[(int)HLSLBaseType::Count] = {
+    HLSLBaseType::Unknown,       // HLSLBaseType::Unknown,
+    HLSLBaseType::Void,          // HLSLBaseType::Void,
+    HLSLBaseType::Float,         // HLSLBaseType::Float,
+    HLSLBaseType::Float,         // HLSLBaseType::Float2,
+    HLSLBaseType::Float,         // HLSLBaseType::Float3,
+    HLSLBaseType::Float,         // HLSLBaseType::Float4,
+    HLSLBaseType::Float,         // HLSLBaseType::Float2x2,
+    HLSLBaseType::Float,         // HLSLBaseType::Float3x3,
+    HLSLBaseType::Float,         // HLSLBaseType::Float4x4,
+    HLSLBaseType::Float,         // HLSLBaseType::Float4x3,
+    HLSLBaseType::Float,         // HLSLBaseType::Float4x2,
+    HLSLBaseType::Half,          // HLSLBaseType::Half,
+    HLSLBaseType::Half,          // HLSLBaseType::Half2,
+    HLSLBaseType::Half,          // HLSLBaseType::Half3,
+    HLSLBaseType::Half,          // HLSLBaseType::Half4,
+    HLSLBaseType::Half,          // HLSLBaseType::Half2x2,
+    HLSLBaseType::Half,          // HLSLBaseType::Half3x3,
+    HLSLBaseType::Half,          // HLSLBaseType::Half4x4,
+    HLSLBaseType::Half,          // HLSLBaseType::Half4x3,
+    HLSLBaseType::Half,          // HLSLBaseType::Half4x2,
+    HLSLBaseType::Bool,          // HLSLBaseType::Bool,
+    HLSLBaseType::Bool,          // HLSLBaseType::Bool2,
+    HLSLBaseType::Bool,          // HLSLBaseType::Bool3,
+    HLSLBaseType::Bool,          // HLSLBaseType::Bool4,
+    HLSLBaseType::Int,           // HLSLBaseType::Int,
+    HLSLBaseType::Int,           // HLSLBaseType::Int2,
+    HLSLBaseType::Int,           // HLSLBaseType::Int3,
+    HLSLBaseType::Int,           // HLSLBaseType::Int4,
+    HLSLBaseType::Uint,          // HLSLBaseType::Uint,
+    HLSLBaseType::Uint,          // HLSLBaseType::Uint2,
+    HLSLBaseType::Uint,          // HLSLBaseType::Uint3,
+    HLSLBaseType::Uint,          // HLSLBaseType::Uint4,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Texture,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Sampler,           // @@ use type inference to determine sampler type.
+    HLSLBaseType::Unknown,       // HLSLBaseType::Sampler2D,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Sampler3D,
+    HLSLBaseType::Unknown,       // HLSLBaseType::SamplerCube,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Sampler2DShadow,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Sampler2DMS,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Sampler2DArray,
+    HLSLBaseType::Unknown,       // HLSLBaseType::UserDefined,       // struct
+    HLSLBaseType::Unknown,       // HLSLBaseType::Expression,        // type argument for defined() sizeof() and typeof().
+    HLSLBaseType::Unknown,       // HLSLBaseType::Auto,
 };
 
 #define MAX_NODE_PAGES 4096
@@ -167,7 +167,7 @@ HLSLFunction * HLSLTree::FindFunction(const char * name)
     HLSLStatement * statement = m_root->statement;
     while (statement != NULL)
     {
-        if (statement->nodeType == HLSLNodeType_Function)
+        if (statement->nodeType == HLSLNodeType::Function)
         {
             HLSLFunction * function = (HLSLFunction *)statement;
             if (String_Equal(name, function->name))
@@ -187,7 +187,7 @@ HLSLDeclaration * HLSLTree::FindGlobalDeclaration(const char * name, HLSLBuffer 
     HLSLStatement * statement = m_root->statement;
     while (statement != NULL)
     {
-        if (statement->nodeType == HLSLNodeType_Declaration)
+        if (statement->nodeType == HLSLNodeType::Declaration)
         {
             HLSLDeclaration * declaration = (HLSLDeclaration *)statement;
             if (String_Equal(name, declaration->name))
@@ -196,14 +196,14 @@ HLSLDeclaration * HLSLTree::FindGlobalDeclaration(const char * name, HLSLBuffer 
                 return declaration;
             }
         }
-        else if (statement->nodeType == HLSLNodeType_Buffer)
+        else if (statement->nodeType == HLSLNodeType::Buffer)
         {
             HLSLBuffer* buffer = (HLSLBuffer*)statement;
 
             HLSLDeclaration* field = buffer->field;
             while (field != NULL)
             {
-                ASSERT(field->nodeType == HLSLNodeType_Declaration);
+                ASSERT(field->nodeType == HLSLNodeType::Declaration);
                 if (String_Equal(name, field->name))
                 {
                     if (buffer_out) *buffer_out = buffer;
@@ -225,7 +225,7 @@ HLSLStruct * HLSLTree::FindGlobalStruct(const char * name)
     HLSLStatement * statement = m_root->statement;
     while (statement != NULL)
     {
-        if (statement->nodeType == HLSLNodeType_Struct)
+        if (statement->nodeType == HLSLNodeType::Struct)
         {
             HLSLStruct * declaration = (HLSLStruct *)statement;
             if (String_Equal(name, declaration->name))
@@ -245,7 +245,7 @@ HLSLTechnique * HLSLTree::FindTechnique(const char * name)
     HLSLStatement * statement = m_root->statement;
     while (statement != NULL)
     {
-        if (statement->nodeType == HLSLNodeType_Technique)
+        if (statement->nodeType == HLSLNodeType::Technique)
         {
             HLSLTechnique * technique = (HLSLTechnique *)statement;
             if (String_Equal(name, technique->name))
@@ -270,7 +270,7 @@ HLSLPipeline * HLSLTree::FindNextPipeline(HLSLPipeline * current)
     HLSLStatement * statement = current ? current : m_root->statement;
     while (statement != NULL)
     {
-        if (statement->nodeType == HLSLNodeType_Pipeline)
+        if (statement->nodeType == HLSLNodeType::Pipeline)
         {
             return (HLSLPipeline *)statement;
         }
@@ -286,7 +286,7 @@ HLSLPipeline * HLSLTree::FindPipeline(const char * name)
     HLSLStatement * statement = m_root->statement;
     while (statement != NULL)
     {
-        if (statement->nodeType == HLSLNodeType_Pipeline)
+        if (statement->nodeType == HLSLNodeType::Pipeline)
         {
             HLSLPipeline * pipeline = (HLSLPipeline *)statement;
             if (String_Equal(name, pipeline->name))
@@ -306,7 +306,7 @@ HLSLBuffer * HLSLTree::FindBuffer(const char * name)
     HLSLStatement * statement = m_root->statement;
     while (statement != NULL)
     {
-        if (statement->nodeType == HLSLNodeType_Buffer)
+        if (statement->nodeType == HLSLNodeType::Buffer)
         {
             HLSLBuffer * buffer = (HLSLBuffer *)statement;
             if (String_Equal(name, buffer->name))
@@ -328,14 +328,14 @@ bool HLSLTree::GetExpressionValue(HLSLExpression * expression, int & value)
     ASSERT (expression != NULL);
 
     // Expression must be constant.
-    if ((expression->expressionType.flags & HLSLTypeFlag_Const) == 0) 
+    if ((expression->expressionType.flags & (int)HLSLTypeFlags::Const) == 0)
     {
         return false;
     }
 
     // We are expecting an integer scalar. @@ Add support for type conversion from other scalar types.
-    if (expression->expressionType.baseType != HLSLBaseType_Int &&
-        expression->expressionType.baseType != HLSLBaseType_Bool)
+    if (expression->expressionType.baseType != HLSLBaseType::Int &&
+        expression->expressionType.baseType != HLSLBaseType::Bool)
     {
         return false;
     }
@@ -345,7 +345,7 @@ bool HLSLTree::GetExpressionValue(HLSLExpression * expression, int & value)
         return false;
     }
 
-    if (expression->nodeType == HLSLNodeType_BinaryExpression) 
+    if (expression->nodeType == HLSLNodeType::BinaryExpression) 
     {
         HLSLBinaryExpression * binaryExpression = (HLSLBinaryExpression *)expression;
 
@@ -358,61 +358,61 @@ bool HLSLTree::GetExpressionValue(HLSLExpression * expression, int & value)
 
         switch(binaryExpression->binaryOp)
         {
-            case HLSLBinaryOp_And:
+            case HLSLBinaryOp::And:
                 value = value1 && value2;
                 return true;
-            case HLSLBinaryOp_Or:
+            case HLSLBinaryOp::Or:
                 value = value1 || value2;
                 return true;
-            case HLSLBinaryOp_Add:
+            case HLSLBinaryOp::Add:
                 value = value1 + value2;
                 return true;
-            case HLSLBinaryOp_Sub:
+            case HLSLBinaryOp::Sub:
                 value = value1 - value2;
                 return true;
-            case HLSLBinaryOp_Mul:
+            case HLSLBinaryOp::Mul:
                 value = value1 * value2;
                 return true;
-            case HLSLBinaryOp_Div:
+            case HLSLBinaryOp::Div:
                 value = value1 / value2;
                 return true;
-            case HLSLBinaryOp_Less:
+            case HLSLBinaryOp::Less:
                 value = value1 < value2;
                 return true;
-            case HLSLBinaryOp_Greater:
+            case HLSLBinaryOp::Greater:
                 value = value1 > value2;
                 return true;
-            case HLSLBinaryOp_LessEqual:
+            case HLSLBinaryOp::LessEqual:
                 value = value1 <= value2;
                 return true;
-            case HLSLBinaryOp_GreaterEqual:
+            case HLSLBinaryOp::GreaterEqual:
                 value = value1 >= value2;
                 return true;
-            case HLSLBinaryOp_Equal:
+            case HLSLBinaryOp::Equal:
                 value = value1 == value2;
                 return true;
-            case HLSLBinaryOp_NotEqual:
+            case HLSLBinaryOp::NotEqual:
                 value = value1 != value2;
                 return true;
-            case HLSLBinaryOp_BitAnd:
+            case HLSLBinaryOp::BitAnd:
                 value = value1 & value2;
                 return true;
-            case HLSLBinaryOp_BitOr:
+            case HLSLBinaryOp::BitOr:
                 value = value1 | value2;
                 return true;
-            case HLSLBinaryOp_BitXor:
+            case HLSLBinaryOp::BitXor:
                 value = value1 ^ value2;
                 return true;
-            case HLSLBinaryOp_Assign:
-            case HLSLBinaryOp_AddAssign:
-            case HLSLBinaryOp_SubAssign:
-            case HLSLBinaryOp_MulAssign:
-            case HLSLBinaryOp_DivAssign:
+            case HLSLBinaryOp::Assign:
+            case HLSLBinaryOp::AddAssign:
+            case HLSLBinaryOp::SubAssign:
+            case HLSLBinaryOp::MulAssign:
+            case HLSLBinaryOp::DivAssign:
                 // IC: These are not valid on non-constant expressions and should fail earlier when querying expression value.
                 return false;
         }
     }
-    else if (expression->nodeType == HLSLNodeType_UnaryExpression) 
+    else if (expression->nodeType == HLSLNodeType::UnaryExpression) 
     {
         HLSLUnaryExpression * unaryExpression = (HLSLUnaryExpression *)expression;
 
@@ -423,27 +423,27 @@ bool HLSLTree::GetExpressionValue(HLSLExpression * expression, int & value)
 
         switch(unaryExpression->unaryOp)
         {
-            case HLSLUnaryOp_Negative:
+            case HLSLUnaryOp::Negative:
                 value = -value;
                 return true;
-            case HLSLUnaryOp_Positive:
+            case HLSLUnaryOp::Positive:
                 // nop.
                 return true;
-            case HLSLUnaryOp_Not:
+            case HLSLUnaryOp::Not:
                 value = !value;
                 return true;
-            case HLSLUnaryOp_BitNot:
+            case HLSLUnaryOp::BitNot:
                 value = ~value;
                 return true;
-            case HLSLUnaryOp_PostDecrement:
-            case HLSLUnaryOp_PostIncrement:
-            case HLSLUnaryOp_PreDecrement:
-            case HLSLUnaryOp_PreIncrement:
+            case HLSLUnaryOp::PostDecrement:
+            case HLSLUnaryOp::PostIncrement:
+            case HLSLUnaryOp::PreDecrement:
+            case HLSLUnaryOp::PreIncrement:
                 // IC: These are not valid on non-constant expressions and should fail earlier when querying expression value.
                 return false;
         }
     }
-    else if (expression->nodeType == HLSLNodeType_IdentifierExpression)
+    else if (expression->nodeType == HLSLNodeType::IdentifierExpression)
     {
         HLSLIdentifierExpression * identifier = (HLSLIdentifierExpression *)expression;
 
@@ -452,19 +452,19 @@ bool HLSLTree::GetExpressionValue(HLSLExpression * expression, int & value)
         {
             return false;
         }
-        if ((declaration->type.flags & HLSLTypeFlag_Const) == 0)
+        if ((declaration->type.flags & (int)HLSLTypeFlags::Const) == 0)
         {
             return false;
         }
 
         return GetExpressionValue(declaration->assignment, value);
     }
-    else if (expression->nodeType == HLSLNodeType_LiteralExpression) 
+    else if (expression->nodeType == HLSLNodeType::LiteralExpression) 
     {
         HLSLLiteralExpression * literal = (HLSLLiteralExpression *)expression;
    
-        if (literal->expressionType.baseType == HLSLBaseType_Int) value = literal->iValue;
-        else if (literal->expressionType.baseType == HLSLBaseType_Bool) value = (int)literal->bValue;
+        if (literal->expressionType.baseType == HLSLBaseType::Int) value = literal->iValue;
+        else if (literal->expressionType.baseType == HLSLBaseType::Bool) value = (int)literal->bValue;
         else return false;
         
         return true;
@@ -509,13 +509,13 @@ bool HLSLTree::NeedsFunction(const char* name)
 
 int GetVectorDimension(HLSLType & type)
 {
-    if (type.baseType >= HLSLBaseType_FirstNumeric &&
-        type.baseType <= HLSLBaseType_LastNumeric)
+    if (type.baseType >= HLSLBaseType::FirstNumeric &&
+        type.baseType <= HLSLBaseType::LastNumeric)
     {
-        if (type.baseType == HLSLBaseType_Float || type.baseType == HLSLBaseType_Half) return 1;
-        if (type.baseType == HLSLBaseType_Float2 || type.baseType == HLSLBaseType_Half2) return 2;
-        if (type.baseType == HLSLBaseType_Float3 || type.baseType == HLSLBaseType_Half3) return 3;
-        if (type.baseType == HLSLBaseType_Float4 || type.baseType == HLSLBaseType_Half4) return 4;
+        if (type.baseType == HLSLBaseType::Float || type.baseType == HLSLBaseType::Half) return 1;
+        if (type.baseType == HLSLBaseType::Float2 || type.baseType == HLSLBaseType::Half2) return 2;
+        if (type.baseType == HLSLBaseType::Float3 || type.baseType == HLSLBaseType::Half3) return 3;
+        if (type.baseType == HLSLBaseType::Float4 || type.baseType == HLSLBaseType::Half4) return 4;
 
     }
     return 0;
@@ -527,13 +527,13 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
     ASSERT (expression != NULL);
 
     // Expression must be constant.
-    if ((expression->expressionType.flags & HLSLTypeFlag_Const) == 0) 
+    if ((expression->expressionType.flags & (int)HLSLTypeFlags::Const) == 0)
     {
         return 0;
     }
 
-    if (expression->expressionType.baseType == HLSLBaseType_Int ||
-        expression->expressionType.baseType == HLSLBaseType_Bool)
+    if (expression->expressionType.baseType == HLSLBaseType::Int ||
+        expression->expressionType.baseType == HLSLBaseType::Bool)
     {
         int int_value;
         if (GetExpressionValue(expression, int_value)) {
@@ -543,13 +543,13 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
 
         return 0;
     }
-    if (expression->expressionType.baseType >= HLSLBaseType_FirstInteger && expression->expressionType.baseType <= HLSLBaseType_LastInteger)
+    if (expression->expressionType.baseType >= HLSLBaseType::FirstInteger && expression->expressionType.baseType <= HLSLBaseType::LastInteger)
     {
         // @@ Add support for uints?
         // @@ Add support for int vectors?
         return 0;
     }
-    if (expression->expressionType.baseType > HLSLBaseType_LastNumeric)
+    if (expression->expressionType.baseType > HLSLBaseType::LastNumeric)
     {
         return 0;
     }
@@ -560,7 +560,7 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
         return false;
     }
 
-    if (expression->nodeType == HLSLNodeType_BinaryExpression) 
+    if (expression->nodeType == HLSLNodeType::BinaryExpression) 
     {
         HLSLBinaryExpression * binaryExpression = (HLSLBinaryExpression *)expression;
         int dim = GetVectorDimension(binaryExpression->expressionType);
@@ -596,23 +596,23 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
 
         switch(binaryExpression->binaryOp)
         {
-            case HLSLBinaryOp_Add:
+            case HLSLBinaryOp::Add:
                 for (int i = 0; i < dim; i++) values[i] = values1[i] + values2[i];
                 return dim;
-            case HLSLBinaryOp_Sub:
+            case HLSLBinaryOp::Sub:
                 for (int i = 0; i < dim; i++) values[i] = values1[i] - values2[i];
                 return dim;
-            case HLSLBinaryOp_Mul:
+            case HLSLBinaryOp::Mul:
                 for (int i = 0; i < dim; i++) values[i] = values1[i] * values2[i];
                 return dim;
-            case HLSLBinaryOp_Div:
+            case HLSLBinaryOp::Div:
                 for (int i = 0; i < dim; i++) values[i] = values1[i] / values2[i];
                 return dim;
             default:
                 return 0;
         }
     }
-    else if (expression->nodeType == HLSLNodeType_UnaryExpression) 
+    else if (expression->nodeType == HLSLNodeType::UnaryExpression) 
     {
         HLSLUnaryExpression * unaryExpression = (HLSLUnaryExpression *)expression;
         int dim = GetVectorDimension(unaryExpression->expressionType);
@@ -626,17 +626,17 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
 
         switch(unaryExpression->unaryOp)
         {
-            case HLSLUnaryOp_Negative:
+            case HLSLUnaryOp::Negative:
                 for (int i = 0; i < dim; i++) values[i] = -values[i];
                 return dim;
-            case HLSLUnaryOp_Positive:
+            case HLSLUnaryOp::Positive:
                 // nop.
                 return dim;
             default:
                 return 0;
         }
     }
-    else if (expression->nodeType == HLSLNodeType_ConstructorExpression)
+    else if (expression->nodeType == HLSLNodeType::ConstructorExpression)
     {
         HLSLConstructorExpression * constructor = (HLSLConstructorExpression *)expression;
 
@@ -657,7 +657,7 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
 
         return dim;
     }
-    else if (expression->nodeType == HLSLNodeType_IdentifierExpression)
+    else if (expression->nodeType == HLSLNodeType::IdentifierExpression)
     {
         HLSLIdentifierExpression * identifier = (HLSLIdentifierExpression *)expression;
 
@@ -666,21 +666,21 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
         {
             return 0;
         }
-        if ((declaration->type.flags & HLSLTypeFlag_Const) == 0)
+        if ((declaration->type.flags & (int)HLSLTypeFlags::Const) == 0)
         {
             return 0;
         }
 
         return GetExpressionValue(declaration->assignment, values);
     }
-    else if (expression->nodeType == HLSLNodeType_LiteralExpression)
+    else if (expression->nodeType == HLSLNodeType::LiteralExpression)
     {
         HLSLLiteralExpression * literal = (HLSLLiteralExpression *)expression;
 
-        if (literal->expressionType.baseType == HLSLBaseType_Float) values[0] = literal->fValue;
-        else if (literal->expressionType.baseType == HLSLBaseType_Half) values[0] = literal->fValue;
-        else if (literal->expressionType.baseType == HLSLBaseType_Bool) values[0] = literal->bValue;
-        else if (literal->expressionType.baseType == HLSLBaseType_Int) values[0] = (float)literal->iValue;  // @@ Warn if conversion is not exact.
+        if (literal->expressionType.baseType == HLSLBaseType::Float) values[0] = literal->fValue;
+        else if (literal->expressionType.baseType == HLSLBaseType::Half) values[0] = literal->fValue;
+        else if (literal->expressionType.baseType == HLSLBaseType::Bool) values[0] = literal->bValue;
+        else if (literal->expressionType.baseType == HLSLBaseType::Int) values[0] = (float)literal->iValue;  // @@ Warn if conversion is not exact.
         else return 0;
 
         return 1;
@@ -707,22 +707,22 @@ void HLSLTreeVisitor::VisitRoot(HLSLRoot * root)
 
 void HLSLTreeVisitor::VisitTopLevelStatement(HLSLStatement * node)
 {
-    if (node->nodeType == HLSLNodeType_Declaration) {
+    if (node->nodeType == HLSLNodeType::Declaration) {
         VisitDeclaration((HLSLDeclaration *)node);
     }
-    else if (node->nodeType == HLSLNodeType_Struct) {
+    else if (node->nodeType == HLSLNodeType::Struct) {
         VisitStruct((HLSLStruct *)node);
     }
-    else if (node->nodeType == HLSLNodeType_Buffer) {
+    else if (node->nodeType == HLSLNodeType::Buffer) {
         VisitBuffer((HLSLBuffer *)node);
     }
-    else if (node->nodeType == HLSLNodeType_Function) {
+    else if (node->nodeType == HLSLNodeType::Function) {
         VisitFunction((HLSLFunction *)node);
     }
-    else if (node->nodeType == HLSLNodeType_Technique) {
+    else if (node->nodeType == HLSLNodeType::Technique) {
         VisitTechnique((HLSLTechnique *)node);
     }
-    else if (node->nodeType == HLSLNodeType_Pipeline) {
+    else if (node->nodeType == HLSLNodeType::Pipeline) {
         VisitPipeline((HLSLPipeline *)node);
     }
     else {
@@ -741,31 +741,31 @@ void HLSLTreeVisitor::VisitStatements(HLSLStatement * statement)
 void HLSLTreeVisitor::VisitStatement(HLSLStatement * node)
 {
     // Function statements
-    if (node->nodeType == HLSLNodeType_Declaration) {
+    if (node->nodeType == HLSLNodeType::Declaration) {
         VisitDeclaration((HLSLDeclaration *)node);
     }
-    else if (node->nodeType == HLSLNodeType_ExpressionStatement) {
+    else if (node->nodeType == HLSLNodeType::ExpressionStatement) {
         VisitExpressionStatement((HLSLExpressionStatement *)node);
     }
-    else if (node->nodeType == HLSLNodeType_ReturnStatement) {
+    else if (node->nodeType == HLSLNodeType::ReturnStatement) {
         VisitReturnStatement((HLSLReturnStatement *)node);
     }
-    else if (node->nodeType == HLSLNodeType_DiscardStatement) {
+    else if (node->nodeType == HLSLNodeType::DiscardStatement) {
         VisitDiscardStatement((HLSLDiscardStatement *)node);
     }
-    else if (node->nodeType == HLSLNodeType_BreakStatement) {
+    else if (node->nodeType == HLSLNodeType::BreakStatement) {
         VisitBreakStatement((HLSLBreakStatement *)node);
     }
-    else if (node->nodeType == HLSLNodeType_ContinueStatement) {
+    else if (node->nodeType == HLSLNodeType::ContinueStatement) {
         VisitContinueStatement((HLSLContinueStatement *)node);
     }
-    else if (node->nodeType == HLSLNodeType_IfStatement) {
+    else if (node->nodeType == HLSLNodeType::IfStatement) {
         VisitIfStatement((HLSLIfStatement *)node);
     }
-    else if (node->nodeType == HLSLNodeType_ForStatement) {
+    else if (node->nodeType == HLSLNodeType::ForStatement) {
         VisitForStatement((HLSLForStatement *)node);
     }
-    else if (node->nodeType == HLSLNodeType_BlockStatement) {
+    else if (node->nodeType == HLSLNodeType::BlockStatement) {
         VisitBlockStatement((HLSLBlockStatement *)node);
     }
     else {
@@ -806,7 +806,7 @@ void HLSLTreeVisitor::VisitBuffer(HLSLBuffer * node)
 {
     HLSLDeclaration * field = node->field;
     while (field != NULL) {
-        ASSERT(field->nodeType == HLSLNodeType_Declaration);
+        ASSERT(field->nodeType == HLSLNodeType::Declaration);
         VisitDeclaration(field);
         ASSERT(field->nextDeclaration == NULL);
         field = (HLSLDeclaration *)field->nextStatement;
@@ -848,38 +848,38 @@ void HLSLTreeVisitor::VisitExpression(HLSLExpression * node)
 {
     VisitType(node->expressionType);
 
-    if (node->nodeType == HLSLNodeType_UnaryExpression) {
+    if (node->nodeType == HLSLNodeType::UnaryExpression) {
         VisitUnaryExpression((HLSLUnaryExpression *)node);
     }
-    else if (node->nodeType == HLSLNodeType_BinaryExpression) {
+    else if (node->nodeType == HLSLNodeType::BinaryExpression) {
         VisitBinaryExpression((HLSLBinaryExpression *)node);
     }
-    else if (node->nodeType == HLSLNodeType_ConditionalExpression) {
+    else if (node->nodeType == HLSLNodeType::ConditionalExpression) {
         VisitConditionalExpression((HLSLConditionalExpression *)node);
     }
-    else if (node->nodeType == HLSLNodeType_CastingExpression) {
+    else if (node->nodeType == HLSLNodeType::CastingExpression) {
         VisitCastingExpression((HLSLCastingExpression *)node);
     }
-    else if (node->nodeType == HLSLNodeType_LiteralExpression) {
+    else if (node->nodeType == HLSLNodeType::LiteralExpression) {
         VisitLiteralExpression((HLSLLiteralExpression *)node);
     }
-    else if (node->nodeType == HLSLNodeType_IdentifierExpression) {
+    else if (node->nodeType == HLSLNodeType::IdentifierExpression) {
         VisitIdentifierExpression((HLSLIdentifierExpression *)node);
     }
-    else if (node->nodeType == HLSLNodeType_ConstructorExpression) {
+    else if (node->nodeType == HLSLNodeType::ConstructorExpression) {
         VisitConstructorExpression((HLSLConstructorExpression *)node);
     }
-    else if (node->nodeType == HLSLNodeType_MemberAccess) {
+    else if (node->nodeType == HLSLNodeType::MemberAccess) {
         VisitMemberAccess((HLSLMemberAccess *)node);
     }
-    else if (node->nodeType == HLSLNodeType_ArrayAccess) {
+    else if (node->nodeType == HLSLNodeType::ArrayAccess) {
         VisitArrayAccess((HLSLArrayAccess *)node);
     }
-    else if (node->nodeType == HLSLNodeType_FunctionCall) {
+    else if (node->nodeType == HLSLNodeType::FunctionCall) {
         VisitFunctionCall((HLSLFunctionCall *)node);
     }
     // Acoget-TODO: This was missing. Did adding it break anything?
-    else if (node->nodeType == HLSLNodeType_SamplerState) {
+    else if (node->nodeType == HLSLNodeType::SamplerState) {
         VisitSamplerState((HLSLSamplerState *)node);
     }
     else {
@@ -1018,7 +1018,7 @@ void HLSLTreeVisitor::VisitFunctions(HLSLRoot * root)
 {
     HLSLStatement * statement = root->statement;
     while (statement != NULL) {
-        if (statement->nodeType == HLSLNodeType_Function) {
+        if (statement->nodeType == HLSLNodeType::Function) {
             VisitFunction((HLSLFunction *)statement);
         }
 
@@ -1030,7 +1030,7 @@ void HLSLTreeVisitor::VisitParameters(HLSLRoot * root)
 {
     HLSLStatement * statement = root->statement;
     while (statement != NULL) {
-        if (statement->nodeType == HLSLNodeType_Declaration) {
+        if (statement->nodeType == HLSLNodeType::Declaration) {
             VisitDeclaration((HLSLDeclaration *)statement);
         }
 
@@ -1046,7 +1046,7 @@ public:
     {
         statement->hidden = true;
 
-        if (statement->nodeType == HLSLNodeType_Buffer)
+        if (statement->nodeType == HLSLNodeType::Buffer)
         {
             VisitBuffer((HLSLBuffer*)statement);
         }
@@ -1106,7 +1106,7 @@ public:
 
     virtual void VisitType(HLSLType & type)
     {
-        if (type.baseType == HLSLBaseType_UserDefined)
+        if (type.baseType == HLSLBaseType::UserDefined)
         {
             HLSLStruct * globalStruct = tree->FindGlobalStruct(type.typeName);
             if (globalStruct != NULL)
@@ -1150,14 +1150,14 @@ void PruneTree(HLSLTree* tree, const char* entryName0, const char* entryName1/*=
     HLSLStatement * statement = root->statement;
     while (statement != NULL)
     {
-        if (statement->nodeType == HLSLNodeType_Buffer)
+        if (statement->nodeType == HLSLNodeType::Buffer)
         {
             HLSLBuffer* buffer = (HLSLBuffer*)statement;
 
             HLSLDeclaration* field = buffer->field;
             while (field != NULL)
             {
-                ASSERT(field->nodeType == HLSLNodeType_Declaration);
+                ASSERT(field->nodeType == HLSLNodeType::Declaration);
                 if (!field->hidden)
                 {
                     buffer->hidden = false;
@@ -1196,13 +1196,13 @@ void SortTree(HLSLTree * tree)
         HLSLStatement* nextStatement = statement->nextStatement;
         statement->nextStatement = NULL;
 
-        if (statement->nodeType == HLSLNodeType_Struct) {
+        if (statement->nodeType == HLSLNodeType::Struct) {
             if (structs == NULL) structs = statement;
             if (lastStruct != NULL) lastStruct->nextStatement = statement;
             lastStruct = statement;
         }
-        else if (statement->nodeType == HLSLNodeType_Declaration || statement->nodeType == HLSLNodeType_Buffer) {
-            if (statement->nodeType == HLSLNodeType_Declaration && (((HLSLDeclaration *)statement)->type.flags & HLSLTypeFlag_Const)) {
+        else if (statement->nodeType == HLSLNodeType::Declaration || statement->nodeType == HLSLNodeType::Buffer) {
+            if (statement->nodeType == HLSLNodeType::Declaration && (((HLSLDeclaration *)statement)->type.flags & (int)HLSLTypeFlags::Const)) {
                 if (constDeclarations == NULL) constDeclarations = statement;
                 if (lastConstDeclaration != NULL) lastConstDeclaration->nextStatement = statement;
                 lastConstDeclaration = statement;
@@ -1213,7 +1213,7 @@ void SortTree(HLSLTree * tree)
                 lastDeclaration = statement;
             }
         }
-        else if (statement->nodeType == HLSLNodeType_Function) {
+        else if (statement->nodeType == HLSLNodeType::Function) {
             if (functions == NULL) functions = statement;
             if (lastFunction != NULL) lastFunction->nextStatement = statement;
             lastFunction = statement;
@@ -1311,22 +1311,22 @@ void GroupParameters(HLSLTree * tree)
     {
         HLSLStatement* nextStatement = statement->nextStatement;
 
-        if (statement->nodeType == HLSLNodeType_Struct) // Do not remove this, or it will mess the else clause below.
+        if (statement->nodeType == HLSLNodeType::Struct) // Do not remove this, or it will mess the else clause below.
         {   
             statementBeforeBuffers = statement;
         }
-        else if (statement->nodeType == HLSLNodeType_Declaration)
+        else if (statement->nodeType == HLSLNodeType::Declaration)
         {
             HLSLDeclaration* declaration = (HLSLDeclaration*)statement;
 
             // We insert buffers after the last const declaration.
-            if ((declaration->type.flags & HLSLTypeFlag_Const) != 0)
+            if ((declaration->type.flags & (int)HLSLTypeFlags::Const) != 0)
             {
                 statementBeforeBuffers = statement;
             }
 
             // Do not move samplers or static/const parameters.
-            if ((declaration->type.flags & (HLSLTypeFlag_Static|HLSLTypeFlag_Const)) == 0)
+            if ((declaration->type.flags & ((int)HLSLTypeFlags::Static | (int)HLSLTypeFlags::Const)) == 0)
             {
                 // Unlink statement.
                 statement->nextStatement = NULL;
@@ -1535,7 +1535,7 @@ bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef/*=0.
         HLSLStatement * statement = entry->statement;
         while (statement != NULL)
         {
-            if (statement->nodeType == HLSLNodeType_ReturnStatement)
+            if (statement->nodeType == HLSLNodeType::ReturnStatement)
             {
                 HLSLReturnStatement * returnStatement = (HLSLReturnStatement *)statement;
                 HLSLBaseType returnType = returnStatement->expression->expressionType.baseType;
@@ -1545,12 +1545,12 @@ bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef/*=0.
                 HLSLDiscardStatement * discard = tree->AddNode<HLSLDiscardStatement>(statement->fileName, statement->line);
                 
                 HLSLExpression * alpha = NULL;
-                if (returnType == HLSLBaseType_Float4 || returnType == HLSLBaseType_Half4)
+                if (returnType == HLSLBaseType::Float4 || returnType == HLSLBaseType::Half4)
                 {
                     // @@ If return expression is a constructor, grab 4th argument.
                     // That's not as easy, since we support 'float4(float3, float)' or 'float4(float, float3)', extracting
                     // the latter is not that easy.
-                    /*if (returnStatement->expression->nodeType == HLSLNodeType_ConstructorExpression) {
+                    /*if (returnStatement->expression->nodeType == HLSLNodeType::ConstructorExpression) {
                         HLSLConstructorExpression * constructor = (HLSLConstructorExpression *)returnStatement->expression;
                         //constructor->
                     }
@@ -1558,7 +1558,7 @@ bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef/*=0.
                     
                     if (alpha == NULL) {
                         HLSLMemberAccess * access = tree->AddNode<HLSLMemberAccess>(statement->fileName, statement->line);
-                        access->expressionType = HLSLType(HLSLBaseType_Float);
+                        access->expressionType = HLSLType(HLSLBaseType::Float);
                         access->object = returnStatement->expression;     // @@ Is reference OK? Or should we clone expression?
                         access->field = tree->AddString("a");
                         access->swizzle = true;
@@ -1566,7 +1566,7 @@ bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef/*=0.
                         alpha = access;
                     }
                 }
-                else if (returnType == HLSLBaseType_Float || returnType == HLSLBaseType_Half)
+                else if (returnType == HLSLBaseType::Float || returnType == HLSLBaseType::Half)
                 {
                     alpha = returnStatement->expression;     // @@ Is reference OK? Or should we clone expression?
                 }
@@ -1576,13 +1576,13 @@ bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef/*=0.
                 }
                 
                 HLSLLiteralExpression * threshold = tree->AddNode<HLSLLiteralExpression>(statement->fileName, statement->line);
-                threshold->expressionType = HLSLType(HLSLBaseType_Float);
+                threshold->expressionType = HLSLType(HLSLBaseType::Float);
                 threshold->fValue = alphaRef;
-                threshold->type = HLSLBaseType_Float;
+                threshold->type = HLSLBaseType::Float;
                 
                 HLSLBinaryExpression * condition = tree->AddNode<HLSLBinaryExpression>(statement->fileName, statement->line);
-                condition->expressionType = HLSLType(HLSLBaseType_Bool);
-                condition->binaryOp = HLSLBinaryOp_Less;
+                condition->expressionType = HLSLType(HLSLBaseType::Bool);
+                condition->binaryOp = HLSLBinaryOp::Less;
                 condition->expression1 = alpha;
                 condition->expression2 = threshold;
 
@@ -1606,11 +1606,11 @@ bool NeedsFlattening(HLSLExpression * expr, int level = 0) {
     if (expr == NULL) {
         return false;
     }
-    if (expr->nodeType == HLSLNodeType_UnaryExpression) {
+    if (expr->nodeType == HLSLNodeType::UnaryExpression) {
         HLSLUnaryExpression * unaryExpr = (HLSLUnaryExpression *)expr;
         return NeedsFlattening(unaryExpr->expression, level+1) || NeedsFlattening(expr->nextExpression, level);
     }
-    else if (expr->nodeType == HLSLNodeType_BinaryExpression) {
+    else if (expr->nodeType == HLSLNodeType::BinaryExpression) {
         HLSLBinaryExpression * binaryExpr = (HLSLBinaryExpression *)expr;
         if (IsAssignOp(binaryExpr->binaryOp)) {
             return NeedsFlattening(binaryExpr->expression2, level+1) || NeedsFlattening(expr->nextExpression, level);
@@ -1619,32 +1619,32 @@ bool NeedsFlattening(HLSLExpression * expr, int level = 0) {
             return NeedsFlattening(binaryExpr->expression1, level+1) || NeedsFlattening(binaryExpr->expression2, level+1) || NeedsFlattening(expr->nextExpression, level);
         }
     }
-    else if (expr->nodeType == HLSLNodeType_ConditionalExpression) {
+    else if (expr->nodeType == HLSLNodeType::ConditionalExpression) {
         HLSLConditionalExpression * conditionalExpr = (HLSLConditionalExpression *)expr;
         return NeedsFlattening(conditionalExpr->condition, level+1) || NeedsFlattening(conditionalExpr->trueExpression, level+1) || NeedsFlattening(conditionalExpr->falseExpression, level+1) || NeedsFlattening(expr->nextExpression, level);
     }
-    else if (expr->nodeType == HLSLNodeType_CastingExpression) {
+    else if (expr->nodeType == HLSLNodeType::CastingExpression) {
         HLSLCastingExpression * castingExpr = (HLSLCastingExpression *)expr;
         return NeedsFlattening(castingExpr->expression, level+1) || NeedsFlattening(expr->nextExpression, level);
     }
-    else if (expr->nodeType == HLSLNodeType_LiteralExpression) {
+    else if (expr->nodeType == HLSLNodeType::LiteralExpression) {
         return NeedsFlattening(expr->nextExpression, level);
     }
-    else if (expr->nodeType == HLSLNodeType_IdentifierExpression) {
+    else if (expr->nodeType == HLSLNodeType::IdentifierExpression) {
         return NeedsFlattening(expr->nextExpression, level);
     }
-    else if (expr->nodeType == HLSLNodeType_ConstructorExpression) {
+    else if (expr->nodeType == HLSLNodeType::ConstructorExpression) {
         HLSLConstructorExpression * constructorExpr = (HLSLConstructorExpression *)expr;
         return NeedsFlattening(constructorExpr->argument, level+1) || NeedsFlattening(expr->nextExpression, level);
     }
-    else if (expr->nodeType == HLSLNodeType_MemberAccess) {
+    else if (expr->nodeType == HLSLNodeType::MemberAccess) {
         return NeedsFlattening(expr->nextExpression, level+1);
     }
-    else if (expr->nodeType == HLSLNodeType_ArrayAccess) {
+    else if (expr->nodeType == HLSLNodeType::ArrayAccess) {
         HLSLArrayAccess * arrayAccess = (HLSLArrayAccess *)expr;
         return NeedsFlattening(arrayAccess->array, level+1) || NeedsFlattening(arrayAccess->index, level+1) || NeedsFlattening(expr->nextExpression, level);
     }
-    else if (expr->nodeType == HLSLNodeType_FunctionCall) {
+    else if (expr->nodeType == HLSLNodeType::FunctionCall) {
         HLSLFunctionCall * functionCall = (HLSLFunctionCall *)expr;
         if (functionCall->function->numOutputArguments > 0) {
             if (level > 0) {
@@ -1823,7 +1823,7 @@ struct StatementList {
         
         HLSLDeclaration * BuildTemporaryDeclaration(HLSLExpression * expr)
         {
-            assert(expr->expressionType.baseType != HLSLBaseType_Void);
+            assert(expr->expressionType.baseType != HLSLBaseType::Void);
             
             HLSLDeclaration * declaration = m_tree->AddNode<HLSLDeclaration>(expr->fileName, expr->line);
             declaration->name = m_tree->AddStringFormat("tmp%d", tmp_index++);
@@ -1866,7 +1866,7 @@ struct StatementList {
                 return AddExpressionStatement(expr, statements, wantIdent);
             }
             
-            if (expr->nodeType == HLSLNodeType_UnaryExpression) {
+            if (expr->nodeType == HLSLNodeType::UnaryExpression) {
                 assert(expr->nextExpression == NULL);
                 
                 HLSLUnaryExpression * unaryExpr = (HLSLUnaryExpression *)expr;
@@ -1880,7 +1880,7 @@ struct StatementList {
 
                 return AddExpressionStatement(newUnaryExpr, statements, wantIdent);
             }
-            else if (expr->nodeType == HLSLNodeType_BinaryExpression) {
+            else if (expr->nodeType == HLSLNodeType::BinaryExpression) {
                 assert(expr->nextExpression == NULL);
                 
                 HLSLBinaryExpression * binaryExpr = (HLSLBinaryExpression *)expr;
@@ -1910,28 +1910,28 @@ struct StatementList {
                     return AddExpressionStatement(newBinaryExpr, statements, wantIdent);
                 }
             }
-            else if (expr->nodeType == HLSLNodeType_ConditionalExpression) {
+            else if (expr->nodeType == HLSLNodeType::ConditionalExpression) {
                 assert(false);
             }
-            else if (expr->nodeType == HLSLNodeType_CastingExpression) {
+            else if (expr->nodeType == HLSLNodeType::CastingExpression) {
                 assert(false);
             }
-            else if (expr->nodeType == HLSLNodeType_LiteralExpression) {
+            else if (expr->nodeType == HLSLNodeType::LiteralExpression) {
                 assert(false);
             }
-            else if (expr->nodeType == HLSLNodeType_IdentifierExpression) {
+            else if (expr->nodeType == HLSLNodeType::IdentifierExpression) {
                 assert(false);
             }
-            else if (expr->nodeType == HLSLNodeType_ConstructorExpression) {
+            else if (expr->nodeType == HLSLNodeType::ConstructorExpression) {
                 assert(false);
             }
-            else if (expr->nodeType == HLSLNodeType_MemberAccess) {
+            else if (expr->nodeType == HLSLNodeType::MemberAccess) {
                 assert(false);
             }
-            else if (expr->nodeType == HLSLNodeType_ArrayAccess) {
+            else if (expr->nodeType == HLSLNodeType::ArrayAccess) {
                 assert(false);
             }
-            else if (expr->nodeType == HLSLNodeType_FunctionCall) {
+            else if (expr->nodeType == HLSLNodeType::FunctionCall) {
                 HLSLFunctionCall * functionCall = (HLSLFunctionCall *)expr;
 
                 // @@ Output function as is?

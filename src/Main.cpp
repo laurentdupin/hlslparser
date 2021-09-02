@@ -86,5 +86,7 @@ int main( int argc, char* argv[] )
 		return 1;
 	}
 
+	auto nodename = magic_enum::enum_name(tree.GetRoot()->nodeType);
+
 	return 0;
 }
