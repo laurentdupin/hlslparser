@@ -455,10 +455,12 @@ struct HLSLBuffer : public HLSLStatement
     {
         name            = NULL;
         registerName    = NULL;
+        spaceName       = NULL;
         field           = NULL;
     }
     const char*         name;
     const char*         registerName;
+    const char*         spaceName;
     HLSLDeclaration*    field;
 };
 

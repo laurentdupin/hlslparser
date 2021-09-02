@@ -1358,10 +1358,24 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
         // Optional register assignment.
         if (Accept(':'))
         {
-            if (!Expect(HLSLToken_Register) || !Expect('(') || !ExpectIdentifier(buffer->registerName) || !Expect(')'))
+            if (!Expect(HLSLToken_Register) || !Expect('(') || !ExpectIdentifier(buffer->registerName))
             {
                 return false;
             }
+
+            if (Accept(','))
+            {
+                if (!ExpectIdentifier(buffer->spaceName))
+                {
+                    return false;
+                }
+            }
+            
+            if (!Expect(')'))
+            {
+                return false;
+            }
+
             // TODO: Check that we aren't re-using a register.
         }
 
