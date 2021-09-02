@@ -5,6 +5,228 @@
 
 namespace M4
 {
+    nlohmann::json      HLSLType::ConvertToJSON()
+    {
+        nlohmann::json output = nlohmann::json::object();
+
+        output["baseType"] = magic_enum::enum_name(baseType);
+        output["samplerType"] = magic_enum::enum_name(samplerType);
+        if (typeName != NULL) output["typeName"] = typeName;
+        output["array"] = array;
+        if (arraySize != NULL) output["arraySize"] = arraySize->ConvertToJSON();
+        if(flags != 0) output["flags"] = flags;
+        if(addressSpace != HLSLAddressSpace::Undefined) output["addressSpace"] = magic_enum::enum_name(addressSpace);
+
+        return output;
+    }
+
+    nlohmann::json      HLSLNode::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = nlohmann::json::object();
+        if(bNodeType) output["nodeType"] = magic_enum::enum_name(nodeType);
+
+        /*if (fileName != NULL)
+        {
+            output["fileName"] = fileName;
+            output["line"] = line;
+        }*/
+
+        return output;
+    }
+
+    nlohmann::json      HLSLRoot::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLNode::ConvertToJSON(bNodeType);
+
+        output["statements"] = nlohmann::json::array();
+
+        HLSLStatement* nextstatement = statement;
+
+        while (nextstatement != NULL)
+        {
+            output["attributes"].push_back(nextstatement->ConvertToJSON());
+            nextstatement = nextstatement->nextStatement;
+        }
+
+        return output;
+    }
+
+    nlohmann::json      HLSLStatement::ConvertToJSON(bool bNodeType)
+
+    {
+        nlohmann::json output = HLSLNode::ConvertToJSON(bNodeType);
+        //output["hidden"] = hidden;
+       
+        HLSLAttribute* nextattribute = attributes;
+        if(nextattribute != NULL) 
+            output["attributes"] = nlohmann::json::array();
+
+        while (nextattribute != NULL)
+        {
+            output["attributes"].push_back(nextattribute->ConvertToJSON());
+            nextattribute = nextattribute->nextAttribute;
+        }
+
+        return output;
+    }
+
+    nlohmann::json      HLSLAttribute::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLNode::ConvertToJSON(bNodeType);
+
+        output["attributeType"] = magic_enum::enum_name(attributeType);
+        output["arguments"] = nlohmann::json::array();
+
+        HLSLExpression* nextargument = argument;
+
+        while (nextargument != NULL)
+        {
+            output["arguments"].push_back(nextargument->ConvertToJSON());
+            nextargument = nextargument->nextExpression;
+        }
+
+        return output;
+    }
+
+    nlohmann::json      HLSLDeclaration::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLStatement::ConvertToJSON(bNodeType);
+
+        if (name != NULL) output["name"] = name;
+        output["type"] = type.ConvertToJSON();
+        if (registerName != NULL) output["registerName"] = registerName;
+        if (semantic != NULL) output["semantic"] = semantic;
+
+        output["assignments"] = nlohmann::json::array();
+        HLSLExpression* nextassignment = assignment;
+
+        while (nextassignment != NULL)
+        {
+            output["assignments"].push_back(nextassignment->ConvertToJSON());
+            nextassignment = nextassignment->nextExpression;
+        }
+
+        return output;
+    }
+
+    nlohmann::json      HLSLStruct::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLStatement::ConvertToJSON(bNodeType);
+
+        if (name != NULL) output["name"] = name;
+
+        output["fields"] = nlohmann::json::array();
+        HLSLStructField* nextfield = field;
+
+        while (nextfield != NULL)
+        {
+            output["fields"].push_back(nextfield->ConvertToJSON(false));
+            nextfield = nextfield->nextField;
+        }
+
+        return output;
+    }
+
+    nlohmann::json      HLSLStructField::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLNode::ConvertToJSON(bNodeType);
+
+        if (name != NULL) output["name"] = name;
+        output["type"] = type.ConvertToJSON();
+        if (semantic != NULL) output["semantic"] = semantic;
+        if (sv_semantic != NULL) output["sv_semantic"] = sv_semantic;
+
+        //output["hidden"] = hidden;
+
+        return output;
+    }
+
+    nlohmann::json      HLSLBuffer::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLStatement::ConvertToJSON(bNodeType);
+
+        if (name != NULL) output["name"] = name;
+        if (registerName != NULL) output["registerName"] = registerName;
+        if (spaceName != NULL) output["spaceName"] = spaceName;
+
+        output["fields"] = nlohmann::json::array();
+        HLSLDeclaration* nextdeclaration = field;
+
+        while (nextdeclaration != NULL)
+        {
+            output["fields"].push_back(nextdeclaration->ConvertToJSON());
+            nextdeclaration = nextdeclaration->nextDeclaration;
+        }
+
+        return output;
+    }
+
+    nlohmann::json      HLSLFunction::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLStatement::ConvertToJSON(bNodeType);
+
+        if (name != NULL) output["name"] = name;
+        output["returnType"] = returnType.ConvertToJSON();
+        if (semantic != NULL) output["semantic"] = semantic;
+        if (sv_semantic != NULL) output["sv_semantic"] = sv_semantic;
+        //output["numArguments"] = numArguments;
+        //output["numOutputArguments"] = numOutputArguments;
+
+        output["arguments"] = nlohmann::json::array();
+        HLSLArgument* nextargument = argument;
+
+        while (nextargument != NULL)
+        {
+            output["arguments"].push_back(nextargument->ConvertToJSON(false));
+            nextargument = nextargument->nextArgument;
+        }
+
+        /*output["statements"] = nlohmann::json::array();
+        HLSLStatement* nextstatement = statement;
+
+        while (nextstatement != NULL)
+        {
+            output["statements"].push_back(nextstatement->ConvertToJSON());
+            nextstatement = nextstatement->nextStatement;
+        }*/
+
+        if (forward != NULL) output["forward"] = forward->ConvertToJSON();
+
+        return output;
+    }
+
+    nlohmann::json      HLSLArgument::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLNode::ConvertToJSON(bNodeType);
+
+        if (name != NULL) output["name"] = name;
+        output["modifier"] = magic_enum::enum_name(modifier);
+        output["type"] = type.ConvertToJSON();
+        if (semantic != NULL) output["semantic"] = semantic;
+        if (sv_semantic != NULL) output["sv_semantic"] = sv_semantic;
+
+        output["defaultValue"] = nlohmann::json::array();
+        HLSLExpression* nextexpression = defaultValue;
+
+        while (nextexpression != NULL)
+        {
+            output["defaultValue"].push_back(nextexpression->ConvertToJSON());
+            nextexpression = nextexpression->nextExpression;
+        }
+
+        //output["hidden"] = hidden;
+
+        return output;
+    }
+
+    nlohmann::json      HLSLExpression::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLNode::ConvertToJSON(bNodeType);
+
+        output["type"] = expressionType.ConvertToJSON();
+
+        return output;
+    }
 
 const HLSLTypeDimension BaseTypeDimension[(int)HLSLBaseType::Count] =
 {

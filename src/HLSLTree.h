@@ -335,6 +335,8 @@ struct HLSLType
     HLSLExpression*     arraySize;
     int                 flags;
     HLSLAddressSpace    addressSpace;
+
+    virtual nlohmann::json      ConvertToJSON();
 };
 
 inline bool IsSamplerType(const HLSLType & type)
@@ -360,18 +362,7 @@ struct HLSLNode
     const char*                 fileName = NULL;
     int                         line = 0;
 
-    virtual nlohmann::json      ConvertToJSON()
-    {
-        nlohmann::json output = nlohmann::json::object();
-        output["nodeType"] = magic_enum::enum_name(nodeType);
-        if (fileName != NULL)
-        {
-            output["fileName"] = fileName;
-            output["line"] = line;
-        }
-        
-        return output;
-    }
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true);
 };
 
 struct HLSLRoot : public HLSLNode
@@ -379,6 +370,8 @@ struct HLSLRoot : public HLSLNode
     static const HLSLNodeType s_type = HLSLNodeType::Root;
     HLSLRoot()          { statement = NULL; }
     HLSLStatement*      statement;          // First statement.
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 struct HLSLStatement : public HLSLNode
@@ -392,6 +385,8 @@ struct HLSLStatement : public HLSLNode
     HLSLStatement*      nextStatement;      // Next statement in the block.
     HLSLAttribute*      attributes;
     mutable bool        hidden;
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 struct HLSLAttribute : public HLSLNode
@@ -406,6 +401,8 @@ struct HLSLAttribute : public HLSLNode
     HLSLAttributeType   attributeType;
     HLSLExpression*     argument;
     HLSLAttribute*      nextAttribute;
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 struct HLSLDeclaration : public HLSLStatement
@@ -427,6 +424,8 @@ struct HLSLDeclaration : public HLSLStatement
     HLSLDeclaration*    nextDeclaration;    // If multiple variables declared on a line.
     HLSLExpression*     assignment;
     HLSLBuffer*         buffer;
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 struct HLSLStruct : public HLSLStatement
@@ -439,6 +438,8 @@ struct HLSLStruct : public HLSLStatement
     }
     const char*         name;
     HLSLStructField*    field;              // First field in the structure.
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 struct HLSLStructField : public HLSLNode
@@ -458,6 +459,9 @@ struct HLSLStructField : public HLSLNode
     const char*         sv_semantic;
     HLSLStructField*    nextField;      // Next field in the structure.
     bool                hidden;
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
+
 };
 
 /** A cbuffer or tbuffer declaration. */
@@ -475,6 +479,8 @@ struct HLSLBuffer : public HLSLStatement
     const char*         registerName;
     const char*         spaceName;
     HLSLDeclaration*    field;
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 
@@ -502,6 +508,8 @@ struct HLSLFunction : public HLSLStatement
     HLSLArgument*       argument;
     HLSLStatement*      statement;
     HLSLFunction*       forward; // Which HLSLFunction this one forward-declares
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 /** Declaration of an argument to a function. */
@@ -526,6 +534,8 @@ struct HLSLArgument : public HLSLNode
     HLSLExpression*         defaultValue;
     HLSLArgument*           nextArgument;
     bool                    hidden;
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 /** A expression which forms a complete statement. */
@@ -617,6 +627,8 @@ struct HLSLExpression : public HLSLNode
     }
     HLSLType            expressionType;
     HLSLExpression*     nextExpression; // Used when the expression is part of a list, like in a function call.
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 struct HLSLUnaryExpression : public HLSLExpression
