@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <filesystem>
 
 std::string ReadFile( const char* fileName )
 {
@@ -63,6 +64,12 @@ int main( int argc, char* argv[] )
 	{
 		Log_Error( "Missing arguments\n" );
 		PrintUsage();
+		return 1;
+	}
+
+	if (!std::filesystem::exists(fileName))
+	{
+		Log_Error("File does not exits\n");
 		return 1;
 	}
 
