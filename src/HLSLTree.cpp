@@ -99,9 +99,12 @@ const HLSLBaseType ScalarBaseType[HLSLBaseType_Count] = {
     HLSLBaseType_Unknown,       // HLSLBaseType_Auto,
 };
 
+#define MAX_NODE_PAGES 4096
 
 HLSLTree::HLSLTree() : m_stringPool()
 {
+    m_NodePages.reserve(MAX_NODE_PAGES);
+
     m_NodePages.emplace_back();
     m_firstPage         = &m_NodePages.back();
 
@@ -114,6 +117,9 @@ HLSLTree::HLSLTree() : m_stringPool()
 void HLSLTree::AllocatePage()
 {
     m_NodePages.emplace_back();
+
+    ASSERT(m_NodePages.size() <= MAX_NODE_PAGES);
+
     NodePage* newPage    = &m_NodePages.back();
     m_currentPage->next  = newPage;
     m_currentPageOffset  = 0;

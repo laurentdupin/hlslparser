@@ -3,6 +3,7 @@
 
 #include <stdarg.h> // va_list, vsnprintf
 #include <vector>
+#include <stdexcept>
 
 #ifndef NULL
 #define NULL    0
@@ -14,8 +15,8 @@
 
 // Engine/Assert.h
 
-#define ASSERT(...)
-#define assert(...)
+#define ASSERT(...) while(!(__VA_ARGS__)) throw std::runtime_error(#__VA_ARGS__ " condition failed");
+#define assert(...) while(!(__VA_ARGS__)) throw std::runtime_error(#__VA_ARGS__ " condition failed");
 
 namespace M4 
 {
