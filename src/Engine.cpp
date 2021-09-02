@@ -96,17 +96,17 @@ void Log_ErrorArgList(const char * format, va_list args) {
 
 // Engine/StringPool.cpp
 
-StringPool::StringPool(Allocator * allocator) : stringArray(allocator) {
+StringPool::StringPool() : stringArray() {
 }
 StringPool::~StringPool() {
-    for (int i = 0; i < stringArray.GetSize(); i++) {
+    for (int i = 0; i < stringArray.size(); i++) {
         free((void *)stringArray[i]);
         stringArray[i] = NULL;
     }
 }
 
 const char * StringPool::AddString(const char * string) {
-    for (int i = 0; i < stringArray.GetSize(); i++) {
+    for (int i = 0; i < stringArray.size(); i++) {
         if (String_Equal(stringArray[i], string)) return stringArray[i];
     }
 #if _MSC_VER
@@ -114,7 +114,7 @@ const char * StringPool::AddString(const char * string) {
 #else
     const char * dup = strdup(string);
 #endif
-    stringArray.PushBack(dup);
+    stringArray.push_back(dup);
     return dup;
 }
 
@@ -155,14 +155,14 @@ const char * StringPool::AddStringFormatList(const char * format, va_list args) 
     const char * string = mprintf_valist(256, format, tmp);
     va_end(tmp);
 
-    for (int i = 0; i < stringArray.GetSize(); i++) {
+    for (int i = 0; i < stringArray.size(); i++) {
         if (String_Equal(stringArray[i], string)) {
             delete [] string;
             return stringArray[i];
         }
     }
 
-    stringArray.PushBack(string);
+    stringArray.push_back(string);
     return string;
 }
 
@@ -176,7 +176,7 @@ const char * StringPool::AddStringFormat(const char * format, ...) {
 }
 
 bool StringPool::GetContainsString(const char * string) const {
-    for (int i = 0; i < stringArray.GetSize(); i++) {
+    for (int i = 0; i < stringArray.size(); i++) {
         if (String_Equal(stringArray[i], string)) return true;
     }
     return false;

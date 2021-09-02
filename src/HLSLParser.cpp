@@ -1165,11 +1165,11 @@ static bool GetBinaryOpResultType(HLSLBinaryOp binaryOp, const HLSLType& type1, 
 
 }
 
-HLSLParser::HLSLParser(Allocator* allocator, const char* fileName, const char* buffer, size_t length) : 
+HLSLParser::HLSLParser(const char* fileName, const char* buffer, size_t length) : 
     m_tokenizer(fileName, buffer, length),
-    m_userTypes(allocator),
-    m_variables(allocator),
-    m_functions(allocator)
+    m_userTypes(),
+    m_variables(),
+    m_functions()
 {
     m_numGlobals = 0;
     m_tree = NULL;
@@ -1318,7 +1318,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
         HLSLStruct* structure = m_tree->AddNode<HLSLStruct>(fileName, line);
         structure->name = structName;
 
-        m_userTypes.PushBack(structure);
+        m_userTypes.push_back(structure);
  
         HLSLStructField* lastField = NULL;
 
@@ -1436,7 +1436,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
                 // Add a function entry so that calls can refer to it
                 if (!declaration)
                 {
-                    m_functions.PushBack( function );
+                    m_functions.push_back( function );
                     statement = function;
                 }
                 EndScope();
@@ -1461,7 +1461,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
             }
             else
             {
-                m_functions.PushBack( function );
+                m_functions.push_back( function );
             }
 
             if (!Expect('{') || !ParseBlock(function->statement, function->returnType))
@@ -2709,7 +2709,7 @@ bool HLSLParser::ParseTechnique(HLSLStatement*& statement)
     HLSLTechnique* technique = m_tree->AddNode<HLSLTechnique>(GetFileName(), GetLineNumber());
     technique->name = techniqueName;
 
-    //m_techniques.PushBack(technique);
+    //m_techniques.push_back(technique);
 
     HLSLPass* lastPass = NULL;
 
@@ -3523,7 +3523,7 @@ const HLSLStruct* HLSLParser::FindUserDefinedType(const char* name) const
 {
     // Pointer comparison is sufficient for strings since they exist in the
     // string pool.
-    for (int i = 0; i < m_userTypes.GetSize(); ++i)
+    for (int i = 0; i < m_userTypes.size(); ++i)
     {
         if (m_userTypes[i]->name == name)
         {
@@ -3558,24 +3558,25 @@ const char* HLSLParser::GetFileName()
 void HLSLParser::BeginScope()
 {
     // Use NULL as a sentinel that indices a new scope level.
-    Variable& variable = m_variables.PushBackNew();
+    m_variables.emplace_back();
+    Variable& variable = m_variables.back();
     variable.name = NULL;
 }
 
 void HLSLParser::EndScope()
 {
-    int numVariables = m_variables.GetSize() - 1;
+    int32_t numVariables = (int32_t)m_variables.size() - 1;
     while (m_variables[numVariables].name != NULL)
     {
         --numVariables;
         ASSERT(numVariables >= 0);
     }
-    m_variables.Resize(numVariables);
+    m_variables.resize(numVariables);
 }
 
 const HLSLType* HLSLParser::FindVariable(const char* name, bool& global) const
 {
-    for (int i = m_variables.GetSize() - 1; i >= 0; --i)
+    for (int32_t i = (int32_t)m_variables.size() - 1; i >= 0; --i)
     {
         if (m_variables[i].name == name)
         {
@@ -3588,7 +3589,7 @@ const HLSLType* HLSLParser::FindVariable(const char* name, bool& global) const
 
 const HLSLFunction* HLSLParser::FindFunction(const char* name) const
 {
-    for (int i = 0; i < m_functions.GetSize(); ++i)
+    for (int i = 0; i < m_functions.size(); ++i)
     {
         if (m_functions[i]->name == name)
         {
@@ -3625,7 +3626,7 @@ static bool AreArgumentListsEqual(HLSLTree* tree, HLSLArgument* lhs, HLSLArgumen
 
 const HLSLFunction* HLSLParser::FindFunction(const HLSLFunction* fun) const
 {
-    for (int i = 0; i < m_functions.GetSize(); ++i)
+    for (int i = 0; i < m_functions.size(); ++i)
     {
         if (m_functions[i]->name == fun->name &&
             AreTypesEqual(m_tree, m_functions[i]->returnType, fun->returnType) &&
@@ -3639,18 +3640,20 @@ const HLSLFunction* HLSLParser::FindFunction(const HLSLFunction* fun) const
 
 void HLSLParser::DeclareVariable(const char* name, const HLSLType& type)
 {
-    if (m_variables.GetSize() == m_numGlobals)
+    if (m_variables.size() == m_numGlobals)
     {
         ++m_numGlobals;
     }
-    Variable& variable = m_variables.PushBackNew();
+
+    m_variables.emplace_back();
+    Variable& variable = m_variables.back();
     variable.name = name;
     variable.type = type;
 }
 
 bool HLSLParser::GetIsFunction(const char* name) const
 {
-    for (int i = 0; i < m_functions.GetSize(); ++i)
+    for (int i = 0; i < m_functions.size(); ++i)
     {
         // == is ok here because we're passed the strings through the string pool.
         if (m_functions[i]->name == name)
@@ -3680,7 +3683,7 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
     bool nameMatches            = false;
 
     // Get the user defined functions with the specified name.
-    for (int i = 0; i < m_functions.GetSize(); ++i)
+    for (int i = 0; i < m_functions.size(); ++i)
     {
         const HLSLFunction* function = m_functions[i];
         if (function->name == name)

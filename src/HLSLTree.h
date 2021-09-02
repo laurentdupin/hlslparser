@@ -840,8 +840,7 @@ class HLSLTree
 
 public:
 
-    explicit HLSLTree(Allocator* allocator);
-    ~HLSLTree();
+    explicit HLSLTree();
 
     /** Adds a string to the string pool used by the tree. */
     const char* AddString(const char* string);
@@ -889,11 +888,10 @@ private:
 
     struct NodePage
     {
-        NodePage*   next;
+        NodePage*   next = NULL;
         char        buffer[s_nodePageSize];
     };
 
-    Allocator*      m_allocator;
     StringPool      m_stringPool;
     HLSLRoot*       m_root;
 
@@ -901,6 +899,7 @@ private:
     NodePage*       m_currentPage;
     size_t          m_currentPageOffset;
 
+    std::vector<NodePage> m_NodePages;
 };
 
 

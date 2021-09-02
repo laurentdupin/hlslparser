@@ -100,11 +100,10 @@ const HLSLBaseType ScalarBaseType[HLSLBaseType_Count] = {
 };
 
 
-HLSLTree::HLSLTree(Allocator* allocator) :
-    m_allocator(allocator), m_stringPool(allocator)
+HLSLTree::HLSLTree() : m_stringPool()
 {
-    m_firstPage         = m_allocator->New<NodePage>();
-    m_firstPage->next   = NULL;
+    m_NodePages.emplace_back();
+    m_firstPage         = &m_NodePages.back();
 
     m_currentPage       = m_firstPage;
     m_currentPageOffset = 0;
@@ -112,21 +111,10 @@ HLSLTree::HLSLTree(Allocator* allocator) :
     m_root              = AddNode<HLSLRoot>(NULL, 1);
 }
 
-HLSLTree::~HLSLTree()
-{
-    NodePage* page = m_firstPage;
-    while (page != NULL)
-    {
-        NodePage* next = page->next;
-        m_allocator->Delete(page);
-        page = next;
-    }
-}
-
 void HLSLTree::AllocatePage()
 {
-    NodePage* newPage    = m_allocator->New<NodePage>();
-    newPage->next        = NULL;
+    m_NodePages.emplace_back();
+    NodePage* newPage    = &m_NodePages.back();
     m_currentPage->next  = newPage;
     m_currentPageOffset  = 0;
     m_currentPage        = newPage;

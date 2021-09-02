@@ -27,7 +27,7 @@ class HLSLParser
 
 public:
 
-    HLSLParser(Allocator* allocator, const char* fileName, const char* buffer, size_t length);
+    HLSLParser(const char* fileName, const char* buffer, size_t length);
 
     bool Parse(HLSLTree* tree);
 
@@ -129,9 +129,9 @@ private:
     };
 
     HLSLTokenizer           m_tokenizer;
-    Array<HLSLStruct*>      m_userTypes;
-    Array<Variable>         m_variables;
-    Array<HLSLFunction*>    m_functions;
+    std::vector<HLSLStruct*>      m_userTypes;
+    std::vector<Variable>         m_variables;
+    std::vector<HLSLFunction*>    m_functions;
     int                     m_numGlobals;
 
     HLSLTree*               m_tree;
