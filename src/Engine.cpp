@@ -99,14 +99,14 @@ void Log_ErrorArgList(const char * format, va_list args) {
 StringPool::StringPool() : stringArray() {
 }
 StringPool::~StringPool() {
-    for (int i = 0; i < stringArray.size(); i++) {
+    for (size_t i = 0; i < stringArray.size(); i++) {
         free((void *)stringArray[i]);
         stringArray[i] = NULL;
     }
 }
 
 const char * StringPool::AddString(const char * string) {
-    for (int i = 0; i < stringArray.size(); i++) {
+    for (size_t i = 0; i < stringArray.size(); i++) {
         if (String_Equal(stringArray[i], string)) return stringArray[i];
     }
 #if _MSC_VER
@@ -155,7 +155,7 @@ const char * StringPool::AddStringFormatList(const char * format, va_list args) 
     const char * string = mprintf_valist(256, format, tmp);
     va_end(tmp);
 
-    for (int i = 0; i < stringArray.size(); i++) {
+    for (size_t i = 0; i < stringArray.size(); i++) {
         if (String_Equal(stringArray[i], string)) {
             delete [] string;
             return stringArray[i];
@@ -176,7 +176,7 @@ const char * StringPool::AddStringFormat(const char * format, ...) {
 }
 
 bool StringPool::GetContainsString(const char * string) const {
-    for (int i = 0; i < stringArray.size(); i++) {
+    for (size_t i = 0; i < stringArray.size(); i++) {
         if (String_Equal(stringArray[i], string)) return true;
     }
     return false;

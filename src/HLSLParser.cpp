@@ -3523,7 +3523,7 @@ const HLSLStruct* HLSLParser::FindUserDefinedType(const char* name) const
 {
     // Pointer comparison is sufficient for strings since they exist in the
     // string pool.
-    for (int i = 0; i < m_userTypes.size(); ++i)
+    for (size_t i = 0; i < m_userTypes.size(); ++i)
     {
         if (m_userTypes[i]->name == name)
         {
@@ -3589,7 +3589,7 @@ const HLSLType* HLSLParser::FindVariable(const char* name, bool& global) const
 
 const HLSLFunction* HLSLParser::FindFunction(const char* name) const
 {
-    for (int i = 0; i < m_functions.size(); ++i)
+    for (size_t i = 0; i < m_functions.size(); ++i)
     {
         if (m_functions[i]->name == name)
         {
@@ -3626,7 +3626,7 @@ static bool AreArgumentListsEqual(HLSLTree* tree, HLSLArgument* lhs, HLSLArgumen
 
 const HLSLFunction* HLSLParser::FindFunction(const HLSLFunction* fun) const
 {
-    for (int i = 0; i < m_functions.size(); ++i)
+    for (size_t i = 0; i < m_functions.size(); ++i)
     {
         if (m_functions[i]->name == fun->name &&
             AreTypesEqual(m_tree, m_functions[i]->returnType, fun->returnType) &&
@@ -3653,7 +3653,7 @@ void HLSLParser::DeclareVariable(const char* name, const HLSLType& type)
 
 bool HLSLParser::GetIsFunction(const char* name) const
 {
-    for (int i = 0; i < m_functions.size(); ++i)
+    for (size_t i = 0; i < m_functions.size(); ++i)
     {
         // == is ok here because we're passed the strings through the string pool.
         if (m_functions[i]->name == name)
@@ -3683,7 +3683,7 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
     bool nameMatches            = false;
 
     // Get the user defined functions with the specified name.
-    for (int i = 0; i < m_functions.size(); ++i)
+    for (size_t i = 0; i < m_functions.size(); ++i)
     {
         const HLSLFunction* function = m_functions[i];
         if (function->name == name)
