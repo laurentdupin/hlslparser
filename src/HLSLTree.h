@@ -357,10 +357,21 @@ inline bool IsVectorType(const HLSLType & type)
 struct HLSLNode
 {
     HLSLNodeType                nodeType;
-    const char*                 fileName;
-    int                         line;
+    const char*                 fileName = NULL;
+    int                         line = 0;
 
-    //virtual nlohmann::json      ConvertToJSON() = 0;
+    virtual nlohmann::json      ConvertToJSON()
+    {
+        nlohmann::json output = nlohmann::json::object();
+        output["nodeType"] = magic_enum::enum_name(nodeType);
+        if (fileName != NULL)
+        {
+            output["fileName"] = fileName;
+            output["line"] = line;
+        }
+        
+        return output;
+    }
 };
 
 struct HLSLRoot : public HLSLNode

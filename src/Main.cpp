@@ -17,7 +17,7 @@ void PrintUsage()
 {
 	std::cerr << "usage: hlslparser [-h] FILENAME ENTRYNAME\n"
 		<< "\n"
-		<< "Translate HLSL shader to GLSL shader.\n"
+		<< "Output HLSL Parsing results to JSON.\n"
 		<< "\n"
 		<< "positional arguments:\n"
 		<< " FILENAME    input file name\n"
@@ -86,7 +86,30 @@ int main( int argc, char* argv[] )
 		return 1;
 	}
 
-	auto nodename = magic_enum::enum_name(tree.GetRoot()->nodeType);
+	nlohmann::json output = nlohmann::json::array();
+
+	HLSLStatement* nextStatement = tree.GetRoot()->statement;
+	while (nextStatement != nullptr)
+	{
+		output.emplace_back(nextStatement->ConvertToJSON());
+		nextStatement = nextStatement->nextStatement;
+	}
+
+	FILE* file = NULL;
+	std::string strOutput = output.dump(2);
+
+	fopen_s(&file, (std::string(fileName) + ".analysis").c_str(), "w");
+
+	if (file != NULL)
+	{
+		fprintf(file, "%s", strOutput.c_str());
+		fclose(file);
+	}
+	else
+	{
+		Log_Error("Failed to output analysis\n");
+		return 1;
+	}
 
 	return 0;
 }
