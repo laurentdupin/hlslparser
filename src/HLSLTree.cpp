@@ -10,7 +10,7 @@ namespace M4
         nlohmann::json output = nlohmann::json::object();
 
         output["baseType"] = magic_enum::enum_name(baseType);
-        output["samplerType"] = magic_enum::enum_name(samplerType);
+        if(IsSamplerType(baseType)) output["samplerType"] = magic_enum::enum_name(samplerType);
         if (typeName != NULL) output["typeName"] = typeName;
         output["array"] = array;
         if (arraySize != NULL) output["arraySize"] = arraySize->ConvertToJSON();
