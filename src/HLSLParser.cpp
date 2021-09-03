@@ -2128,7 +2128,7 @@ bool HLSLParser::ParseBinaryExpression(int priority, HLSLExpression*& expression
         {
 
             HLSLExpression* expression2 = NULL;
-            ASSERT((int)binaryOp < sizeof(_binaryOpPriority) / sizeof(int) );
+            ASSERT((size_t)binaryOp < sizeof(_binaryOpPriority) / sizeof(int) );
             if (!ParseBinaryExpression(_binaryOpPriority[(int)binaryOp], expression2))
             {
                 return false;
@@ -3654,7 +3654,7 @@ const HLSLFunction* HLSLParser::FindFunction(const HLSLFunction* fun) const
 
 void HLSLParser::DeclareVariable(const char* name, const HLSLType& type)
 {
-    if (m_variables.size() == m_numGlobals)
+    if ((int)m_variables.size() == m_numGlobals)
     {
         ++m_numGlobals;
     }
