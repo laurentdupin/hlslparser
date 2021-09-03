@@ -5,9 +5,11 @@
 #include <vector>
 #include <stdexcept>
 
+#ifndef _MSC_VER 
 #define sprintf_s(buffer, size, ...) sprintf(buffer, __VA_ARGS__)
 #define strcpy_s(buffer, size, ...) strcpy(buffer, __VA_ARGS__)
 #define fopen_s(file, path, ...) *file = fopen(path, __VA_ARGS__)
+#endif
 
 #define MAGIC_ENUM_RANGE_MIN 0
 #define MAGIC_ENUM_RANGE_MAX 512
