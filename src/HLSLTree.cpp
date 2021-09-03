@@ -2052,7 +2052,7 @@ struct StatementList {
             declaration->type = expr->expressionType;
             declaration->assignment = expr;
             
-            HLSLIdentifierExpression * ident = (HLSLIdentifierExpression *)expr;
+            //HLSLIdentifierExpression * ident = (HLSLIdentifierExpression *)expr;
             
             return declaration;
         }

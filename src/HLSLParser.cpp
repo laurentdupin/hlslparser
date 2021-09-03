@@ -346,7 +346,7 @@ static const EffectStateValue witnessStencilModeValues[] = {
     {NULL, 0}
 };
 
-static const EffectStateValue witnessFilterModeValues[] = {
+/*static const EffectStateValue witnessFilterModeValues[] = {
     {"Point", 0},
     {"Linear", 1},
     {"Mipmap_Nearest", 2},
@@ -360,7 +360,7 @@ static const EffectStateValue witnessWrapModeValues[] = {
     {"Clamp", 1},
     {"ClampToBorder", 2},
     {NULL, 0}
-};
+};*/
 
 static const EffectState pipelineStates[] = {
     {"VertexShader", 0, NULL},
@@ -1515,7 +1515,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
             {
                 // @@ Currently we support either a semantic or a register, but not both.
                 if (AcceptIdentifier(declaration->semantic)) {
-                    int k = 1;
+                    //int k = 1;
                 }
                 else if (!Expect(HLSLToken::Register) || !Expect('(') || !ExpectIdentifier(declaration->registerName) || !Expect(')'))
                 {
@@ -3692,7 +3692,7 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
 {
     const HLSLFunction* matchedFunction     = NULL;
 
-    int  numArguments           = functionCall->numArguments;
+    //int  numArguments           = functionCall->numArguments;
     int  numMatchedOverloads    = 0;
     bool nameMatches            = false;
 
