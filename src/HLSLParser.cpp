@@ -3893,9 +3893,6 @@ bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * me
 
     if (Accept('('))
     {
-        const char* fileName = GetFileName();
-        int         line = GetLineNumber();
-
         HLSLFunctionCall functionCall;
 
         if (!ParseExpressionList(')', false, functionCall.argument, functionCall.numArguments))
