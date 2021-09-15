@@ -75,9 +75,21 @@ enum class HLSLToken
     InOut,
 
     // Effect keywords.
-    SamplerState,
+    SamplerUnderscoreState,
     Technique,
     Pass,
+
+    //New Texture related keywords
+    Texture1D,
+    Texture1DArray,
+    Texture2D,
+    Texture2DArray,
+    Texture2DMS,
+    Texture2DMSArray,
+    Texture3D,
+    TextureCube,
+    TextureCubeArray,
+    SamplerState,
 
     // Multi-character symbols.
     LessEqual,

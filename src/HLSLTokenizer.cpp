@@ -79,6 +79,16 @@ static const char* _reservedWords[] =
         "sampler_state",
         "technique",
         "pass",
+        "Texture1D",
+        "Texture1DArray",
+        "Texture2D",
+        "Texture2DArray",
+        "Texture2DMS",
+        "Texture2DMSArray",
+        "Texture3D",
+        "TextureCube",
+        "TextureCubeArray",
+        "SamplerState"
     };
 
 static bool GetIsSymbol(char c)

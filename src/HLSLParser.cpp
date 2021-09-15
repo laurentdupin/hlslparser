@@ -1517,9 +1517,25 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
                 if (AcceptIdentifier(declaration->semantic)) {
                     //int k = 1;
                 }
-                else if (!Expect(HLSLToken::Register) || !Expect('(') || !ExpectIdentifier(declaration->registerName) || !Expect(')'))
+                else
                 {
-                    return false;
+                    if (!Expect(HLSLToken::Register) || !Expect('(') || !ExpectIdentifier(declaration->registerName))
+                    {
+                        return false;
+                    }
+
+                    if (Accept(','))
+                    {
+                        if (!ExpectIdentifier(declaration->spaceName))
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (!Expect(')'))
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -2656,7 +2672,7 @@ bool HLSLParser::ParseArgumentList(HLSLArgument*& firstArgument, int& numArgumen
 
 bool HLSLParser::ParseSamplerState(HLSLExpression*& expression)
 {
-    if (!Expect(HLSLToken::SamplerState))
+    if (!Expect(HLSLToken::SamplerUnderscoreState))
     {
         return false;
     }
@@ -3430,7 +3446,38 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
     case (int)HLSLToken::Sampler2DArray:
         type.baseType = HLSLBaseType::Sampler2DArray;
         break;
+    case (int)HLSLToken::Texture1D:
+        type.baseType = HLSLBaseType::Texture1D;
+        break;
+    case (int)HLSLToken::Texture1DArray:
+        type.baseType = HLSLBaseType::Texture1DArray;
+        break;
+    case (int)HLSLToken::Texture2D:
+        type.baseType = HLSLBaseType::Texture2D;
+        break;
+    case (int)HLSLToken::Texture2DArray:
+        type.baseType = HLSLBaseType::Texture2DArray;
+        break;
+    case (int)HLSLToken::Texture2DMS:
+        type.baseType = HLSLBaseType::Texture2DMS;
+        break;
+    case (int)HLSLToken::Texture2DMSArray:
+        type.baseType = HLSLBaseType::Texture2DMSArray;
+        break;
+    case (int)HLSLToken::Texture3D:
+        type.baseType = HLSLBaseType::Texture3D;
+        break;
+    case (int)HLSLToken::TextureCube:
+        type.baseType = HLSLBaseType::TextureCube;
+        break;
+    case (int)HLSLToken::TextureCubeArray:
+        type.baseType = HLSLBaseType::TextureCubeArray;
+        break;
+    case (int)HLSLToken::SamplerState:
+        type.baseType = HLSLBaseType::SamplerState;
+        break;
     }
+
     if (type.baseType != HLSLBaseType::Void)
     {
         m_tokenizer.Next();
@@ -3462,6 +3509,32 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
                 }
             }
         }
+        else if (IsTextureType(type.baseType))
+        {
+            // Parse optional sampler type.
+            if (Accept('<'))
+            {
+                int token = m_tokenizer.GetToken();
+
+                if (token == (int)HLSLToken::Float4)
+                {
+                    type.textureType = HLSLBaseType::Float4;
+                }
+                else
+                {
+                    m_tokenizer.Error("Expected float4");
+                    return false;
+                }
+
+                m_tokenizer.Next();
+
+                if (!Expect('>'))
+                {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 
@@ -3470,6 +3543,7 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
         type.baseType = HLSLBaseType::Void;
         return true;
     }
+
     if (token == (int)HLSLToken::Identifier)
     {
         const char* identifier = m_tree->AddString( m_tokenizer.GetIdentifier() );
@@ -3481,6 +3555,7 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
             return true;
         }
     }
+
     return false;
 }
 

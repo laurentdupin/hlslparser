@@ -115,6 +115,16 @@ enum class HLSLBaseType
     Sampler2DShadow,
     Sampler2DMS,
     Sampler2DArray,
+    Texture1D,
+    Texture1DArray,
+    Texture2D,
+    Texture2DArray,
+    Texture2DMS,
+    Texture2DMSArray,
+    Texture3D,
+    TextureCube,
+    TextureCubeArray,
+    SamplerState,
     UserDefined,       // struct
     Expression,        // type argument for defined() sizeof() and typeof().
     Auto,
@@ -135,6 +145,19 @@ inline bool IsSamplerType(HLSLBaseType baseType)
            baseType == HLSLBaseType::Sampler2DShadow ||
            baseType == HLSLBaseType::Sampler2DMS ||
            baseType == HLSLBaseType::Sampler2DArray;
+}
+
+inline bool IsTextureType(HLSLBaseType baseType)
+{
+    return baseType == HLSLBaseType::Texture1D ||
+           baseType == HLSLBaseType::Texture1DArray ||
+           baseType == HLSLBaseType::Texture2D ||
+           baseType == HLSLBaseType::Texture2DArray ||
+           baseType == HLSLBaseType::Texture2DMS ||
+           baseType == HLSLBaseType::Texture2DMSArray ||
+           baseType == HLSLBaseType::Texture3D ||
+           baseType == HLSLBaseType::TextureCube ||
+           baseType == HLSLBaseType::TextureCubeArray;
 }
 
 inline bool IsMatrixType(HLSLBaseType baseType)
@@ -322,6 +345,7 @@ struct HLSLType
     { 
         baseType    = _baseType;
         samplerType = HLSLBaseType::Float;
+        textureType = HLSLBaseType::Float4;
         typeName    = NULL;
         array       = false;
         arraySize   = NULL;
@@ -330,6 +354,7 @@ struct HLSLType
     }
     HLSLBaseType        baseType;
     HLSLBaseType        samplerType;    // Half or Float
+    HLSLBaseType        textureType;    // Half or Float
     const char*         typeName;       // For user defined types.
     bool                array;
     HLSLExpression*     arraySize;
@@ -412,6 +437,7 @@ struct HLSLDeclaration : public HLSLStatement
     {
         name            = NULL;
         registerName    = NULL;
+        spaceName       = NULL;
         semantic        = NULL;
         nextDeclaration = NULL;
         assignment      = NULL;
@@ -420,6 +446,7 @@ struct HLSLDeclaration : public HLSLStatement
     const char*         name;
     HLSLType            type;
     const char*         registerName;       // @@ Store register index?
+    const char*         spaceName;       // @@ Store register index?
     const char*         semantic;
     HLSLDeclaration*    nextDeclaration;    // If multiple variables declared on a line.
     HLSLExpression*     assignment;

@@ -88,6 +88,15 @@ void Log_ErrorArgList(const char * format, va_list args) {
     va_copy(tmp, args);
     vprintf( format, args );
     va_end(tmp);
+
+    try
+    {
+        throw std::runtime_error(format);
+    }
+    catch (std::exception const&)
+    {
+        
+    }
 #else
     vprintf( format, args );
 #endif

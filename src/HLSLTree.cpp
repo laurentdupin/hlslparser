@@ -95,6 +95,7 @@ namespace M4
         if (name != NULL) output["name"] = name;
         output["type"] = type.ConvertToJSON();
         if (registerName != NULL) output["registerName"] = registerName;
+        if (spaceName != NULL) output["spaceName"] = spaceName;
         if (semantic != NULL) output["semantic"] = semantic;
 
         output["assignments"] = nlohmann::json::array();
