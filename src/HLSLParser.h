@@ -112,7 +112,7 @@ private:
     bool GetIsFunction(const char* name) const;
     
     /** Finds the overloaded function that matches the specified call. */
-    const HLSLFunction* MatchFunctionCall(const HLSLFunctionCall* functionCall, const char* name);
+    const HLSLFunction* MatchFunctionCall(const HLSLFunctionCall* functionCall, const char* name, const HLSLBaseType baseType = HLSLBaseType::Void);
 
     /** Gets the type of the named field on the specified object type (fieldName can also specify a swizzle. ) */
     bool GetMemberType(const HLSLType& objectType, HLSLMemberAccess * memberAccess);

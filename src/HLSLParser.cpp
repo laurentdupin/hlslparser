@@ -31,24 +31,27 @@ enum class CompareFunctionsResult
 /** This structure stores a HLSLFunction-like declaration for an intrinsic function */
 struct Intrinsic
 {
-    explicit Intrinsic(const char* name, HLSLBaseType returnType)
+    explicit Intrinsic(const char* name, HLSLBaseType memberOfType, HLSLBaseType returnType)
     {
         function.name                   = name;
+        function.memberOfType           = memberOfType;
         function.returnType.baseType    = returnType;
         function.numArguments           = 0;
     }
-    explicit Intrinsic(const char* name, HLSLBaseType returnType, HLSLBaseType arg1)
+    explicit Intrinsic(const char* name, HLSLBaseType memberOfType, HLSLBaseType returnType, HLSLBaseType arg1)
     {
         function.name                   = name;
+        function.memberOfType           = memberOfType;
         function.returnType.baseType    = returnType;
         function.numArguments           = 1;
         function.argument               = argument + 0;
         argument[0].type.baseType       = arg1;
         argument[0].type.flags          = (int)HLSLTypeFlags::Const;
     }
-    explicit Intrinsic(const char* name, HLSLBaseType returnType, HLSLBaseType arg1, HLSLBaseType arg2)
+    explicit Intrinsic(const char* name, HLSLBaseType memberOfType, HLSLBaseType returnType, HLSLBaseType arg1, HLSLBaseType arg2)
     {
         function.name                   = name;
+        function.memberOfType           = memberOfType;
         function.returnType.baseType    = returnType;
         function.argument               = argument + 0;
         function.numArguments           = 2;
@@ -58,9 +61,10 @@ struct Intrinsic
         argument[1].type.baseType       = arg2;
         argument[1].type.flags          = (int)HLSLTypeFlags::Const;
     }
-    explicit Intrinsic(const char* name, HLSLBaseType returnType, HLSLBaseType arg1, HLSLBaseType arg2, HLSLBaseType arg3)
+    explicit Intrinsic(const char* name, HLSLBaseType memberOfType, HLSLBaseType returnType, HLSLBaseType arg1, HLSLBaseType arg2, HLSLBaseType arg3)
     {
         function.name                   = name;
+        function.memberOfType           = memberOfType;
         function.returnType.baseType    = returnType;
         function.argument               = argument + 0;
         function.numArguments           = 3;
@@ -73,9 +77,10 @@ struct Intrinsic
         argument[2].type.baseType       = arg3;
         argument[2].type.flags          = (int)HLSLTypeFlags::Const;
     }
-    explicit Intrinsic(const char* name, HLSLBaseType returnType, HLSLBaseType arg1, HLSLBaseType arg2, HLSLBaseType arg3, HLSLBaseType arg4)
+    explicit Intrinsic(const char* name, HLSLBaseType memberOfType, HLSLBaseType returnType, HLSLBaseType arg1, HLSLBaseType arg2, HLSLBaseType arg3, HLSLBaseType arg4)
     {
         function.name                   = name;
+        function.memberOfType           = memberOfType;
         function.returnType.baseType    = returnType;
         function.argument               = argument + 0;
         function.numArguments           = 4;
@@ -399,34 +404,34 @@ struct BaseTypeDescription
 
 
 #define INTRINSIC_FLOAT1_FUNCTION(name) \
-        Intrinsic( name, HLSLBaseType::Float,   HLSLBaseType::Float  ),   \
-        Intrinsic( name, HLSLBaseType::Float2,  HLSLBaseType::Float2 ),   \
-        Intrinsic( name, HLSLBaseType::Float3,  HLSLBaseType::Float3 ),   \
-        Intrinsic( name, HLSLBaseType::Float4,  HLSLBaseType::Float4 ),   \
-        Intrinsic( name, HLSLBaseType::Half,    HLSLBaseType::Half   ),   \
-        Intrinsic( name, HLSLBaseType::Half2,   HLSLBaseType::Half2  ),   \
-        Intrinsic( name, HLSLBaseType::Half3,   HLSLBaseType::Half3  ),   \
-        Intrinsic( name, HLSLBaseType::Half4,   HLSLBaseType::Half4  )
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float,   HLSLBaseType::Float  ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float2,  HLSLBaseType::Float2 ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float3,  HLSLBaseType::Float3 ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float4,  HLSLBaseType::Float4 ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half,    HLSLBaseType::Half   ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half2,   HLSLBaseType::Half2  ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half3,   HLSLBaseType::Half3  ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half4,   HLSLBaseType::Half4  )
 
 #define INTRINSIC_FLOAT2_FUNCTION(name) \
-        Intrinsic( name, HLSLBaseType::Float,   HLSLBaseType::Float,   HLSLBaseType::Float  ),   \
-        Intrinsic( name, HLSLBaseType::Float2,  HLSLBaseType::Float2,  HLSLBaseType::Float2 ),   \
-        Intrinsic( name, HLSLBaseType::Float3,  HLSLBaseType::Float3,  HLSLBaseType::Float3 ),   \
-        Intrinsic( name, HLSLBaseType::Float4,  HLSLBaseType::Float4,  HLSLBaseType::Float4 ),   \
-        Intrinsic( name, HLSLBaseType::Half,    HLSLBaseType::Half,    HLSLBaseType::Half   ),   \
-        Intrinsic( name, HLSLBaseType::Half2,   HLSLBaseType::Half2,   HLSLBaseType::Half2  ),   \
-        Intrinsic( name, HLSLBaseType::Half3,   HLSLBaseType::Half3,   HLSLBaseType::Half3  ),   \
-        Intrinsic( name, HLSLBaseType::Half4,   HLSLBaseType::Half4,   HLSLBaseType::Half4  )
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float,   HLSLBaseType::Float,   HLSLBaseType::Float  ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float2,  HLSLBaseType::Float2,  HLSLBaseType::Float2 ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float3,  HLSLBaseType::Float3,  HLSLBaseType::Float3 ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float4,  HLSLBaseType::Float4,  HLSLBaseType::Float4 ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half,    HLSLBaseType::Half,    HLSLBaseType::Half   ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half2,   HLSLBaseType::Half2,   HLSLBaseType::Half2  ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half3,   HLSLBaseType::Half3,   HLSLBaseType::Half3  ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half4,   HLSLBaseType::Half4,   HLSLBaseType::Half4  )
 
 #define INTRINSIC_FLOAT3_FUNCTION(name) \
-        Intrinsic( name, HLSLBaseType::Float,   HLSLBaseType::Float,   HLSLBaseType::Float,  HLSLBaseType::Float ),   \
-        Intrinsic( name, HLSLBaseType::Float2,  HLSLBaseType::Float2,  HLSLBaseType::Float2,  HLSLBaseType::Float2 ),  \
-        Intrinsic( name, HLSLBaseType::Float3,  HLSLBaseType::Float3,  HLSLBaseType::Float3,  HLSLBaseType::Float3 ),  \
-        Intrinsic( name, HLSLBaseType::Float4,  HLSLBaseType::Float4,  HLSLBaseType::Float4,  HLSLBaseType::Float4 ),  \
-        Intrinsic( name, HLSLBaseType::Half,    HLSLBaseType::Half,    HLSLBaseType::Half,   HLSLBaseType::Half ),    \
-        Intrinsic( name, HLSLBaseType::Half2,   HLSLBaseType::Half2,   HLSLBaseType::Half2,  HLSLBaseType::Half2 ),    \
-        Intrinsic( name, HLSLBaseType::Half3,   HLSLBaseType::Half3,   HLSLBaseType::Half3,  HLSLBaseType::Half3 ),    \
-        Intrinsic( name, HLSLBaseType::Half4,   HLSLBaseType::Half4,   HLSLBaseType::Half4,  HLSLBaseType::Half4 )
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float,   HLSLBaseType::Float,   HLSLBaseType::Float,  HLSLBaseType::Float ),   \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float2,  HLSLBaseType::Float2,  HLSLBaseType::Float2,  HLSLBaseType::Float2 ),  \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float3,  HLSLBaseType::Float3,  HLSLBaseType::Float3,  HLSLBaseType::Float3 ),  \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float4,  HLSLBaseType::Float4,  HLSLBaseType::Float4,  HLSLBaseType::Float4 ),  \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half,    HLSLBaseType::Half,    HLSLBaseType::Half,   HLSLBaseType::Half ),    \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half2,   HLSLBaseType::Half2,   HLSLBaseType::Half2,  HLSLBaseType::Half2 ),    \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half3,   HLSLBaseType::Half3,   HLSLBaseType::Half3,  HLSLBaseType::Half3 ),    \
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Half4,   HLSLBaseType::Half4,   HLSLBaseType::Half4,  HLSLBaseType::Half4 )
 
 #if 0
 // @@ IC: For some reason this is not working with the Visual Studio compiler:
@@ -435,7 +440,7 @@ struct BaseTypeDescription
         SamplerIntrinsic( name, HLSLBaseType::Half4,  sampler, HLSLBaseType::Half,  arg1  )
 #else
 #define SAMPLER_INTRINSIC_FUNCTION(name, sampler, arg1) \
-        Intrinsic( name, HLSLBaseType::Float4, sampler, arg1)
+        Intrinsic( name, HLSLBaseType::Void, HLSLBaseType::Float4, sampler, arg1)
 #endif
     
 const Intrinsic _intrinsic[] =
@@ -443,33 +448,33 @@ const Intrinsic _intrinsic[] =
         INTRINSIC_FLOAT1_FUNCTION( "abs" ),
         INTRINSIC_FLOAT1_FUNCTION( "acos" ),
 
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Float ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Float2 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Float3 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Float4 ),
-		Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Float2x2 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Float3x3 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Float4x4 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Float4x3 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Float4x2 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Half ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Half2 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Half3 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Half4 ),
-		Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Half2x2 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Half3x3 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Half4x4 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Half4x3 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Half4x2 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Bool ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Int ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Int2 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Int3 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Int4 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Uint ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Uint2 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Uint3 ),
-        Intrinsic( "any", HLSLBaseType::Bool, HLSLBaseType::Uint4 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Float ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Float2 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Float3 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Float4 ),
+		Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Float2x2 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Float3x3 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Float4x4 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Float4x3 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Float4x2 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Half ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Half2 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Half3 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Half4 ),
+		Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Half2x2 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Half3x3 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Half4x4 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Half4x3 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Half4x2 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Bool ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Int ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Int2 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Int3 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Int4 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Uint ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Uint2 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Uint3 ),
+        Intrinsic( "any", HLSLBaseType::Void, HLSLBaseType::Bool, HLSLBaseType::Uint4 ),
 
         INTRINSIC_FLOAT1_FUNCTION( "asin" ),
         INTRINSIC_FLOAT1_FUNCTION( "atan" ),
@@ -486,34 +491,34 @@ const Intrinsic _intrinsic[] =
 
         INTRINSIC_FLOAT2_FUNCTION( "fmod" ),
 
-        Intrinsic( "clip", HLSLBaseType::Void,  HLSLBaseType::Float    ),
-        Intrinsic( "clip", HLSLBaseType::Void,  HLSLBaseType::Float2   ),
-        Intrinsic( "clip", HLSLBaseType::Void,  HLSLBaseType::Float3   ),
-        Intrinsic( "clip", HLSLBaseType::Void,  HLSLBaseType::Float4   ),
-        Intrinsic( "clip", HLSLBaseType::Void,  HLSLBaseType::Half     ),
-        Intrinsic( "clip", HLSLBaseType::Void,  HLSLBaseType::Half2    ),
-        Intrinsic( "clip", HLSLBaseType::Void,  HLSLBaseType::Half3    ),
-        Intrinsic( "clip", HLSLBaseType::Void,  HLSLBaseType::Half4    ),
+        Intrinsic( "clip", HLSLBaseType::Void, HLSLBaseType::Void,  HLSLBaseType::Float    ),
+        Intrinsic( "clip", HLSLBaseType::Void, HLSLBaseType::Void,  HLSLBaseType::Float2   ),
+        Intrinsic( "clip", HLSLBaseType::Void, HLSLBaseType::Void,  HLSLBaseType::Float3   ),
+        Intrinsic( "clip", HLSLBaseType::Void, HLSLBaseType::Void,  HLSLBaseType::Float4   ),
+        Intrinsic( "clip", HLSLBaseType::Void, HLSLBaseType::Void,  HLSLBaseType::Half     ),
+        Intrinsic( "clip", HLSLBaseType::Void, HLSLBaseType::Void,  HLSLBaseType::Half2    ),
+        Intrinsic( "clip", HLSLBaseType::Void, HLSLBaseType::Void,  HLSLBaseType::Half3    ),
+        Intrinsic( "clip", HLSLBaseType::Void, HLSLBaseType::Void,  HLSLBaseType::Half4    ),
 
-        Intrinsic( "dot", HLSLBaseType::Float,  HLSLBaseType::Float,   HLSLBaseType::Float  ),
-        Intrinsic( "dot", HLSLBaseType::Float,  HLSLBaseType::Float2,  HLSLBaseType::Float2 ),
-        Intrinsic( "dot", HLSLBaseType::Float,  HLSLBaseType::Float3,  HLSLBaseType::Float3 ),
-        Intrinsic( "dot", HLSLBaseType::Float,  HLSLBaseType::Float4,  HLSLBaseType::Float4 ),
-        Intrinsic( "dot", HLSLBaseType::Half,   HLSLBaseType::Half,    HLSLBaseType::Half   ),
-        Intrinsic( "dot", HLSLBaseType::Half,   HLSLBaseType::Half2,   HLSLBaseType::Half2  ),
-        Intrinsic( "dot", HLSLBaseType::Half,   HLSLBaseType::Half3,   HLSLBaseType::Half3  ),
-        Intrinsic( "dot", HLSLBaseType::Half,   HLSLBaseType::Half4,   HLSLBaseType::Half4  ),
+        Intrinsic( "dot", HLSLBaseType::Void, HLSLBaseType::Float,  HLSLBaseType::Float,   HLSLBaseType::Float  ),
+        Intrinsic( "dot", HLSLBaseType::Void, HLSLBaseType::Float,  HLSLBaseType::Float2,  HLSLBaseType::Float2 ),
+        Intrinsic( "dot", HLSLBaseType::Void, HLSLBaseType::Float,  HLSLBaseType::Float3,  HLSLBaseType::Float3 ),
+        Intrinsic( "dot", HLSLBaseType::Void, HLSLBaseType::Float,  HLSLBaseType::Float4,  HLSLBaseType::Float4 ),
+        Intrinsic( "dot", HLSLBaseType::Void, HLSLBaseType::Half,   HLSLBaseType::Half,    HLSLBaseType::Half   ),
+        Intrinsic( "dot", HLSLBaseType::Void, HLSLBaseType::Half,   HLSLBaseType::Half2,   HLSLBaseType::Half2  ),
+        Intrinsic( "dot", HLSLBaseType::Void, HLSLBaseType::Half,   HLSLBaseType::Half3,   HLSLBaseType::Half3  ),
+        Intrinsic( "dot", HLSLBaseType::Void, HLSLBaseType::Half,   HLSLBaseType::Half4,   HLSLBaseType::Half4  ),
 
-        Intrinsic( "cross", HLSLBaseType::Float3,  HLSLBaseType::Float3,  HLSLBaseType::Float3 ),
+        Intrinsic( "cross", HLSLBaseType::Void, HLSLBaseType::Float3,  HLSLBaseType::Float3,  HLSLBaseType::Float3 ),
 
-        Intrinsic( "length", HLSLBaseType::Float,  HLSLBaseType::Float  ),
-        Intrinsic( "length", HLSLBaseType::Float,  HLSLBaseType::Float2 ),
-        Intrinsic( "length", HLSLBaseType::Float,  HLSLBaseType::Float3 ),
-        Intrinsic( "length", HLSLBaseType::Float,  HLSLBaseType::Float4 ),
-        Intrinsic( "length", HLSLBaseType::Half,   HLSLBaseType::Half   ),
-        Intrinsic( "length", HLSLBaseType::Half,   HLSLBaseType::Half2  ),
-        Intrinsic( "length", HLSLBaseType::Half,   HLSLBaseType::Half3  ),
-        Intrinsic( "length", HLSLBaseType::Half,   HLSLBaseType::Half4  ),
+        Intrinsic( "length", HLSLBaseType::Void, HLSLBaseType::Float,  HLSLBaseType::Float  ),
+        Intrinsic( "length", HLSLBaseType::Void, HLSLBaseType::Float,  HLSLBaseType::Float2 ),
+        Intrinsic( "length", HLSLBaseType::Void, HLSLBaseType::Float,  HLSLBaseType::Float3 ),
+        Intrinsic( "length", HLSLBaseType::Void, HLSLBaseType::Float,  HLSLBaseType::Float4 ),
+        Intrinsic( "length", HLSLBaseType::Void, HLSLBaseType::Half,   HLSLBaseType::Half   ),
+        Intrinsic( "length", HLSLBaseType::Void, HLSLBaseType::Half,   HLSLBaseType::Half2  ),
+        Intrinsic( "length", HLSLBaseType::Void, HLSLBaseType::Half,   HLSLBaseType::Half3  ),
+        Intrinsic( "length", HLSLBaseType::Void, HLSLBaseType::Half,   HLSLBaseType::Half4  ),
 
         INTRINSIC_FLOAT2_FUNCTION( "max" ),
         INTRINSIC_FLOAT2_FUNCTION( "min" ),
@@ -528,21 +533,21 @@ const Intrinsic _intrinsic[] =
         // matrix<N,M> = mul(matrix<N,M>, matrix<M,N>) ?
         
         INTRINSIC_FLOAT2_FUNCTION( "mul" ),
-		Intrinsic( "mul", HLSLBaseType::Float2, HLSLBaseType::Float2, HLSLBaseType::Float2x2 ),
-        Intrinsic( "mul", HLSLBaseType::Float3, HLSLBaseType::Float3, HLSLBaseType::Float3x3 ),
-        Intrinsic( "mul", HLSLBaseType::Float4, HLSLBaseType::Float4, HLSLBaseType::Float4x4 ),
-        Intrinsic( "mul", HLSLBaseType::Float2, HLSLBaseType::Float2x2, HLSLBaseType::Float2 ),
-        Intrinsic( "mul", HLSLBaseType::Float3, HLSLBaseType::Float3x3, HLSLBaseType::Float3 ),
-        Intrinsic( "mul", HLSLBaseType::Float4, HLSLBaseType::Float4x4, HLSLBaseType::Float4 ),
-        Intrinsic( "mul", HLSLBaseType::Float3, HLSLBaseType::Float4, HLSLBaseType::Float4x3 ),
-        Intrinsic( "mul", HLSLBaseType::Float2, HLSLBaseType::Float4, HLSLBaseType::Float4x2 ),
+		Intrinsic( "mul", HLSLBaseType::Void, HLSLBaseType::Float2, HLSLBaseType::Float2, HLSLBaseType::Float2x2 ),
+        Intrinsic( "mul", HLSLBaseType::Void, HLSLBaseType::Float3, HLSLBaseType::Float3, HLSLBaseType::Float3x3 ),
+        Intrinsic( "mul", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Float4, HLSLBaseType::Float4x4 ),
+        Intrinsic( "mul", HLSLBaseType::Void, HLSLBaseType::Float2, HLSLBaseType::Float2x2, HLSLBaseType::Float2 ),
+        Intrinsic( "mul", HLSLBaseType::Void, HLSLBaseType::Float3, HLSLBaseType::Float3x3, HLSLBaseType::Float3 ),
+        Intrinsic( "mul", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Float4x4, HLSLBaseType::Float4 ),
+        Intrinsic( "mul", HLSLBaseType::Void, HLSLBaseType::Float3, HLSLBaseType::Float4, HLSLBaseType::Float4x3 ),
+        Intrinsic( "mul", HLSLBaseType::Void, HLSLBaseType::Float2, HLSLBaseType::Float4, HLSLBaseType::Float4x2 ),
 
-		Intrinsic( "transpose", HLSLBaseType::Float2x2, HLSLBaseType::Float2x2 ),
-        Intrinsic( "transpose", HLSLBaseType::Float3x3, HLSLBaseType::Float3x3 ),
-        Intrinsic( "transpose", HLSLBaseType::Float4x4, HLSLBaseType::Float4x4 ),
-        Intrinsic( "transpose", HLSLBaseType::Half2x2, HLSLBaseType::Half2x2 ),
-        Intrinsic( "transpose", HLSLBaseType::Half3x3, HLSLBaseType::Half3x3 ),
-        Intrinsic( "transpose", HLSLBaseType::Half4x4, HLSLBaseType::Half4x4 ),
+		Intrinsic( "transpose", HLSLBaseType::Void, HLSLBaseType::Float2x2, HLSLBaseType::Float2x2 ),
+        Intrinsic( "transpose", HLSLBaseType::Void, HLSLBaseType::Float3x3, HLSLBaseType::Float3x3 ),
+        Intrinsic( "transpose", HLSLBaseType::Void, HLSLBaseType::Float4x4, HLSLBaseType::Float4x4 ),
+        Intrinsic( "transpose", HLSLBaseType::Void, HLSLBaseType::Half2x2, HLSLBaseType::Half2x2 ),
+        Intrinsic( "transpose", HLSLBaseType::Void, HLSLBaseType::Half3x3, HLSLBaseType::Half3x3 ),
+        Intrinsic( "transpose", HLSLBaseType::Void, HLSLBaseType::Half4x4, HLSLBaseType::Half4x4 ),
 
         INTRINSIC_FLOAT1_FUNCTION( "normalize" ),
         INTRINSIC_FLOAT2_FUNCTION( "pow" ),
@@ -566,40 +571,40 @@ const Intrinsic _intrinsic[] =
 		INTRINSIC_FLOAT1_FUNCTION("isnan"),
 		INTRINSIC_FLOAT1_FUNCTION("isinf"),
 
-		Intrinsic("asuint",    HLSLBaseType::Uint, HLSLBaseType::Float),
+		Intrinsic("asuint", HLSLBaseType::Void, HLSLBaseType::Uint, HLSLBaseType::Float),
 
         SAMPLER_INTRINSIC_FUNCTION("tex2D", HLSLBaseType::Sampler2D, HLSLBaseType::Float2),
         
-        Intrinsic("tex2Dproj", HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float4),
+        Intrinsic("tex2Dproj", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float4),
 
         SAMPLER_INTRINSIC_FUNCTION("tex2Dlod", HLSLBaseType::Sampler2D, HLSLBaseType::Float4),
         
-        Intrinsic("tex2Dlod",  HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float4, HLSLBaseType::Int2),   // With offset.
+        Intrinsic("tex2Dlod", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float4, HLSLBaseType::Int2),   // With offset.
 
         SAMPLER_INTRINSIC_FUNCTION("tex2Dbias", HLSLBaseType::Sampler2D, HLSLBaseType::Float4),
         
-        Intrinsic("tex2Dgrad", HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float2, HLSLBaseType::Float2, HLSLBaseType::Float2),
-        Intrinsic("tex2Dgather", HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float2, HLSLBaseType::Int),
-        Intrinsic("tex2Dgather", HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float2, HLSLBaseType::Int2, HLSLBaseType::Int),    // With offset.
-        Intrinsic("tex2Dsize", HLSLBaseType::Int2, HLSLBaseType::Sampler2D),
-        Intrinsic("tex2Dfetch", HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Int3),    // u,v,mipmap
+        Intrinsic("tex2Dgrad", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float2, HLSLBaseType::Float2, HLSLBaseType::Float2),
+        Intrinsic("tex2Dgather", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float2, HLSLBaseType::Int),
+        Intrinsic("tex2Dgather", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Float2, HLSLBaseType::Int2, HLSLBaseType::Int),    // With offset.
+        Intrinsic("tex2Dsize", HLSLBaseType::Void, HLSLBaseType::Int2, HLSLBaseType::Sampler2D),
+        Intrinsic("tex2Dfetch", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler2D, HLSLBaseType::Int3),    // u,v,mipmap
 
-        Intrinsic("tex2Dcmp", HLSLBaseType::Float4, HLSLBaseType::Sampler2DShadow, HLSLBaseType::Float4),                // @@ IC: This really takes a float3 (uvz) and returns a float.
+        Intrinsic("tex2Dcmp", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler2DShadow, HLSLBaseType::Float4),                // @@ IC: This really takes a float3 (uvz) and returns a float.
 
-        Intrinsic("tex2DMSfetch", HLSLBaseType::Float4, HLSLBaseType::Sampler2DMS, HLSLBaseType::Int2, HLSLBaseType::Int),
-        Intrinsic("tex2DMSsize", HLSLBaseType::Int3, HLSLBaseType::Sampler2DMS),
+        Intrinsic("tex2DMSfetch", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler2DMS, HLSLBaseType::Int2, HLSLBaseType::Int),
+        Intrinsic("tex2DMSsize", HLSLBaseType::Void, HLSLBaseType::Int3, HLSLBaseType::Sampler2DMS),
 
-        Intrinsic("tex2DArray", HLSLBaseType::Float4, HLSLBaseType::Sampler2DArray, HLSLBaseType::Float3),
+        Intrinsic("tex2DArray", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler2DArray, HLSLBaseType::Float3),
 
-        Intrinsic("tex3D",     HLSLBaseType::Float4, HLSLBaseType::Sampler3D, HLSLBaseType::Float3),
-        Intrinsic("tex3Dlod",  HLSLBaseType::Float4, HLSLBaseType::Sampler3D, HLSLBaseType::Float4),
-        Intrinsic("tex3Dbias", HLSLBaseType::Float4, HLSLBaseType::Sampler3D, HLSLBaseType::Float4),
-        Intrinsic("tex3Dsize", HLSLBaseType::Int3, HLSLBaseType::Sampler3D),
+        Intrinsic("tex3D",     HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler3D, HLSLBaseType::Float3),
+        Intrinsic("tex3Dlod",  HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler3D, HLSLBaseType::Float4),
+        Intrinsic("tex3Dbias", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Sampler3D, HLSLBaseType::Float4),
+        Intrinsic("tex3Dsize", HLSLBaseType::Void, HLSLBaseType::Int3, HLSLBaseType::Sampler3D),
 
-        Intrinsic("texCUBE",       HLSLBaseType::Float4, HLSLBaseType::SamplerCube, HLSLBaseType::Float3),
-        Intrinsic("texCUBElod", HLSLBaseType::Float4, HLSLBaseType::SamplerCube, HLSLBaseType::Float4),
-        Intrinsic("texCUBEbias", HLSLBaseType::Float4, HLSLBaseType::SamplerCube, HLSLBaseType::Float4),
-        Intrinsic("texCUBEsize", HLSLBaseType::Int, HLSLBaseType::SamplerCube),
+        Intrinsic("texCUBE", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::SamplerCube, HLSLBaseType::Float3),
+        Intrinsic("texCUBElod", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::SamplerCube, HLSLBaseType::Float4),
+        Intrinsic("texCUBEbias", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::SamplerCube, HLSLBaseType::Float4),
+        Intrinsic("texCUBEsize", HLSLBaseType::Void, HLSLBaseType::Int, HLSLBaseType::SamplerCube),
 
         Intrinsic( "sincos", HLSLBaseType::Void,  HLSLBaseType::Float,   HLSLBaseType::Float,  HLSLBaseType::Float ),
         Intrinsic( "sincos", HLSLBaseType::Void,  HLSLBaseType::Float2,  HLSLBaseType::Float,  HLSLBaseType::Float2 ),
@@ -610,14 +615,22 @@ const Intrinsic _intrinsic[] =
         Intrinsic( "sincos", HLSLBaseType::Void,  HLSLBaseType::Half3,   HLSLBaseType::Half3,  HLSLBaseType::Half3 ),
         Intrinsic( "sincos", HLSLBaseType::Void,  HLSLBaseType::Half4,   HLSLBaseType::Half4,  HLSLBaseType::Half4 ),
 
-        Intrinsic( "mad", HLSLBaseType::Float, HLSLBaseType::Float, HLSLBaseType::Float, HLSLBaseType::Float ),
-        Intrinsic( "mad", HLSLBaseType::Float2, HLSLBaseType::Float2, HLSLBaseType::Float2, HLSLBaseType::Float2 ),
-        Intrinsic( "mad", HLSLBaseType::Float3, HLSLBaseType::Float3, HLSLBaseType::Float3, HLSLBaseType::Float3 ),
-        Intrinsic( "mad", HLSLBaseType::Float4, HLSLBaseType::Float4, HLSLBaseType::Float4, HLSLBaseType::Float4 ),
-        Intrinsic( "mad", HLSLBaseType::Half, HLSLBaseType::Half, HLSLBaseType::Half, HLSLBaseType::Half ),
-        Intrinsic( "mad", HLSLBaseType::Half2, HLSLBaseType::Half2, HLSLBaseType::Half2, HLSLBaseType::Half2 ),
-        Intrinsic( "mad", HLSLBaseType::Half3, HLSLBaseType::Half3, HLSLBaseType::Half3, HLSLBaseType::Half3 ),
-        Intrinsic( "mad", HLSLBaseType::Half4, HLSLBaseType::Half4, HLSLBaseType::Half4, HLSLBaseType::Half4 ),
+        Intrinsic( "mad", HLSLBaseType::Void, HLSLBaseType::Float, HLSLBaseType::Float, HLSLBaseType::Float, HLSLBaseType::Float ),
+        Intrinsic( "mad", HLSLBaseType::Void, HLSLBaseType::Float2, HLSLBaseType::Float2, HLSLBaseType::Float2, HLSLBaseType::Float2 ),
+        Intrinsic( "mad", HLSLBaseType::Void, HLSLBaseType::Float3, HLSLBaseType::Float3, HLSLBaseType::Float3, HLSLBaseType::Float3 ),
+        Intrinsic( "mad", HLSLBaseType::Void, HLSLBaseType::Float4, HLSLBaseType::Float4, HLSLBaseType::Float4, HLSLBaseType::Float4 ),
+        Intrinsic( "mad", HLSLBaseType::Void, HLSLBaseType::Half, HLSLBaseType::Half, HLSLBaseType::Half, HLSLBaseType::Half ),
+        Intrinsic( "mad", HLSLBaseType::Void, HLSLBaseType::Half2, HLSLBaseType::Half2, HLSLBaseType::Half2, HLSLBaseType::Half2 ),
+        Intrinsic( "mad", HLSLBaseType::Void, HLSLBaseType::Half3, HLSLBaseType::Half3, HLSLBaseType::Half3, HLSLBaseType::Half3 ),
+        Intrinsic( "mad", HLSLBaseType::Void, HLSLBaseType::Half4, HLSLBaseType::Half4, HLSLBaseType::Half4, HLSLBaseType::Half4 ),
+
+        Intrinsic( "Sample", HLSLBaseType::Texture1D, HLSLBaseType::Float4, HLSLBaseType::SamplerState, HLSLBaseType::Float ),
+        Intrinsic( "Sample", HLSLBaseType::Texture1DArray, HLSLBaseType::Float4, HLSLBaseType::SamplerState, HLSLBaseType::Float2 ),
+        Intrinsic( "Sample", HLSLBaseType::Texture2D, HLSLBaseType::Float4, HLSLBaseType::SamplerState, HLSLBaseType::Float2 ),
+        Intrinsic( "Sample", HLSLBaseType::Texture2DArray, HLSLBaseType::Float4, HLSLBaseType::SamplerState, HLSLBaseType::Float3 ),
+        Intrinsic( "Sample", HLSLBaseType::Texture3D, HLSLBaseType::Float4, HLSLBaseType::SamplerState, HLSLBaseType::Float3),
+        Intrinsic( "Sample", HLSLBaseType::TextureCube, HLSLBaseType::Float4, HLSLBaseType::SamplerState, HLSLBaseType::Float3),
+        Intrinsic( "Sample", HLSLBaseType::TextureCubeArray, HLSLBaseType::Float4, HLSLBaseType::SamplerState, HLSLBaseType::Float4)
     };
 
 const int _numIntrinsics = sizeof(_intrinsic) / sizeof(Intrinsic);
@@ -681,6 +694,17 @@ const BaseTypeDescription _baseTypeDescriptions[(int)HLSLBaseType::Count] =
         { "sampler2DShadow",    NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Sampler2DShadow
         { "sampler2DMS",        NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Sampler2DMS
         { "sampler2DArray",     NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Sampler2DArray
+        { "Texture1D",          NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Texture1D,
+        { "Texture1DArray",     NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Texture1DArray,
+        { "Texture2D",          NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Texture2D,
+        { "Texture2DArray",     NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Texture2DArray,
+        { "Texture2DMS",        NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Texture2DMS,
+        { "Texture2DMSArray",   NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Texture2DMSArray,
+        { "Texture3D",          NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::Texture3D,
+        { "TextureCube",        NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::TextureCube,
+        { "TextureCubeArray",   NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::TextureCubeArray,
+        { "SamplerState",       NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::SamplerState,
+
         { "user defined",       NumericType::NaN,        1, 0, 0, -1 },      // HLSLBaseType::UserDefined
         { "expression",         NumericType::NaN,        1, 0, 0, -1 }       // HLSLBaseType::Expression
     };
@@ -2437,15 +2461,18 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
         {
             HLSLMemberAccess* memberAccess = m_tree->AddNode<HLSLMemberAccess>(fileName, line);
             memberAccess->object = expression;
+
             if (!ExpectIdentifier(memberAccess->field))
             {
                 return false;
             }
+
             if (!GetMemberType( expression->expressionType, memberAccess))
             {
                 m_tokenizer.Error("Couldn't access '%s'", memberAccess->field);
                 return false;
             }
+
             expression = memberAccess;
             done = false;
         }
@@ -2550,6 +2577,7 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
 
             const HLSLIdentifierExpression* identifierExpression = static_cast<const HLSLIdentifierExpression*>(expression);
             const HLSLFunction* function = MatchFunctionCall( functionCall, identifierExpression->name );
+
             if (function == NULL)
             {
                 return false;
@@ -3763,7 +3791,7 @@ bool HLSLParser::GetIsFunction(const char* name) const
     return false;
 }
 
-const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functionCall, const char* name)
+const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functionCall, const char* name, const HLSLBaseType baseType)
 {
     const HLSLFunction* matchedFunction     = NULL;
 
@@ -3775,7 +3803,7 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
     for (size_t i = 0; i < m_functions.size(); ++i)
     {
         const HLSLFunction* function = m_functions[i];
-        if (function->name == name)
+        if (function->name == name && function->memberOfType == baseType)
         {
             nameMatches = true;
             
@@ -3796,7 +3824,7 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
     for (int i = 0; i < _numIntrinsics; ++i)
     {
         const HLSLFunction* function = &_intrinsic[i].function;
-        if (String_Equal(function->name, name))
+        if (String_Equal(function->name, name) && function->memberOfType == baseType)
         {
             nameMatches = true;
 
@@ -3836,6 +3864,12 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
 
 bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * memberAccess)
 {
+    if (objectType.array)
+    {
+        m_tokenizer.Error("Trying to access member from array object");
+        return false;
+    }
+
     const char* fieldName = memberAccess->field;
 
     if (objectType.baseType == HLSLBaseType::UserDefined)
@@ -3855,6 +3889,30 @@ bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * me
         }
 
         return false;
+    }
+
+    if (Accept('('))
+    {
+        const char* fileName = GetFileName();
+        int         line = GetLineNumber();
+
+        HLSLFunctionCall functionCall;
+
+        if (!ParseExpressionList(')', false, functionCall.argument, functionCall.numArguments))
+        {
+            return false;
+        }
+
+        const HLSLFunction* function = MatchFunctionCall(&functionCall, fieldName, objectType.baseType);
+
+        if (function == NULL)
+        {
+            return false;
+        }
+
+        memberAccess->expressionType = function->returnType;
+
+        return true;
     }
 
     if (_baseTypeDescriptions[(int)objectType.baseType].numericType == NumericType::NaN)

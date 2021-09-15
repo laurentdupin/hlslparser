@@ -364,6 +364,11 @@ struct HLSLType
     virtual nlohmann::json      ConvertToJSON();
 };
 
+inline bool IsTextureType(const HLSLType& type)
+{
+    return IsTextureType(type.baseType);
+}
+
 inline bool IsSamplerType(const HLSLType & type)
 {
     return IsSamplerType(type.baseType);
@@ -528,6 +533,7 @@ struct HLSLFunction : public HLSLStatement
     }
     const char*         name;
     HLSLType            returnType;
+    HLSLBaseType        memberOfType = HLSLBaseType::Void;
     const char*         semantic;
     const char*         sv_semantic;
     int                 numArguments;

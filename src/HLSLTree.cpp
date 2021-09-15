@@ -271,6 +271,16 @@ const HLSLTypeDimension BaseTypeDimension[(int)HLSLBaseType::Count] =
     HLSLTypeDimension::None,     // HLSLBaseType::Sampler2DShadow,
     HLSLTypeDimension::None,     // HLSLBaseType::Sampler2DMS,
     HLSLTypeDimension::None,     // HLSLBaseType::Sampler2DArray,
+    HLSLTypeDimension::None,     // HLSLBaseType::Texture1D,
+    HLSLTypeDimension::None,     // HLSLBaseType::Texture1DArray,
+    HLSLTypeDimension::None,     // HLSLBaseType::Texture2D,
+    HLSLTypeDimension::None,     // HLSLBaseType::Texture2DArray,
+    HLSLTypeDimension::None,     // HLSLBaseType::Texture2DMS,
+    HLSLTypeDimension::None,     // HLSLBaseType::Texture2DMSArray,
+    HLSLTypeDimension::None,     // HLSLBaseType::Texture3D,
+    HLSLTypeDimension::None,     // HLSLBaseType::TextureCube,
+    HLSLTypeDimension::None,     // HLSLBaseType::TextureCubeArray,
+    HLSLTypeDimension::None,     // HLSLBaseType::SamplerState,
     HLSLTypeDimension::None,     // HLSLBaseType::UserDefined,       // struct
     HLSLTypeDimension::None,     // HLSLBaseType::Expression,        // type argument for defined() sizeof() and typeof().
     HLSLTypeDimension::None,     // HLSLBaseType::Auto,
@@ -317,6 +327,16 @@ const HLSLBaseType ScalarBaseType[(int)HLSLBaseType::Count] = {
     HLSLBaseType::Unknown,       // HLSLBaseType::Sampler2DShadow,
     HLSLBaseType::Unknown,       // HLSLBaseType::Sampler2DMS,
     HLSLBaseType::Unknown,       // HLSLBaseType::Sampler2DArray,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Texture1D,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Texture1DArray,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Texture2D,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Texture2DArray,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Texture2DMS,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Texture2DMSArray,
+    HLSLBaseType::Unknown,       // HLSLBaseType::Texture3D,
+    HLSLBaseType::Unknown,       // HLSLBaseType::TextureCube,
+    HLSLBaseType::Unknown,       // HLSLBaseType::TextureCubeArray,
+    HLSLBaseType::Unknown,       // HLSLBaseType::SamplerState,
     HLSLBaseType::Unknown,       // HLSLBaseType::UserDefined,       // struct
     HLSLBaseType::Unknown,       // HLSLBaseType::Expression,        // type argument for defined() sizeof() and typeof().
     HLSLBaseType::Unknown,       // HLSLBaseType::Auto,
