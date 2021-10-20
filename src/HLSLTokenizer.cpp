@@ -63,6 +63,7 @@ static const char* _reservedWords[] =
         "false",
         "void",
         "struct",
+        "namespace",
         "cbuffer",
         "tbuffer",
         "register",
@@ -239,8 +240,15 @@ void HLSLTokenizer::Next()
     }
 
     // Must be an identifier or a reserved word.
-    while (m_buffer < m_bufferEnd && m_buffer[0] != 0 && !GetIsSymbol(m_buffer[0]) && !isspace(m_buffer[0]))
+    while (m_buffer < m_bufferEnd && m_buffer[0] != 0 && 
+        (!GetIsSymbol(m_buffer[0]) || (((m_buffer + 1) < m_bufferEnd) && m_buffer[0] == ':' && m_buffer[1] == ':')) && 
+        !isspace(m_buffer[0]))
     {
+        if (((m_buffer + 1) < m_bufferEnd) && m_buffer[0] == ':' && m_buffer[1] == ':')
+        {
+            ++m_buffer;
+        }
+
         ++m_buffer;
     }
 

@@ -58,6 +58,7 @@ enum class HLSLToken
     False,
     Void,
     Struct,
+    Namespace,
     CBuffer,
     TBuffer,
     Register,

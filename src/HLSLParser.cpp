@@ -1304,8 +1304,17 @@ bool HLSLParser::AcceptInt(int& value)
     return false;
 }
 
+static std::vector<const char *> strCurrentNamespaces;
+static std::vector<std::string> strTempNames;
+static bool bReserved = false;
+
 bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
 {
+    if (!bReserved)
+    {
+        strTempNames.reserve(10000);
+    }
+
     HLSLAttribute * attributes = NULL;
     ParseAttributeBlock(attributes);
 
@@ -1319,7 +1328,30 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
 
     bool doesNotExpectSemicolon = false;
 
-    if (Accept(HLSLToken::Struct))
+    if (Accept(HLSLToken::Namespace))
+    {
+        // Struct declaration.
+
+        const char* namespaceName = NULL;
+        if (!ExpectIdentifier(namespaceName))
+        {
+            return false;
+        }
+
+        if (!Expect('{'))
+        {
+            return false;
+        }
+
+        strCurrentNamespaces.push_back(namespaceName);
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept('}'))
+    {
+        strCurrentNamespaces.pop_back();
+        doesNotExpectSemicolon = true;
+    }
+    else if (Accept(HLSLToken::Struct))
     {
         // Struct declaration.
 
@@ -1328,6 +1360,20 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
         {
             return false;
         }
+
+        if (strCurrentNamespaces.size() > 0)
+        {
+            strTempNames.emplace_back();
+
+            for (auto& strnamespace : strCurrentNamespaces)
+            {
+                strTempNames.back() += std::string(strnamespace) + "::";
+            }
+
+            strTempNames.back() += structName;
+            structName = strTempNames.back().c_str();
+        }
+
         if (FindUserDefinedType(structName) != NULL)
         {
             m_tokenizer.Error("struct %s already defined", structName);
@@ -1447,6 +1493,19 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
         if (!ExpectIdentifier(globalName))
         {
             return false;
+        }
+
+        if (strCurrentNamespaces.size() > 0)
+        {
+            strTempNames.emplace_back();
+
+            for (auto& strnamespace : strCurrentNamespaces)
+            {
+                strTempNames.back() += std::string(strnamespace) + "::";
+            }
+
+            strTempNames.back() += globalName;
+            globalName = strTempNames.back().c_str();
         }
 
         if (Accept('('))
@@ -3695,7 +3754,7 @@ const HLSLType* HLSLParser::FindVariable(const char* name, bool& global) const
 {
     for (int32_t i = (int32_t)m_variables.size() - 1; i >= 0; --i)
     {
-        if (m_variables[i].name == name)
+        if (m_variables[i].name != NULL && strcmp(m_variables[i].name, name) == 0)
         {
             global = (i < m_numGlobals);
             return &m_variables[i].type;
@@ -3708,7 +3767,7 @@ const HLSLFunction* HLSLParser::FindFunction(const char* name) const
 {
     for (size_t i = 0; i < m_functions.size(); ++i)
     {
-        if (m_functions[i]->name == name)
+        if (m_functions[i]->name != NULL && strcmp(m_functions[i]->name, name))
         {
             return m_functions[i];
         }
