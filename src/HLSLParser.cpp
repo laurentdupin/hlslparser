@@ -3603,14 +3603,12 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
             {
                 int token = m_tokenizer.GetToken();
 
-                if (token == (int)HLSLToken::Float4)
+                switch (token)
                 {
-                    type.textureType = HLSLBaseType::Float4;
-                }
-                else
-                {
-                    m_tokenizer.Error("Expected float4");
-                    return false;
+                case (int)HLSLToken::Float4: type.textureType = HLSLBaseType::Float4; break;
+                case (int)HLSLToken::Float2: type.textureType = HLSLBaseType::Float2; break;
+                case (int)HLSLToken::Float: type.textureType = HLSLBaseType::Float; break;
+                default: m_tokenizer.Error("Unhandled texture type"); break;
                 }
 
                 m_tokenizer.Next();

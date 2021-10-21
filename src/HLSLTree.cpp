@@ -16,7 +16,8 @@ namespace M4
         if (arraySize != NULL) output["arraySize"] = arraySize->ConvertToJSON();
         if(flags != 0) output["flags"] = flags;
         if(addressSpace != HLSLAddressSpace::Undefined) output["addressSpace"] = magic_enum::enum_name(addressSpace);
-
+        output["textureType"] = magic_enum::enum_name(textureType);
+        output["samplerType"] = magic_enum::enum_name(samplerType);
         return output;
     }
 
