@@ -725,6 +725,8 @@ struct HLSLLiteralExpression : public HLSLExpression
         float           fValue;
         int             iValue;
     };
+
+    virtual nlohmann::json      ConvertToJSON(bool bNodeType = true) override;
 };
 
 /** An identifier, typically a variable name or structure field name. */

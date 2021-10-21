@@ -229,6 +229,19 @@ namespace M4
         return output;
     }
 
+    nlohmann::json      HLSLLiteralExpression::ConvertToJSON(bool bNodeType)
+    {
+        nlohmann::json output = HLSLExpression::ConvertToJSON(bNodeType);
+
+        output["literaltype"] = magic_enum::enum_name(type);
+
+        output["bvalue"] = bValue;
+        output["fValue"] = fValue;
+        output["iValue"] = iValue;
+
+        return output;
+    }
+
 const HLSLTypeDimension BaseTypeDimension[(int)HLSLBaseType::Count] =
 {
     HLSLTypeDimension::None,     // HLSLBaseType::Unknown,
